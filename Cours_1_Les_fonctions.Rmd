@@ -3,60 +3,84 @@ title: 'Cours 1 : Les fonctions'
 output: 
   ioslides_presentation:
     smaller : true
+    css : slides.css
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, comment = "#")
 ```
 
-## Sources
+## Sources {#cover}
 
-Advanced R
+La **TRES** grande majorité des informations données ici sont issue du livre d'Hadley Wickham : **Advanced R**.
 
+Clairement la référence (en Anglais !) sur les fonctionnalités "avancées" de R.
+
+<div class="centered">
+![](img/AdvancedR.jpg)
+
+[http://adv-r.had.co.nz/](http://adv-r.had.co.nz/)
+</div>
+
+Livre consultable intégralement en ligne, ou achetable sur internet (Amazon...)
 
 ## Une fonction : présentation simple
-Dans R, une fonction est un objet, au même titre qu'un vecteur, un dataframe, etc.
-Dans R, tout est fonction dans R, y compris `+` ou `(` ou encore `if`
+Dans R, **une fonction est un objet**, au même titre qu'un vecteur, un dataframe, une liste...
+Dans R, **tout est fonction dans R**, y compris '`+`' ou '`(`' ou encore '`if`'.
 
-Elle permet de créer une abstraction de ce qu'on souhaite implémenter.
+Une fonction permet de créer une version abstraite et réutilisable d'une solution que l'on souhaite appliquer à un problème donné.
 
-Exemple :
-
+Exemple de fonction basique:
 ```{r}
+# Fonction renvoyant le carré d'une valeur
 f <- function(x) {
   x^2
 }
+```
 
+Exemple d'utilisation (= appel de la fonction) :
+```{r}
 f(2)
 ```
 
+## Pourquoi utiliser des fonctions ?
 
-## Une fonction : pourquoi ?
+### Grande facilité à réutiliser son code
+Créer une fonction permet de **"s'extraire" du contexte** dans laquelle est crée.
 
-- Grande facilité à réutiliser son code (dans un même script, ou dans d'autres)
-- Meilleure lisibilité (eg. plus compact)
-- Maintenance plus aisée (eg. via `debug()`)
+On ne cherche plus à résoudre un problème précis, mais un **problème générique** : la fonction pourra être réutilisé dès qu'on sera confronté au même type de problème.
 
-## Les constituants d'une fonction (1/2)
+### Meilleure lisibilité
 
-- Le corps : la définition de la fonction, accessible via `body()`
+Le code est plus compact : toute la partie reproductible est encapsulée dans la fonction. I ne reste qu'à passer les arguments et à manipuler la sortie.
+
+### Maintenance plus aisée
+
+La correction d'un bug au niveau d'une fonction permet de corriger le problème simultanément à tout les endroits où elle est utilisée (y compris dans d'autres projets par ex).
+
+Des outils précieux type `debug()` permettent aussi d'explorer plus finement le comportement d'une fonction, et de trouver souvent la source d'un problème.
+
+
+## Les constituants d'une fonction {.reduceCode}
+Une fonction est constitué de **3 principaux éléments** :
+
+- Le **corps** : la définition de la fonction, accessible via `body()`
 ```{r echo=TRUE}
 body(f)
 ```
-- Les arguments : les paramètres qui sont utilisés par la fonction, accessible via `formals()`
+- Les **arguments** : les paramètres qui sont utilisés par la fonction, accessible via `formals()`
 ```{r echo=TRUE}
 formals(f)
 ```
-
-
-## Les constituants d'une fonction (2/2)
-
-- L'environnement : le contexte dans lequel la fonction est définie, accessible via `environment()`
+- L'**environnement** : le contexte dans lequel la fonction est définie, accessible via `environment()`
 ```{r echo=TRUE}
 environment(f)
 ```
 
-** Définition de l'environnement **
+## L'environnement
+
+- GlobalEnv
+- Environnement de la fonction
 
 ## Le lexical scoping
 
