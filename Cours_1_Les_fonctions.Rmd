@@ -1,0 +1,198 @@
+---
+title: 'Cours 1 : Les fonctions'
+output: 
+  ioslides_presentation:
+    smaller : true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = "#")
+```
+
+## Sources
+
+Advanced R
+
+
+## Une fonction : présentation simple
+Dans R, une fonction est un objet, au même titre qu'un vecteur, un dataframe, etc.
+Dans R, tout est fonction dans R, y compris `+` ou `(` ou encore `if`
+
+Elle permet de créer une abstraction de ce qu'on souhaite implémenter.
+
+Exemple :
+
+```{r}
+f <- function(x) {
+  x^2
+}
+
+f(2)
+```
+
+
+## Une fonction : pourquoi ?
+
+- Grande facilité à réutiliser son code (dans un même script, ou dans d'autres)
+- Meilleure lisibilité (eg. plus compact)
+- Maintenance plus aisée (eg. via `debug()`)
+
+## Les constituants d'une fonction (1/2)
+
+- Le corps : la définition de la fonction, accessible via `body()`
+```{r echo=TRUE}
+body(f)
+```
+- Les arguments : les paramètres qui sont utilisés par la fonction, accessible via `formals()`
+```{r echo=TRUE}
+formals(f)
+```
+
+
+## Les constituants d'une fonction (2/2)
+
+- L'environnement : le contexte dans lequel la fonction est définie, accessible via `environment()`
+```{r echo=TRUE}
+environment(f)
+```
+
+** Définition de l'environnement **
+
+## Le lexical scoping
+
+Ensemble de règles permettant à `R` de faire correspondre une valeur à un symbole
+```{r}
+x <- 10
+f <- function() {
+  x <- 20
+  x
+}
+
+x
+f()
+  
+```
+
+## Le lexical scoping
+
+- Name masking
+- Fonctions et variables
+- Fresh start
+- Dynamic lookup
+
+## La gestion des arguments
+
+- Les arguments formels
+- Les arguments d'appel
+- Les valeurs par défaut
+- La lazy evaluation
+
+## Les arguments
+
+
+- Par leur nom complet
+- Par leur nom partiel
+- Par leur position (ordre dans la définition de la fonction)
+
+
+## Les arguments
+```{r}
+f <- function(foo, bar) {
+  c(foo, bar)
+}
+```
+
+Possiblité de donner les argument en :
+
+- Utilisant leurs noms complets
+```{r, results='hide'}
+f(foo = 1 , bar = 2)
+```
+
+- Utilisant une partie de leur nom (*partial matching*)
+```{r, results='hide'}
+f(f = 1, b = 2)
+```
+
+- Utilisant leur position dans la définition de la fonction
+```{r, results='hide'}
+f(1,2)
+```
+
+## Lazy evaluation
+L'évaluation d'un argument ne se fait qu'à l'instant *t* où l'argument est utilisé
+(et donc à l'instant *t* où l'évaluation devient nécessaire).
+ 
+```{r}
+f <- function(a = 1 , b = a*2) {
+  a <- 6
+  b
+}
+```
+
+L'évaluation de `b` ne se fait qu'au moment de son utilisation 
+(donc ici après l'affectation de la valeur 6 à `a`)
+```{r}
+f()
+```
+
+## Dot Dot Dot (`...`)
+
+Argument spécial `...` qui permet de passer des arguments non spécifiés/déterminés à l'avance.
+
+Utile par exemple quand on veut faire passer des arguments pour une fonction définie à l'intérieure d'une autre fonction
+
+Attention : R ne peut pas alors vérifier si ce que vous passez est cohérent (= correspond bien à un argument nécessaire)
+```{r}
+f <- function(a, b, ...) {
+  x <- sum(..., na.rm=T)
+  c(a, b, x)
+}
+
+f(a = 1, b = 2, 3:30, 4:50)
+```
+
+## Valeur de retour 
+Par défaut, une fonction retourne un objet **unique** qui est :
+
+- Soit le résultat de la dernière évaluation
+```{r}
+f <- function(x) {
+  x^2
+}
+f(2)
+```
+- Soit un résultat précis, choisi, par l'intermédiaire de `return()`
+```{r}
+f <- function(x){
+  if(x%%2 == 0){
+    return("x est un nombre pair")
+  } else {
+    return("x est un nombre impair")
+  }
+}
+f(4)
+```
+
+## Closures
+Le résultat d'une fonction est un objet. Une fonction est un objet comme un autre.
+
+--> Une fonction peut donc renvoyer une autre fonction : ce sont les **closures**.
+
+```{r}
+f <- function(x){
+  g <- function(y){
+    x^y
+  }
+}
+```
+
+```{r}
+carre <- f(2)
+carre(2)
+
+cube <- f(3)
+cube(2)
+```
+
+## 
