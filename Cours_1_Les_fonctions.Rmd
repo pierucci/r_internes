@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE, comment = "#")
 
 ## Sources {#cover}
 
-La **TRES** grande majorité des informations données ici sont issue du livre d'Hadley Wickham : **Advanced R**.
+La **TRES** grande majorité des informations données ici sont issues du livre d'Hadley Wickham : **Advanced R**.
 
 Clairement la référence (en Anglais !) sur les fonctionnalités "avancées" de R.
 
@@ -46,19 +46,19 @@ f(2)
 ## Pourquoi utiliser des fonctions ?
 
 ### Grande facilité à réutiliser son code
-Créer une fonction permet de **"s'extraire" du contexte** dans laquelle est crée.
+Créer une fonction permet de **"s'extraire" du contexte** dans laquelle elle est créée.
 
-On ne cherche plus à résoudre un problème précis, mais un **problème générique** : la fonction pourra être réutilisé dès qu'on sera confronté au même type de problème.
+On ne cherche plus à résoudre un problème précis, mais un **problème générique** : la fonction pourra être réutilisée dès qu'on sera confronté au même type de problème.
 
 ### Meilleure lisibilité
 
-Le code est plus compact : toute la partie reproductible est encapsulée dans la fonction. I ne reste qu'à passer les arguments et à manipuler la sortie.
+Le code est plus compact : toute la partie reproductible est encapsulée dans la fonction. Il ne reste qu'à passer les arguments et à manipuler la sortie.
 
 ### Maintenance plus aisée
 
 La correction d'un bug au niveau d'une fonction permet de corriger le problème simultanément à tout les endroits où elle est utilisée (y compris dans d'autres projets par ex).
 
-Des outils précieux type `debug()` permettent aussi d'explorer plus finement le comportement d'une fonction, et de trouver souvent la source d'un problème.
+Des outils type `debug()` permettent aussi d'explorer plus finement le comportement d'une fonction, et de trouver souvent la source d'un problème.
 
 
 ## Les constituants d'une fonction {.reduceCode}
