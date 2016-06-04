@@ -60,7 +60,7 @@ Le code est plus compact : toute la partie reproductible est encapsulée dans la
 
 ### Maintenance plus aisée
 
-La correction d'un bug au niveau d'une fonction permet de corriger le problème simultanément à tout les endroits où elle est utilisée (y compris dans d'autres projets par ex).
+La correction d'un bug au niveau d'une fonction permet de corriger le problème simultanément à tous les endroits où elle est utilisée (y compris dans d'autres projets par exemple).
 
 Des outils type `debug()` permettent aussi d'explorer plus finement le comportement d'une fonction, et de trouver souvent la source d'un problème.
 
@@ -72,24 +72,24 @@ Code monolithique :
 ```{r}
 # transform data
 # fit model to data
-# plot data, uses 'col' and 'pch'
+# plot data
 # get desired model results
 ```
 Fonction monolithique :
 ```{r}
-monolith <- function(data, col = "blue", pch = 21) {
+monolith <- function(data) {
         # transform data
         # fit model to data
-        # plot data, uses 'col' and 'pch'
+        # plot data
         # get desired model results
 }
 ```
 Fonction en briques :
 ```{r}
-brickwall <- function(data, ...) {
+brickwall <- function(data) {
         tranData <- myDataTransform(data)
         dataMod <- myModelFit(tranData)
-        myPlot(dataMod, ...)
+        myPlot(dataMod)
         myModelOutput(dataMod)
 }
 ```
@@ -122,7 +122,7 @@ En `R` les noms d'objets (`x`, `varName`...) sont liés à des valeurs (`3`, `"f
 
 Par exemple l'environnement où on travaille quand on ouvre `R` est l'environnement global. Mais il peut exister d'autres environnements
 
-Chaque fonction utilise 3 environnements : enclosing, execution, calling.
+Chaque fonction utilise 3 environnements : *enclosing*, *execution*, *calling*.
 
 ## Execution environment
 
@@ -143,7 +143,7 @@ variable
 
 ## Enclosing environment {.reduceCode}
 
-C'est l'environnement où la fonction a été *définie*. Pour une fonction définie classiquement, c'est donc l'environnement global. Mais il est possible que ça soit un autre environnement, par exemple l'*execution environment* d'une autre fonction (quand une fonction est définie dans une autre fonction).
+C'est l'environnement où la fonction a été *définie*. Pour une fonction définie classiquement, c'est donc l'environnement global. Mais il est possible que ça soit un autre environnement, par exemple l'*execution environment* d'une autre fonction (quand une deuxième fonction est définie dans une première fonction).
 
 ```{r}
 f <- function() {
@@ -173,7 +173,7 @@ Ici c'est donc l'environnement global:
 ```{r}
 f()
 ```
-Mais pour cette même fonction ça peut aussi être l'*execution environment* de `g()`.
+Mais pour cette même fonction, si elle est lancée depuis `g()`, ça peut aussi être l'*execution environment* de `g()`.
 ```{r}
 g <- function() {
   f()
@@ -246,11 +246,11 @@ f(1, 2)
 
 ## Manipulation des arguments {.reduceCode}
 
-Récupération de la liste des arguments (formals)
+Récupération de la liste des arguments avec `formals()`.
 ```{r}
 formals(sample)
 ```
-Test sur la présence/absence d'un argument
+Test sur la présence/absence d'un argument avec `missing()`.
 ```{r}
 myplot <- function(x, y) {
   if(missing(y)) {
@@ -262,8 +262,7 @@ myplot <- function(x, y) {
 ```
 
 ## Lazy evaluation
-L'évaluation d'un argument ne se fait qu'à l'instant *t* où l'argument est utilisé
-(et donc à l'instant *t* où l'évaluation devient nécessaire).
+L'évaluation d'un argument ne se fait qu'à l'instant *t* où l'argument est utilisé dans le corps de la fonction (et donc à l'instant *t* où l'évaluation devient nécessaire).
  
 ```{r}
 f <- function(a = 1 , b = a*2) {
@@ -295,7 +294,7 @@ all_numeric(2, c(1, 2, 3), 4:8)
 
 ## Dot Dot Dot (`...`) (2)
 
-- faire passer des arguments pour une fonction exécutée à l'intérieur d'une autre fonction, sans avoir à tous les nommer.
+- faire passer des arguments à une fonction exécutée à l'intérieur d'une autre fonction, sans avoir à tous les nommer.
 ```{r}
 mult_and_resamp <- function(x, y, ...) {
   x2 <- x * y
@@ -305,7 +304,7 @@ mult_and_resamp(0:5, 10)
 mult_and_resamp(0:2, 2, replace = TRUE, size = 10)
 ```
 
-## Valeur de retour 
+## Valeur de retour {.reduceCode}
 Par défaut, une fonction retourne un objet **unique** qui peut être :
 
 - le résultat de la dernière évaluation
@@ -321,13 +320,12 @@ f <- function(x){
   if(x%%2 == 0){
     return("x est un nombre pair")
   }
-  
   "x est un nombre impair"
 }
 f(4)
 ```
 
-## Gestion des valeurs de retour complexes (1)
+## Valeurs de retour complexes (1) {.reduceCode}
 
 Comment faire pour retourner plus de choses ? Deux solutions :
 
@@ -343,7 +341,7 @@ some_stats <- function(x) {
 some_stats(rnorm(10))
 ```
 
-## Gestion des valeurs de retour complexes (2)
+## Valeurs de retour complexes (2) {.reduceCode}
 
 - Utiliser des attributs
 ```{r}
@@ -423,7 +421,7 @@ do_something_to_x(1:10, mean)
 do_something_to_x(1:10, range)
 ```
 
-## Pour combiner les concepts
+## Pour combiner les concepts (1) {.reduceCode}
 
 Closure + *enclosing environment* + scoping. On fait un compteur.
 
@@ -438,7 +436,6 @@ create_counter <- function() {
 c1 <- create_counter()
 c1()
 c1()
-c1()
 ```
 Pas partagé car si on appelle à nouveau `create_counter()`, un second *execution environment* indépendant est créé.
 ```{r}
@@ -447,7 +444,7 @@ c2()
 c1()
 ```
 
-## Pour combiner les concepts encore plus
+## Pour combiner les concepts (2) {.reduceCode}
 
 Il faut remonter d'un cran l'*enclosing environment*.
 ```{r}
@@ -462,8 +459,6 @@ create_counter <- local({
   }
 })
 c1 <- create_counter()
-c1()
-c1()
 c1()
 c2 <- create_counter()
 c2()
