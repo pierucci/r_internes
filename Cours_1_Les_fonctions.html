@@ -116,6 +116,8 @@ f &lt;- function(x) {
 
 <pre ># [1] 4</pre>
 
+<p>Une fonction retourne une valeur, c&#39;est souvent la raison d&#39;être de la fonction.</p>
+
 </article></slide><slide class=''><hgroup><h2>Pourquoi utiliser des fonctions ?</h2></hgroup><article  id="pourquoi-utiliser-des-fonctions" class="smaller ">
 
 <h3>Grande facilité à réutiliser son code</h3>
@@ -138,25 +140,25 @@ f &lt;- function(x) {
 
 </article></slide><slide class=''><hgroup><h2>Exemple d&#39;utilisation</h2></hgroup><article  id="exemple-dutilisation" class="smaller reduceCode">
 
-<p>Code monolithique</p>
+<p>Code monolithique :</p>
 
 <pre class = 'prettyprint lang-r'># transform data
 # fit model to data
 # plot data, uses &#39;col&#39; and &#39;pch&#39;
 # get desired model results</pre>
 
-<p>Fonction monolithique</p>
+<p>Fonction monolithique :</p>
 
-<pre class = 'prettyprint lang-r'>monolith &lt;- function (data, col=&quot;blue&quot;, pch=21) {
+<pre class = 'prettyprint lang-r'>monolith &lt;- function(data, col = &quot;blue&quot;, pch = 21) {
         # transform data
         # fit model to data
         # plot data, uses &#39;col&#39; and &#39;pch&#39;
         # get desired model results
 }</pre>
 
-<p>Fonction en &quot;briques&quot;</p>
+<p>Fonction en briques :</p>
 
-<pre class = 'prettyprint lang-r'>brickwall &lt;- function (data, ...) {
+<pre class = 'prettyprint lang-r'>brickwall &lt;- function(data, ...) {
         tranData &lt;- myDataTransform(data)
         dataMod &lt;- myModelFit(tranData)
         myPlot(dataMod, ...)
@@ -193,12 +195,32 @@ f &lt;- function(x) {
 
 <pre ># &lt;environment: R_GlobalEnv&gt;</pre>
 
-</article></slide><slide class=''><hgroup><h2>L&#39;environnement</h2></hgroup><article  id="lenvironnement" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Les environnements</h2></hgroup><article  id="les-environnements" class="smaller ">
 
-<ul>
-<li>GlobalEnv</li>
-<li>Environnements de la fonction : enclosing, execution, calling</li>
-</ul>
+<p>En <code>R</code> les noms d&#39;objets (<code>x</code>, <code>varName</code>&#8230;) sont liés à des valeurs (<code>3</code>, <code>&quot;foo&quot;</code>&#8230;). Ces informations sont contenues dans un <em>environement</em> (une sorte de &quot;sac de noms&quot;).</p>
+
+<p>Par exemple l&#39;environement où on travaille quand on ouvre <code>R</code> est l&#39;environement global, <code>GlobalEnv</code>. Mais il peut exister d&#39;autres environements.</p>
+
+<p>Chaque fonction utilise 3 environements : enclosing, execution, calling.</p>
+
+</article></slide><slide class=''><hgroup><h2>Execution environment</h2></hgroup><article  id="execution-environment" class="smaller ">
+
+<p>Quand une fonction est lancée, le code contenu dans le corps est éxécuté dans un nouvel environement, créé <em>de novo</em>.</p>
+
+<p>Sauf exception, cet environement est supprimé et les données sont perdues quand la fonction est finie.</p>
+
+<pre class = 'prettyprint lang-r'>f &lt;- function() {
+  variable &lt;- 42
+}
+
+f()
+variable</pre>
+
+<pre ># Error in eval(expr, envir, enclos): object &#39;variable&#39; not found</pre>
+
+</article></slide><slide class=''><hgroup><h2>Enclosing environment</h2></hgroup><article  id="enclosing-environment" class="smaller ">
+
+</article></slide><slide class=''><hgroup><h2>Calling environment</h2></hgroup><article  id="calling-environment" class="smaller ">
 
 </article></slide><slide class=''><hgroup><h2>Le lexical scoping</h2></hgroup><article  id="le-lexical-scoping" class="smaller ">
 

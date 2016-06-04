@@ -69,29 +69,24 @@ Des outils type `debug()` permettent aussi d'explorer plus finement le comportem
 ## Exemple d'utilisation {.reduceCode}
 
 Code monolithique :
-
 ```{r}
 # transform data
 # fit model to data
 # plot data, uses 'col' and 'pch'
 # get desired model results
 ```
-
 Fonction monolithique :
-
 ```{r}
-monolith <- function (data, col="blue", pch=21) {
+monolith <- function(data, col = "blue", pch = 21) {
         # transform data
         # fit model to data
         # plot data, uses 'col' and 'pch'
         # get desired model results
 }
 ```
-
-Fonction en "briques" :
-
+Fonction en briques :
 ```{r}
-brickwall <- function (data, ...) {
+brickwall <- function(data, ...) {
         tranData <- myDataTransform(data)
         dataMod <- myModelFit(tranData)
         myPlot(dataMod, ...)
@@ -116,10 +111,33 @@ formals(f)
 environment(f)
 ```
 
-## L'environnement
+## Les environnements
 
-- GlobalEnv
-- Environnements de la fonction : enclosing, execution, calling
+En `R` les noms d'objets (`x`, `varName`...) sont liés à des valeurs (`3`, `"foo"`...). Ces informations sont contenues dans un *environement* (une sorte de "sac de noms").
+
+Par exemple l'environement où on travaille quand on ouvre `R` est l'environement global, `globalenv`. Mais il peut exister d'autres environements.
+
+Chaque fonction utilise 3 environements : enclosing, execution, calling.
+
+## Execution environment
+
+Quand une fonction est lancée, le code contenu dans le corps est éxécuté dans un nouvel environement, créé *de novo*.
+
+Sauf exception, cet environement est supprimé et les données sont perdues quand la fonction est finie.
+
+```{r error = TRUE}
+f <- function() {
+  variable <- 42
+}
+
+f()
+variable
+```
+
+
+## Enclosing environment
+
+## Calling environment
 
 ## Le lexical scoping
 
