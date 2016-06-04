@@ -44,6 +44,8 @@ Exemple d'utilisation (= appel de la fonction) :
 f(2)
 ```
 
+Une fonction retourne une valeur, c'est souvent la raison d'être de la fonction.
+
 ## Pourquoi utiliser des fonctions ?
 
 ### Grande facilité à réutiliser son code
