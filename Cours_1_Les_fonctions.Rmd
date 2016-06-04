@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE, comment = "#")
 
 La **TRES** grande majorité des informations données ici sont issues du livre d'Hadley Wickham : **Advanced R**.
 
-Clairement la référence (en Anglais !) sur les fonctionnalités "avancées" de R.
+Clairement la référence (en Anglais !) en "vulgarisation"" des fonctionnalités avancées de R.
 
 <div class="centered">
 ![](img/AdvancedR.jpg)
@@ -80,7 +80,7 @@ environment(f)
 ## L'environnement
 
 - GlobalEnv
-- Environnement de la fonction
+- Environnements de la fonction : enclosing, execution, calling
 
 ## Le lexical scoping
 
@@ -99,20 +99,22 @@ f()
 
 ## Le lexical scoping
 
-- Name masking
-- Fonctions et variables
-- Fresh start
-- Dynamic lookup
+- Pacours des environnements
+
+- Fonctions VS variables
+
+- Variables éphémères
+
+- Evaluation à l'exécution
+
+Dynamic lookup + lazy evaluation
 
 ## La gestion des arguments
 
-- Les arguments formels
-- Les arguments d'appel
+- Les arguments (formels et valeurs remplacées par exécution : appels)
 - Les valeurs par défaut
-- La lazy evaluation
 
 ## Les arguments
-
 
 - Par leur nom complet
 - Par leur nom partiel
@@ -142,6 +144,11 @@ f(f = 1, b = 2)
 ```{r, results='hide'}
 f(1,2)
 ```
+
+## Manipulation des arguments
+
+- Récupération de la liste des arguments (formals)
+- Test sur la présence/absence d'un argument
 
 ## Lazy evaluation
 L'évaluation d'un argument ne se fait qu'à l'instant *t* où l'argument est utilisé
@@ -198,6 +205,11 @@ f <- function(x){
 f(4)
 ```
 
+## Gestion des valeurs de retour complexes 
+
+- Création d'un objet list comme "véhicule"
+- Utilisation des attributs
+
 ## Closures
 Le résultat d'une fonction est un objet. Une fonction est un objet comme un autre.
 
@@ -219,4 +231,5 @@ cube <- f(3)
 cube(2)
 ```
 
-## 
+## Une fonction argument d'une fonction
+
