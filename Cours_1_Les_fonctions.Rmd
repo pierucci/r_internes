@@ -113,31 +113,73 @@ environment(f)
 
 ## Les environnements
 
-En `R` les noms d'objets (`x`, `varName`...) sont liés à des valeurs (`3`, `"foo"`...). Ces informations sont contenues dans un *environement* (une sorte de "sac de noms").
+```{r}
+x <- 3
+varName <- "foo"
+```
 
-Par exemple l'environement où on travaille quand on ouvre `R` est l'environement global, `globalenv`. Mais il peut exister d'autres environements.
+En `R` les noms d'objets (`x`, `varName`...) sont liés à des valeurs (`3`, `"foo"`...). Ces informations sont contenues dans un *environnement* (une sorte de "sac de noms").
 
-Chaque fonction utilise 3 environements : enclosing, execution, calling.
+Par exemple l'environnement où on travaille quand on ouvre `R` est l'environnement global. Mais il peut exister d'autres environnements
+
+Chaque fonction utilise 3 environnements : enclosing, execution, calling.
 
 ## Execution environment
 
-Quand une fonction est lancée, le code contenu dans le corps est éxécuté dans un nouvel environement, créé *de novo*.
+Quand une fonction est lancée, le code contenu dans le corps est éxécuté dans un nouvel environnement, créé *de novo*.
 
-Sauf exception, cet environement est supprimé et les données sont perdues quand la fonction est finie.
+Sauf exception, cet environnement est détruit et les données sont perdues quand la fonction est finie.
 
 ```{r error = TRUE}
 f <- function() {
   variable <- 42
+  variable
 }
 
 f()
+
 variable
 ```
 
+## Enclosing environment {.reduceCode}
 
-## Enclosing environment
+C'est l'environnement où la fonction a été *définie*. Pour une fonction définie classiquement, c'est donc l'environnement global. Mais il est possible que ça soit un autre environnement, par exemple l'*execution environment* d'une autre fonction (quand une fonction est définie dans une autre fonction).
+
+```{r}
+f <- function() {
+  g <- function(y) y^2
+  environment(g)
+}
+```
+L'*enclosing environment* de `f()` est l'environement global.
+```{r}
+environment(f)
+```
+L'*enclosing environment* de `g()` est l'*execution environment* de `f()`.
+```{r}
+f()
+```
 
 ## Calling environment
+
+C'est tout simplement l'environnement où la fonction est lancée. On peut l'obtenir avec `parent.frame()`.
+
+```{r}
+f <- function() {
+  parent.frame()
+}
+```
+Ici c'est donc l'environnement global:
+```{r}
+f()
+```
+Mais pour cette même fonction ça peut aussi être l'*execution environment* de `g()`.
+```{r}
+g <- function() {
+  f()
+}
+g()
+```
 
 ## Le lexical scoping
 
@@ -199,13 +241,25 @@ f(f = 1, b = 2)
 
 - Utilisant leur position dans la définition de la fonction
 ```{r, results='hide'}
-f(1,2)
+f(1, 2)
 ```
 
-## Manipulation des arguments
+## Manipulation des arguments {.reduceCode}
 
-- Récupération de la liste des arguments (formals)
-- Test sur la présence/absence d'un argument
+Récupération de la liste des arguments (formals)
+```{r}
+formals(sample)
+```
+Test sur la présence/absence d'un argument
+```{r}
+myplot <- function(x, y) {
+  if(missing(y)) {
+    y <- x
+    x <- 1:length(y)
+  }
+  plot(x, y)
+}
+```
 
 ## Lazy evaluation
 L'évaluation d'un argument ne se fait qu'à l'instant *t* où l'argument est utilisé
@@ -224,50 +278,105 @@ L'évaluation de `b` ne se fait qu'au moment de son utilisation
 f()
 ```
 
-## Dot Dot Dot (`...`)
+## Dot Dot Dot (`...`) (1)
 
 Argument spécial `...` qui permet de passer des arguments non spécifiés/déterminés à l'avance.
 
-Utile par exemple quand on veut faire passer des arguments pour une fonction définie à l'intérieure d'une autre fonction
+Utile dans deux cas :
 
-Attention : R ne peut pas alors vérifier si ce que vous passez est cohérent (= correspond bien à un argument nécessaire)
+- travailler sur un nombre arbitraire d'arguments.
 ```{r}
-f <- function(a, b, ...) {
-  x <- sum(..., na.rm=T)
-  c(a, b, x)
+all_numeric <- function(...) {
+  arguments <- list(...)
+  all(unlist(lapply(arguments, is.numeric)))
 }
+all_numeric(2, c(1, 2, 3), 4:8)
+```
 
-f(a = 1, b = 2, 3:30, 4:50)
+## Dot Dot Dot (`...`) (2)
+
+- faire passer des arguments pour une fonction exécutée à l'intérieur d'une autre fonction, sans avoir à tous les nommer.
+```{r}
+mult_and_resamp <- function(x, y, ...) {
+  x2 <- x * y
+  sample(x2, ...)
+}
+mult_and_resamp(0:5, 10)
+mult_and_resamp(0:2, 2, replace = TRUE, size = 10)
 ```
 
 ## Valeur de retour 
-Par défaut, une fonction retourne un objet **unique** qui est :
+Par défaut, une fonction retourne un objet **unique** qui peut être :
 
-- Soit le résultat de la dernière évaluation
+- le résultat de la dernière évaluation
 ```{r}
 f <- function(x) {
   x^2
 }
 f(2)
 ```
-- Soit un résultat précis, choisi, par l'intermédiaire de `return()`
+- un résultat précis, choisi, par l'intermédiaire de `return()` (force l'arrêt de la fonction)
 ```{r}
 f <- function(x){
   if(x%%2 == 0){
     return("x est un nombre pair")
-  } else {
-    return("x est un nombre impair")
   }
+  
+  "x est un nombre impair"
 }
 f(4)
 ```
 
-## Gestion des valeurs de retour complexes 
+## Gestion des valeurs de retour complexes (1)
 
-- Création d'un objet list comme "véhicule"
-- Utilisation des attributs
+Comment faire pour retourner plus de choses ? Deux solutions :
 
-## Closures
+- Tout mettre dans une liste
+```{r}
+some_stats <- function(x) {
+  list(
+    moyenne = mean(x),
+    etendue = range(x),
+    test = t.test(x)
+  )
+}
+some_stats(rnorm(10))
+```
+
+## Gestion des valeurs de retour complexes (2)
+
+- Utiliser des attributs
+```{r}
+impute_mean <- function(x) {
+  res <- x
+  res[is.na(x)] <- mean(x, na.rm = TRUE)
+  
+  attr(res, "imputed") <- is.na(x)
+  res
+}
+
+(test <- impute_mean(c(1, 2, NA, 3)))
+attr(test, "imputed")
+```
+Avantage: le résultat continue à se comporter comme l'objet original (ici un vecteur), ce qui est parfois plus facile à utiliser qu'une liste.
+
+## Définir plus facilement des attributs
+
+Avec la fonction structure il est plus facile d'ajouter des attributs.
+```{r}
+f <- function(x) {
+  res <- mean(x, na.rm = TRUE)
+  
+  structure(
+    res,
+    original_length = length(x),
+    n_na = sum(is.na(x))
+  )
+}
+f(c(1, 3, NA))
+```
+
+## Closures (1)
 Le résultat d'une fonction est un objet. Une fonction est un objet comme un autre.
 
 --> Une fonction peut donc renvoyer une autre fonction : ce sont les **closures**.
@@ -288,5 +397,75 @@ cube <- f(3)
 cube(2)
 ```
 
+## Closures (2)
+
+Un exemple plus appliqué : un rééchantilloneur.
+```{r}
+create_resampler <- function(x) {
+  function(n) sample(x, size = n, replace = TRUE)
+}
+rs1 <- create_resampler(1:10)
+rs1(2)
+rs1(9)
+rs2 <- create_resampler(c("M", "F"))
+rs2(5)
+```
+
 ## Une fonction argument d'une fonction
 
+On peut passer une fonction comme argument à une autre fonction. Ce concept est fondamental pour le cours suivant sur la famille de fonctions `apply()`.
+
+```{r}
+do_something_to_x <- function(x, func) {
+  func(x)
+}
+do_something_to_x(1:10, mean)
+do_something_to_x(1:10, range)
+```
+
+## Pour combiner les concepts
+
+Closure + *enclosing environment* + scoping. On fait un compteur.
+
+```{r}
+create_counter <- function() {
+  n <- 0
+  function() {
+    n <<- n + 1
+    return(n)
+  }
+}
+c1 <- create_counter()
+c1()
+c1()
+c1()
+```
+Pas partagé car si on appelle à nouveau `create_counter()`, un second *execution environment* indépendant est créé.
+```{r}
+c2 <- create_counter()
+c2()
+c1()
+```
+
+## Pour combiner les concepts encore plus
+
+Il faut remonter d'un cran l'*enclosing environment*.
+```{r}
+# local() permet de créer un environment
+create_counter <- local({
+  n <- 0
+  function() {
+    function() {
+      n <<- n + 1
+      return(n)
+    }
+  }
+})
+c1 <- create_counter()
+c1()
+c1()
+c1()
+c2 <- create_counter()
+c2()
+c1()
+```

@@ -197,30 +197,77 @@ f &lt;- function(x) {
 
 </article></slide><slide class=''><hgroup><h2>Les environnements</h2></hgroup><article  id="les-environnements" class="smaller ">
 
-<p>En <code>R</code> les noms d&#39;objets (<code>x</code>, <code>varName</code>&#8230;) sont liés à des valeurs (<code>3</code>, <code>&quot;foo&quot;</code>&#8230;). Ces informations sont contenues dans un <em>environement</em> (une sorte de &quot;sac de noms&quot;).</p>
+<pre class = 'prettyprint lang-r'>x &lt;- 3
+varName &lt;- &quot;foo&quot;</pre>
 
-<p>Par exemple l&#39;environement où on travaille quand on ouvre <code>R</code> est l&#39;environement global, <code>GlobalEnv</code>. Mais il peut exister d&#39;autres environements.</p>
+<p>En <code>R</code> les noms d&#39;objets (<code>x</code>, <code>varName</code>&#8230;) sont liés à des valeurs (<code>3</code>, <code>&quot;foo&quot;</code>&#8230;). Ces informations sont contenues dans un <em>environnement</em> (une sorte de &quot;sac de noms&quot;).</p>
 
-<p>Chaque fonction utilise 3 environements : enclosing, execution, calling.</p>
+<p>Par exemple l&#39;environnement où on travaille quand on ouvre <code>R</code> est l&#39;environnement global. Mais il peut exister d&#39;autres environnements</p>
+
+<p>Chaque fonction utilise 3 environnements : enclosing, execution, calling.</p>
 
 </article></slide><slide class=''><hgroup><h2>Execution environment</h2></hgroup><article  id="execution-environment" class="smaller ">
 
-<p>Quand une fonction est lancée, le code contenu dans le corps est éxécuté dans un nouvel environement, créé <em>de novo</em>.</p>
+<p>Quand une fonction est lancée, le code contenu dans le corps est éxécuté dans un nouvel environnement, créé <em>de novo</em>.</p>
 
-<p>Sauf exception, cet environement est supprimé et les données sont perdues quand la fonction est finie.</p>
+<p>Sauf exception, cet environnement est détruit et les données sont perdues quand la fonction est finie.</p>
 
 <pre class = 'prettyprint lang-r'>f &lt;- function() {
   variable &lt;- 42
+  variable
 }
 
-f()
-variable</pre>
+f()</pre>
+
+<pre ># [1] 42</pre>
+
+<pre class = 'prettyprint lang-r'>variable</pre>
 
 <pre ># Error in eval(expr, envir, enclos): object &#39;variable&#39; not found</pre>
 
-</article></slide><slide class=''><hgroup><h2>Enclosing environment</h2></hgroup><article  id="enclosing-environment" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Enclosing environment</h2></hgroup><article  id="enclosing-environment" class="smaller reduceCode">
+
+<p>C&#39;est l&#39;environnement où la fonction a été <em>définie</em>. Pour une fonction définie classiquement, c&#39;est donc l&#39;environnement global. Mais il est possible que ça soit un autre environnement, par exemple l&#39;<em>execution environment</em> d&#39;une autre fonction (quand une fonction est définie dans une autre fonction).</p>
+
+<pre class = 'prettyprint lang-r'>f &lt;- function() {
+  g &lt;- function(y) y^2
+  environment(g)
+}</pre>
+
+<p>L&#39;<em>enclosing environment</em> de <code>f()</code> est l&#39;environement global.</p>
+
+<pre class = 'prettyprint lang-r'>environment(f)</pre>
+
+<pre ># &lt;environment: R_GlobalEnv&gt;</pre>
+
+<p>L&#39;<em>enclosing environment</em> de <code>g()</code> est l&#39;<em>execution environment</em> de <code>f()</code>.</p>
+
+<pre class = 'prettyprint lang-r'>f()</pre>
+
+<pre ># &lt;environment: 0x12d3968&gt;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Calling environment</h2></hgroup><article  id="calling-environment" class="smaller ">
+
+<p>C&#39;est tout simplement l&#39;environnement où la fonction est lancée. On peut l&#39;obtenir avec <code>parent.frame()</code>.</p>
+
+<pre class = 'prettyprint lang-r'>f &lt;- function() {
+  parent.frame()
+}</pre>
+
+<p>Ici c&#39;est donc l&#39;environnement global:</p>
+
+<pre class = 'prettyprint lang-r'>f()</pre>
+
+<pre ># &lt;environment: R_GlobalEnv&gt;</pre>
+
+<p>Mais pour cette même fonction ça peut aussi être l&#39;<em>execution environment</em> de <code>g()</code>.</p>
+
+<pre class = 'prettyprint lang-r'>g &lt;- function() {
+  f()
+}
+g()</pre>
+
+<pre ># &lt;environment: 0x1952ef0&gt;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Le lexical scoping</h2></hgroup><article  id="le-lexical-scoping" class="smaller ">
 
@@ -290,14 +337,35 @@ x</pre>
 <li>Utilisant leur position dans la définition de la fonction</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>f(1,2)</pre>
+<pre class = 'prettyprint lang-r'>f(1, 2)</pre>
 
-</article></slide><slide class=''><hgroup><h2>Manipulation des arguments</h2></hgroup><article  id="manipulation-des-arguments" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Manipulation des arguments</h2></hgroup><article  id="manipulation-des-arguments" class="smaller reduceCode">
 
-<ul>
-<li>Récupération de la liste des arguments (formals)</li>
-<li>Test sur la présence/absence d&#39;un argument</li>
-</ul>
+<p>Récupération de la liste des arguments (formals)</p>
+
+<pre class = 'prettyprint lang-r'>formals(sample)</pre>
+
+<pre ># $x
+# 
+# 
+# $size
+# 
+# 
+# $replace
+# [1] FALSE
+# 
+# $prob
+# NULL</pre>
+
+<p>Test sur la présence/absence d&#39;un argument</p>
+
+<pre class = 'prettyprint lang-r'>myplot &lt;- function(x, y) {
+  if(missing(y)) {
+    y &lt;- x
+    x &lt;- 1:length(y)
+  }
+  plot(x, y)
+}</pre>
 
 </article></slide><slide class=''><hgroup><h2>Lazy evaluation</h2></hgroup><article  id="lazy-evaluation" class="smaller ">
 
@@ -314,29 +382,48 @@ x</pre>
 
 <pre ># [1] 12</pre>
 
-</article></slide><slide class=''><hgroup><h2>Dot Dot Dot (<code>...</code>)</h2></hgroup><article  id="dot-dot-dot-..." class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Dot Dot Dot (<code>...</code>) (1)</h2></hgroup><article  id="dot-dot-dot-...-1" class="smaller ">
 
 <p>Argument spécial <code>...</code> qui permet de passer des arguments non spécifiés/déterminés à l&#39;avance.</p>
 
-<p>Utile par exemple quand on veut faire passer des arguments pour une fonction définie à l&#39;intérieure d&#39;une autre fonction</p>
+<p>Utile dans deux cas :</p>
 
-<p>Attention : R ne peut pas alors vérifier si ce que vous passez est cohérent (= correspond bien à un argument nécessaire)</p>
+<ul>
+<li>travailler sur un nombre arbitraire d&#39;arguments.</li>
+</ul>
 
-<pre class = 'prettyprint lang-r'>f &lt;- function(a, b, ...) {
-  x &lt;- sum(..., na.rm=T)
-  c(a, b, x)
+<pre class = 'prettyprint lang-r'>all_numeric &lt;- function(...) {
+  arguments &lt;- list(...)
+  all(unlist(lapply(arguments, is.numeric)))
 }
+all_numeric(2, c(1, 2, 3), 4:8)</pre>
 
-f(a = 1, b = 2, 3:30, 4:50)</pre>
+<pre ># [1] TRUE</pre>
 
-<pre ># [1]    1    2 1731</pre>
+</article></slide><slide class=''><hgroup><h2>Dot Dot Dot (<code>...</code>) (2)</h2></hgroup><article  id="dot-dot-dot-...-2" class="smaller ">
+
+<ul>
+<li>faire passer des arguments pour une fonction exécutée à l&#39;intérieur d&#39;une autre fonction, sans avoir à tous les nommer.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>mult_and_resamp &lt;- function(x, y, ...) {
+  x2 &lt;- x * y
+  sample(x2, ...)
+}
+mult_and_resamp(0:5, 10)</pre>
+
+<pre ># [1] 40  0 20 30 50 10</pre>
+
+<pre class = 'prettyprint lang-r'>mult_and_resamp(0:2, 2, replace = TRUE, size = 10)</pre>
+
+<pre >#  [1] 4 4 2 4 2 4 2 4 0 4</pre>
 
 </article></slide><slide class=''><hgroup><h2>Valeur de retour</h2></hgroup><article  id="valeur-de-retour" class="smaller ">
 
-<p>Par défaut, une fonction retourne un objet <strong>unique</strong> qui est :</p>
+<p>Par défaut, une fonction retourne un objet <strong>unique</strong> qui peut être :</p>
 
 <ul>
-<li>Soit le résultat de la dernière évaluation</li>
+<li>le résultat de la dernière évaluation</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>f &lt;- function(x) {
@@ -347,26 +434,102 @@ f(2)</pre>
 <pre ># [1] 4</pre>
 
 <ul>
-<li>Soit un résultat précis, choisi, par l&#39;intermédiaire de <code>return()</code></li>
+<li>un résultat précis, choisi, par l&#39;intermédiaire de <code>return()</code> (force l&#39;arrêt de la fonction)</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>f &lt;- function(x){
   if(x%%2 == 0){
     return(&quot;x est un nombre pair&quot;)
-  } else {
-    return(&quot;x est un nombre impair&quot;)
   }
+  
+  &quot;x est un nombre impair&quot;
 }
 f(4)</pre>
 
 <pre ># [1] &quot;x est un nombre pair&quot;</pre>
 
-</article></slide><slide class=''><hgroup><h2>Gestion des valeurs de retour complexes</h2></hgroup><article  id="gestion-des-valeurs-de-retour-complexes" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Gestion des valeurs de retour complexes (1)</h2></hgroup><article  id="gestion-des-valeurs-de-retour-complexes-1" class="smaller ">
+
+<p>Comment faire pour retourner plus de choses ? Deux solutions :</p>
 
 <ul>
-<li>Création d&#39;un objet list comme &quot;véhicule&quot;</li>
-<li>Utilisation des attributs</li>
+<li>Tout mettre dans une liste</li>
 </ul>
+
+<pre class = 'prettyprint lang-r'>some_stats &lt;- function(x) {
+  list(
+    moyenne = mean(x),
+    etendue = range(x),
+    test = t.test(x)
+  )
+}
+some_stats(rnorm(10))</pre>
+
+<pre ># $moyenne
+# [1] 0.2483368
+# 
+# $etendue
+# [1] -1.577758  1.897144
+# 
+# $test
+# 
+#   One Sample t-test
+# 
+# data:  x
+# t = 0.71348, df = 9, p-value = 0.4936
+# alternative hypothesis: true mean is not equal to 0
+# 95 percent confidence interval:
+#  -0.5390432  1.0357168
+# sample estimates:
+# mean of x 
+# 0.2483368</pre>
+
+</article></slide><slide class=''><hgroup><h2>Gestion des valeurs de retour complexes (2)</h2></hgroup><article  id="gestion-des-valeurs-de-retour-complexes-2" class="smaller ">
+
+<ul>
+<li>Utiliser des attributs</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>impute_mean &lt;- function(x) {
+  res &lt;- x
+  res[is.na(x)] &lt;- mean(x, na.rm = TRUE)
+  
+  attr(res, &quot;imputed&quot;) &lt;- is.na(x)
+  res
+}
+
+(test &lt;- impute_mean(c(1, 2, NA, 3)))</pre>
+
+<pre ># [1] 1 2 2 3
+# attr(,&quot;imputed&quot;)
+# [1] FALSE FALSE  TRUE FALSE</pre>
+
+<pre class = 'prettyprint lang-r'>attr(test, &quot;imputed&quot;)</pre>
+
+<pre ># [1] FALSE FALSE  TRUE FALSE</pre>
+
+<p>Avantage: le résultat continue à se comporter comme l&#39;objet original (ici un vecteur), ce qui est parfois plus facile à utiliser qu&#39;une liste.</p>
+
+</article></slide><slide class=''><hgroup><h2>Définir plus facilement des attributs</h2></hgroup><article  id="definir-plus-facilement-des-attributs" class="smaller ">
+
+<p>Avec la fonction structure il est plus facile d&#39;ajouter des attributs.</p>
+
+<pre class = 'prettyprint lang-r'>f &lt;- function(x) {
+  res &lt;- mean(x, na.rm = TRUE)
+  
+  structure(
+    res,
+    original_length = length(x),
+    n_na = sum(is.na(x))
+  )
+}
+f(c(1, 3, NA))</pre>
+
+<pre ># [1] 2
+# attr(,&quot;original_length&quot;)
+# [1] 3
+# attr(,&quot;n_na&quot;)
+# [1] 1</pre>
 
 </article></slide><slide class=''><hgroup><h2>Closures</h2></hgroup><article  id="closures" class="smaller ">
 
