@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE, comment = "#")
 
 La **TRES** grande majorité des informations données ici sont issues du livre d'Hadley Wickham : **Advanced R**.
 
-Clairement la référence (en Anglais !) en "vulgarisation"" des fonctionnalités avancées de R.
+Clairement la référence (en Anglais !) en "vulgarisation" des fonctionnalités avancées de R.
 
 <div class="centered">
 ![](img/AdvancedR.jpg)
@@ -25,6 +25,7 @@ Clairement la référence (en Anglais !) en "vulgarisation"" des fonctionnalité
 Livre consultable intégralement en ligne, ou achetable sur internet (Amazon...)
 
 ## Une fonction : présentation simple
+
 Dans R, **une fonction est un objet**, au même titre qu'un vecteur, un dataframe, une liste...
 Dans R, **tout est fonction dans R**, y compris '`+`' ou '`(`' ou encore '`if`'.
 
@@ -46,6 +47,7 @@ f(2)
 ## Pourquoi utiliser des fonctions ?
 
 ### Grande facilité à réutiliser son code
+
 Créer une fonction permet de **"s'extraire" du contexte** dans laquelle elle est créée.
 
 On ne cherche plus à résoudre un problème précis, mais un **problème générique** : la fonction pourra être réutilisée dès qu'on sera confronté au même type de problème.
@@ -60,20 +62,55 @@ La correction d'un bug au niveau d'une fonction permet de corriger le problème 
 
 Des outils type `debug()` permettent aussi d'explorer plus finement le comportement d'une fonction, et de trouver souvent la source d'un problème.
 
+[http://www.burns-stat.com/bricks-not-monoliths/](http://www.burns-stat.com/bricks-not-monoliths/)
+
+## Exemple d'utilisation {.reduceCode}
+
+Code monolithique :
+
+```{r}
+# transform data
+# fit model to data
+# plot data, uses 'col' and 'pch'
+# get desired model results
+```
+
+Fonction monolithique :
+
+```{r}
+monolith <- function (data, col="blue", pch=21) {
+        # transform data
+        # fit model to data
+        # plot data, uses 'col' and 'pch'
+        # get desired model results
+}
+```
+
+Fonction en "briques" :
+
+```{r}
+brickwall <- function (data, ...) {
+        tranData <- myDataTransform(data)
+        dataMod <- myModelFit(tranData)
+        myPlot(dataMod, ...)
+        myModelOutput(dataMod)
+}
+```
 
 ## Les constituants d'une fonction {.reduceCode}
+
 Une fonction est constitué de **3 principaux éléments** :
 
 - Le **corps** : la définition de la fonction, accessible via `body()`
-```{r echo=TRUE}
+```{r}
 body(f)
 ```
 - Les **arguments** : les paramètres qui sont utilisés par la fonction, accessible via `formals()`
-```{r echo=TRUE}
+```{r}
 formals(f)
 ```
 - L'**environnement** : le contexte dans lequel la fonction est définie, accessible via `environment()`
-```{r echo=TRUE}
+```{r}
 environment(f)
 ```
 
