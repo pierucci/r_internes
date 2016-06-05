@@ -4,6 +4,10 @@ author: "Exercices"
 output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(include = FALSE)
+```
+
 # Exemple d'utilisation
 
 Ecrire une fonction qui, à partir d'une variable, effectue les étapes suivantes :
@@ -33,7 +37,8 @@ impute_and_describe(c(rnorm(10), NA))
 Ecrire une fonction spécifique à un jeu de données. Par exemple à partir du jeu de données `infert`, une fonction :
 
   * Qui prend comme argument le nom d'une variable ;
-  * Et retourne la force d'association de cette variable avec la variable `case` (cas ou témoin).
+  * Et retourne la force d'association de cette variable avec la variable `case` (cas ou témoin) ;
+  * Sans prendre `infert` comme argument.
 
 ```{r}
 assoc_case_infert <- function(x) {
@@ -53,9 +58,9 @@ assoc_case_infert("age")
 assoc_case_infert("education")
 ```
 
-`infert` est recherché dans l'environnement où `f()` est définie. Si on appelle `f()` depuis une fonction où on défini un autre jeu de données `infert` ça ne fonctionnera pas.
+`infert` est recherché dans l'environnement où `f()` est définie. Si on appelle `f()` depuis une fonction où on défini un autre jeu de données `infert` on risque d'avoir des surprises.
 
-Par exemple on veut faire une fonction qui rééchantillonne `infert` et calcule la force d'association avec `case`.
+Exemple : faire une fonction qui rééchantillonne `infert`, le modifie, et appelle à nouveau `assoc_case_infert()`.
 
 ```{r}
 resample_and_test <- function(x) {
@@ -70,7 +75,7 @@ resample_and_test <- function(x) {
 resample_and_test("age")
 ```
 
-Car le `infert` utilisé par la fonction `assoc_case_infert()` est toujours celui de son *enclosing environment*, l'environnement global, et pas l'`infert` de son *calling environment*, l'*execution environment* de `resample_and_test()`.
+Ca ne fonctionne pas car le `infert` utilisé par la fonction `assoc_case_infert()` est toujours celui de son *enclosing environment*, l'environnement global, et pas l'`infert` de son *calling environment*, l'*execution environment* de `resample_and_test()`.
 
 # Manipulation des arguments
 
@@ -115,7 +120,7 @@ random_scatter(500, col = "red")
 random_scatter(1000, ylim = c(0, 1))
 ```
 
-Plus avancé, utilise `lapply()` (prévu pour la leçon suivante). Faire une fonction qui à partir d'un nombre arbitraire de `t.test()` retourne le plus significatif.
+Faire une fonction qui à partir d'un nombre arbitraire de `t.test()` retourne le plus significatif.^[Plus avancé, utilise `lapply()` (prévu pour la leçon suivante).]
 
 ```{r}
 most_signif_ttest <- function(...) {
