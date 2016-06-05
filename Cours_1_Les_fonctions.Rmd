@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE, comment = "#")
 
 ## Sources {#cover}
 
-La **TRES** grande majorité des informations données ici sont issues du livre d'Hadley Wickham : **Advanced R**.
+La **TRES** grande majorité des informations données ici sont issues du livre de Hadley Wickham : **Advanced R**.
 
 Clairement la référence (en Anglais !) en "vulgarisation" des fonctionnalités avancées de R.
 
@@ -98,15 +98,15 @@ brickwall <- function(data) {
 
 Une fonction est constitué de **3 principaux éléments** :
 
-- Le **corps** : la définition de la fonction, accessible via `body()`
+- Le **corps** : la définition de la fonction, accessible via `body()`.
 ```{r}
 body(f)
 ```
-- Les **arguments** : les paramètres qui sont utilisés par la fonction, accessible via `formals()`
+- Les **arguments** : les paramètres qui sont utilisés par la fonction, accessible via `formals()`.
 ```{r}
 formals(f)
 ```
-- L'**environnement** : le contexte dans lequel la fonction est définie, accessible via `environment()`
+- L'**environnement** : le contexte dans lequel la fonction est définie, accessible via `environment()`.
 ```{r}
 environment(f)
 ```
@@ -120,7 +120,7 @@ varName <- "foo"
 
 En `R` les noms d'objets (`x`, `varName`...) sont liés à des valeurs (`3`, `"foo"`...). Ces informations sont contenues dans un *environnement* (une sorte de "sac de noms").
 
-Par exemple l'environnement où on travaille quand on ouvre `R` est l'environnement global. Mais il peut exister d'autres environnements
+Par exemple l'environnement où on travaille quand on ouvre `R` est l'environnement global. Mais il peut exister d'autres environnements.
 
 Chaque fonction utilise 3 environnements : *enclosing*, *execution*, *calling*.
 
@@ -143,7 +143,9 @@ variable
 
 ## Enclosing environment {.reduceCode}
 
-C'est l'environnement où la fonction a été *définie*. Pour une fonction définie classiquement, c'est donc l'environnement global. Mais il est possible que ça soit un autre environnement, par exemple l'*execution environment* d'une autre fonction (quand une deuxième fonction est définie dans une première fonction).
+C'est l'environnement où la fonction a été *définie*. Pour une fonction définie classiquement, c'est donc l'environnement global.
+
+Mais il est possible que ça soit un autre environnement, par exemple l'*execution environment* d'une autre fonction (quand une deuxième fonction est définie dans une première fonction).
 
 ```{r}
 f <- function() {
@@ -173,7 +175,7 @@ Ici c'est donc l'environnement global:
 ```{r}
 f()
 ```
-Mais pour cette même fonction, si elle est lancée depuis `g()`, ça peut aussi être l'*execution environment* de `g()`.
+Mais pour cette même fonction `f()`, si elle est lancée depuis `g()`, ça peut aussi être l'*execution environment* de `g()`.
 ```{r}
 g <- function() {
   f()
@@ -183,7 +185,7 @@ g()
 
 ## Le lexical scoping
 
-Ensemble de règles permettant à `R` de faire correspondre une valeur à un symbole
+Ensemble de règles permettant à `R` de faire correspondre une valeur à un symbole.
 ```{r}
 x <- 10
 f <- function() {
@@ -307,14 +309,14 @@ mult_and_resamp(0:2, 2, replace = TRUE, size = 10)
 ## Valeur de retour {.reduceCode}
 Par défaut, une fonction retourne un objet **unique** qui peut être :
 
-- le résultat de la dernière évaluation
+- le résultat de la dernière évaluation.
 ```{r}
 f <- function(x) {
   x^2
 }
 f(2)
 ```
-- un résultat précis, choisi, par l'intermédiaire de `return()` (force l'arrêt de la fonction)
+- un résultat précis, choisi, par l'intermédiaire de `return()` (force l'arrêt de la fonction).
 ```{r}
 f <- function(x){
   if(x%%2 == 0){
@@ -329,7 +331,7 @@ f(4)
 
 Comment faire pour retourner plus de choses ? Deux solutions :
 
-- Tout mettre dans une liste
+- Tout mettre dans une liste.
 ```{r}
 some_stats <- function(x) {
   list(
@@ -343,7 +345,7 @@ some_stats(rnorm(10))
 
 ## Valeurs de retour complexes (2) {.reduceCode}
 
-- Utiliser des attributs
+- Utiliser des attributs.
 ```{r}
 impute_mean <- function(x) {
   res <- x
@@ -377,8 +379,7 @@ f(c(1, 3, NA))
 ## Closures (1)
 Le résultat d'une fonction est un objet. Une fonction est un objet comme un autre.
 
---> Une fonction peut donc renvoyer une autre fonction : ce sont les **closures**.
-
+Une fonction peut donc renvoyer une autre fonction : ce sont les **closures**.
 ```{r}
 f <- function(x){
   g <- function(y){
@@ -424,7 +425,6 @@ do_something_to_x(1:10, range)
 ## Pour combiner les concepts (1) {.reduceCode}
 
 Closure + *enclosing environment* + scoping. On fait un compteur.
-
 ```{r}
 create_counter <- function() {
   n <- 0
@@ -448,7 +448,7 @@ c1()
 
 Il faut remonter d'un cran l'*enclosing environment*.
 ```{r}
-# local() permet de créer un environment
+# local() permet de créer un nouvel environment
 create_counter <- local({
   n <- 0
   function() {
