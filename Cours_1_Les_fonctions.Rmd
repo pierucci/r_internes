@@ -434,7 +434,7 @@ c1()
 
 ## Pour combiner les concepts (2) {.reduceCode}
 
-Il faut remonter d'un cran l'*enclosing environment*.
+Il faut remonter d'un niveau l'*enclosing environment*.
 ```{r}
 # local() permet de créer un nouvel environment
 create_counter <- local({
