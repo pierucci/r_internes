@@ -324,30 +324,27 @@ Comment faire pour retourner plus de choses ? Deux solutions :
 
 - Tout mettre dans une liste.
 ```{r}
-some_stats <- function(x) {
-  list(
-    moyenne = mean(x),
-    etendue = range(x),
-    test = t.test(x)
-  )
+f <- function(x) {
+  
+  # opérations internes...
+  
+  return(list(
+    # objets à retourner
+  ))
 }
-some_stats(rnorm(10))
 ```
 
 ## Valeurs de retour complexes (2) {.reduceCode}
 
 - Utiliser des attributs.
 ```{r}
-impute_mean <- function(x) {
-  res <- x
-  res[is.na(x)] <- mean(x, na.rm = TRUE)
+f <- function(x) {
   
-  attr(res, "imputed") <- is.na(x)
-  res
+  # opérations internes...
+  
+  attr(result, "nom_attribut") <- # contenu attribut
+  return(result)
 }
-
-(test <- impute_mean(c(1, 2, NA, 3)))
-attr(test, "imputed")
 ```
 Avantage: le résultat continue à se comporter comme l'objet original (ici un vecteur), ce qui est parfois plus facile à utiliser qu'une liste.
 
