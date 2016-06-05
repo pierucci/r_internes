@@ -364,6 +364,18 @@ f <- function(x) {
 f(c(1, 3, NA))
 ```
 
+## Une fonction argument d'une fonction
+
+On peut passer une fonction comme argument à une autre fonction. Ce concept est fondamental pour le cours suivant sur la famille de fonctions `apply()`.
+
+```{r}
+do_something_to_x <- function(x, func) {
+  func(x)
+}
+do_something_to_x(1:10, mean)
+do_something_to_x(1:10, range)
+```
+
 ## Closures (1)
 Le résultat d'une fonction est un objet. Une fonction est un objet comme un autre.
 
@@ -396,18 +408,6 @@ rs1(2)
 rs1(9)
 rs2 <- create_resampler(c("M", "F"))
 rs2(5)
-```
-
-## Une fonction argument d'une fonction
-
-On peut passer une fonction comme argument à une autre fonction. Ce concept est fondamental pour le cours suivant sur la famille de fonctions `apply()`.
-
-```{r}
-do_something_to_x <- function(x, func) {
-  func(x)
-}
-do_something_to_x(1:10, mean)
-do_something_to_x(1:10, range)
 ```
 
 ## Pour combiner les concepts (1) {.reduceCode}
