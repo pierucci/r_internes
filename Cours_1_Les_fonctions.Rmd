@@ -22,7 +22,7 @@ Clairement la référence (en Anglais !) en "vulgarisation" des fonctionnalités
 [http://adv-r.had.co.nz/](http://adv-r.had.co.nz/)
 </div>
 
-Livre consultable intégralement en ligne, ou achetable sur internet (Amazon...)
+Livre consultable intégralement en ligne, ou achetable sur internet (Amazon, etc).
 
 ## Une fonction : présentation simple
 
