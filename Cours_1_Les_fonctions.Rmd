@@ -253,21 +253,12 @@ Récupération de la liste des arguments avec `formals()`.
 formals(sample)
 ```
 Test sur la présence/absence d'un argument avec `missing()`.
-```{r}
-myplot <- function(x, y) {
-  if(missing(y)) {
-    y <- x
-    x <- 1:length(y)
-  }
-  plot(x, y)
-}
-```
 
 ## Lazy evaluation
 L'évaluation d'un argument ne se fait qu'à l'instant *t* où l'argument est utilisé dans le corps de la fonction (et donc à l'instant *t* où l'évaluation devient nécessaire).
  
 ```{r}
-f <- function(a = 1 , b = a*2) {
+f <- function(a = 1 , b = a * 2) {
   a <- 6
   b
 }
