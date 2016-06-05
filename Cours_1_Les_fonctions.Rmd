@@ -425,7 +425,7 @@ c1 <- create_counter()
 c1()
 c1()
 ```
-Pas partagé car si on appelle à nouveau `create_counter()`, un second *execution environment* indépendant est créé.
+Le compteur n'est pas partagé car si on appelle à nouveau `create_counter()`, un second *execution environment* indépendant est créé.
 ```{r}
 c2 <- create_counter()
 c2()
@@ -434,7 +434,7 @@ c1()
 
 ## Pour combiner les concepts (2) {.reduceCode}
 
-Il faut remonter d'un niveau l'*enclosing environment*.
+Il faut remonter d'un niveau l'*enclosing environment* pour partager le compteur.
 ```{r}
 # local() permet de créer un nouvel environment
 create_counter <- local({

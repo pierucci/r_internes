@@ -246,7 +246,7 @@ f()</pre>
 
 <pre class = 'prettyprint lang-r'>f()</pre>
 
-<pre ># &lt;environment: 0x371c448&gt;</pre>
+<pre ># &lt;environment: 0x329c1c0&gt;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Calling environment</h2></hgroup><article  id="calling-environment" class="smaller ">
 
@@ -262,18 +262,18 @@ f()</pre>
 
 <pre ># &lt;environment: R_GlobalEnv&gt;</pre>
 
-<p>Mais pour cette même fonction, si elle est lancée depuis <code>g()</code>, ça peut aussi être l&#39;<em>execution environment</em> de <code>g()</code>.</p>
+<p>Mais pour cette même fonction <code>f()</code>, si elle est lancée depuis <code>g()</code>, ça peut aussi être l&#39;<em>execution environment</em> de <code>g()</code>.</p>
 
 <pre class = 'prettyprint lang-r'>g &lt;- function() {
   f()
 }
 g()</pre>
 
-<pre ># &lt;environment: 0x2c75b50&gt;</pre>
+<pre ># &lt;environment: 0x2641b48&gt;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Le lexical scoping</h2></hgroup><article  id="le-lexical-scoping" class="smaller ">
 
-<p>Ensemble de règles permettant à <code>R</code> de faire correspondre une valeur à un symbole</p>
+<p>Ensemble de règles permettant à <code>R</code> de faire correspondre une valeur à un symbole.</p>
 
 <pre class = 'prettyprint lang-r'>x &lt;- 10
 f &lt;- function() {
@@ -361,19 +361,11 @@ x</pre>
 
 <p>Test sur la présence/absence d&#39;un argument avec <code>missing()</code>.</p>
 
-<pre class = 'prettyprint lang-r'>myplot &lt;- function(x, y) {
-  if(missing(y)) {
-    y &lt;- x
-    x &lt;- 1:length(y)
-  }
-  plot(x, y)
-}</pre>
-
 </article></slide><slide class=''><hgroup><h2>Lazy evaluation</h2></hgroup><article  id="lazy-evaluation" class="smaller ">
 
 <p>L&#39;évaluation d&#39;un argument ne se fait qu&#39;à l&#39;instant <em>t</em> où l&#39;argument est utilisé dans le corps de la fonction (et donc à l&#39;instant <em>t</em> où l&#39;évaluation devient nécessaire).</p>
 
-<pre class = 'prettyprint lang-r'>f &lt;- function(a = 1 , b = a*2) {
+<pre class = 'prettyprint lang-r'>f &lt;- function(a = 1 , b = a * 2) {
   a &lt;- 6
   b
 }</pre>
@@ -414,18 +406,18 @@ all_numeric(2, c(1, 2, 3), 4:8)</pre>
 }
 mult_and_resamp(0:5, 10)</pre>
 
-<pre ># [1] 10 30 40  0 50 20</pre>
+<pre ># [1] 40  0 10 50 30 20</pre>
 
 <pre class = 'prettyprint lang-r'>mult_and_resamp(0:2, 2, replace = TRUE, size = 10)</pre>
 
-<pre >#  [1] 4 0 4 0 0 0 4 4 4 2</pre>
+<pre >#  [1] 0 2 0 4 4 0 4 4 4 4</pre>
 
 </article></slide><slide class=''><hgroup><h2>Valeur de retour</h2></hgroup><article  id="valeur-de-retour" class="smaller reduceCode">
 
 <p>Par défaut, une fonction retourne un objet <strong>unique</strong> qui peut être :</p>
 
 <ul>
-<li>le résultat de la dernière évaluation</li>
+<li>le résultat de la dernière évaluation.</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>f &lt;- function(x) {
@@ -436,7 +428,7 @@ f(2)</pre>
 <pre ># [1] 4</pre>
 
 <ul>
-<li>un résultat précis, choisi, par l&#39;intermédiaire de <code>return()</code> (force l&#39;arrêt de la fonction)</li>
+<li>un résultat précis, choisi, par l&#39;intermédiaire de <code>return()</code> (force l&#39;arrêt de la fonction).</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>f &lt;- function(x){
@@ -454,60 +446,31 @@ f(4)</pre>
 <p>Comment faire pour retourner plus de choses ? Deux solutions :</p>
 
 <ul>
-<li>Tout mettre dans une liste</li>
+<li>Tout mettre dans une liste.</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>some_stats &lt;- function(x) {
-  list(
-    moyenne = mean(x),
-    etendue = range(x),
-    test = t.test(x)
-  )
-}
-some_stats(rnorm(10))</pre>
-
-<pre ># $moyenne
-# [1] -0.00224205
-# 
-# $etendue
-# [1] -2.393305  2.469550
-# 
-# $test
-# 
-#   One Sample t-test
-# 
-# data:  x
-# t = -0.0041797, df = 9, p-value = 0.9968
-# alternative hypothesis: true mean is not equal to 0
-# 95 percent confidence interval:
-#  -1.215685  1.211201
-# sample estimates:
-#   mean of x 
-# -0.00224205</pre>
+<pre class = 'prettyprint lang-r'>f &lt;- function(x) {
+  
+  # opérations internes...
+  
+  return(list(
+    # objets à retourner
+  ))
+}</pre>
 
 </article></slide><slide class=''><hgroup><h2>Valeurs de retour complexes (2)</h2></hgroup><article  id="valeurs-de-retour-complexes-2" class="smaller reduceCode">
 
 <ul>
-<li>Utiliser des attributs</li>
+<li>Utiliser des attributs.</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>impute_mean &lt;- function(x) {
-  res &lt;- x
-  res[is.na(x)] &lt;- mean(x, na.rm = TRUE)
+<pre class = 'prettyprint lang-r'>f &lt;- function(x) {
   
-  attr(res, &quot;imputed&quot;) &lt;- is.na(x)
-  res
-}
-
-(test &lt;- impute_mean(c(1, 2, NA, 3)))</pre>
-
-<pre ># [1] 1 2 2 3
-# attr(,&quot;imputed&quot;)
-# [1] FALSE FALSE  TRUE FALSE</pre>
-
-<pre class = 'prettyprint lang-r'>attr(test, &quot;imputed&quot;)</pre>
-
-<pre ># [1] FALSE FALSE  TRUE FALSE</pre>
+  # opérations internes...
+  
+  attr(result, &quot;nom_attribut&quot;) &lt;- # contenu attribut
+  return(result)
+}</pre>
 
 <p>Avantage: le résultat continue à se comporter comme l&#39;objet original (ici un vecteur), ce qui est parfois plus facile à utiliser qu&#39;une liste.</p>
 
@@ -532,11 +495,26 @@ f(c(1, 3, NA))</pre>
 # attr(,&quot;n_na&quot;)
 # [1] 1</pre>
 
+</article></slide><slide class=''><hgroup><h2>Une fonction argument d&#39;une fonction</h2></hgroup><article  id="une-fonction-argument-dune-fonction" class="smaller ">
+
+<p>On peut passer une fonction comme argument à une autre fonction. Ce concept est fondamental pour le cours suivant sur la famille de fonctions <code>apply()</code>.</p>
+
+<pre class = 'prettyprint lang-r'>do_something_to_x &lt;- function(x, func) {
+  func(x)
+}
+do_something_to_x(1:10, mean)</pre>
+
+<pre ># [1] 5.5</pre>
+
+<pre class = 'prettyprint lang-r'>do_something_to_x(1:10, range)</pre>
+
+<pre ># [1]  1 10</pre>
+
 </article></slide><slide class=''><hgroup><h2>Closures (1)</h2></hgroup><article  id="closures-1" class="smaller ">
 
 <p>Le résultat d&#39;une fonction est un objet. Une fonction est un objet comme un autre.</p>
 
-<p>&#8211;&gt; Une fonction peut donc renvoyer une autre fonction : ce sont les <strong>closures</strong>.</p>
+<p>Une fonction peut donc renvoyer une autre fonction : ce sont les <strong>closures</strong>.</p>
 
 <pre class = 'prettyprint lang-r'>f &lt;- function(x){
   g &lt;- function(y){
@@ -564,31 +542,16 @@ cube(2)</pre>
 rs1 &lt;- create_resampler(1:10)
 rs1(2)</pre>
 
-<pre ># [1] 3 5</pre>
+<pre ># [1] 7 6</pre>
 
 <pre class = 'prettyprint lang-r'>rs1(9)</pre>
 
-<pre ># [1]  7 10  9  4  4  5 10 10  4</pre>
+<pre ># [1]  7  2  8  5  9  1  7  8 10</pre>
 
 <pre class = 'prettyprint lang-r'>rs2 &lt;- create_resampler(c(&quot;M&quot;, &quot;F&quot;))
 rs2(5)</pre>
 
-<pre ># [1] &quot;F&quot; &quot;F&quot; &quot;F&quot; &quot;M&quot; &quot;F&quot;</pre>
-
-</article></slide><slide class=''><hgroup><h2>Une fonction argument d&#39;une fonction</h2></hgroup><article  id="une-fonction-argument-dune-fonction" class="smaller ">
-
-<p>On peut passer une fonction comme argument à une autre fonction. Ce concept est fondamental pour le cours suivant sur la famille de fonctions <code>apply()</code>.</p>
-
-<pre class = 'prettyprint lang-r'>do_something_to_x &lt;- function(x, func) {
-  func(x)
-}
-do_something_to_x(1:10, mean)</pre>
-
-<pre ># [1] 5.5</pre>
-
-<pre class = 'prettyprint lang-r'>do_something_to_x(1:10, range)</pre>
-
-<pre ># [1]  1 10</pre>
+<pre ># [1] &quot;M&quot; &quot;F&quot; &quot;M&quot; &quot;M&quot; &quot;M&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Pour combiner les concepts (1)</h2></hgroup><article  id="pour-combiner-les-concepts-1" class="smaller reduceCode">
 
@@ -610,7 +573,7 @@ c1()</pre>
 
 <pre ># [1] 2</pre>
 
-<p>Pas partagé car si on appelle à nouveau <code>create_counter()</code>, un second <em>execution environment</em> indépendant est créé.</p>
+<p>Le compteur n&#39;est pas partagé car si on appelle à nouveau <code>create_counter()</code>, un second <em>execution environment</em> indépendant est créé.</p>
 
 <pre class = 'prettyprint lang-r'>c2 &lt;- create_counter()
 c2()</pre>
@@ -623,9 +586,9 @@ c2()</pre>
 
 </article></slide><slide class=''><hgroup><h2>Pour combiner les concepts (2)</h2></hgroup><article  id="pour-combiner-les-concepts-2" class="smaller reduceCode">
 
-<p>Il faut remonter d&#39;un cran l&#39;<em>enclosing environment</em>.</p>
+<p>Il faut remonter d&#39;un niveau l&#39;<em>enclosing environment</em> pour partager le compteur.</p>
 
-<pre class = 'prettyprint lang-r'># local() permet de créer un environment
+<pre class = 'prettyprint lang-r'># local() permet de créer un nouvel environment
 create_counter &lt;- local({
   n &lt;- 0
   function() {
