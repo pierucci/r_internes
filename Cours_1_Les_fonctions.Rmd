@@ -187,6 +187,7 @@ g()
 
 Ensemble de règles permettant à `R` de faire correspondre une valeur à un symbole.
 ```{r}
+# x est le symbole, 10 est la valeur
 x <- 10
 f <- function() {
   x <- 20
@@ -202,7 +203,7 @@ f()
 
 Quand une variable n'est pas définie directement dans l'environnement de la fonction, `R` va la chercher ailleurs.
 
-Plus précisement, `R` va remonter progressivement le `searchPath` à la recherche d'une correspondance avec une variable/fonction portant ce nom.
+Plus précisement, `R` va remonter progressivement le `searchpaths()` à la recherche d'une correspondance avec une variable/fonction portant ce nom.
 
 Ici, la variable `x` est définie dans l'environnement de la fonction, donc R utilise cette correspondance :
 ```{r}
@@ -235,7 +236,7 @@ Ainsi, il est possible de manipuler des fonctions et des variables avec le même
 
 En fonction du contexte (appel d'une variable ou d'une fonction), `R` va chercher dans le type d'objet adéquat.
 
-**ATTENTION : c'est pratique, mais c'est une potentielle source d'erreurs**  (risque de confusion)
+**ATTENTION : c'est pratique, mais c'est une potentielle source d'erreurs** (risque de confusion)
 
 Ici, on crée un variable min correspondant à un vecteur
 ```{r}
@@ -267,22 +268,74 @@ f()
 f()
 ```
 
-## Le lexical scoping en détails (4/4)
+## Le lexical scoping en détails (4/4) {.reduceCode}
 ### Evaluation à l'exécution
 
-Dynamic lookup + lazy evaluation
+Les différentes variables utilisées par une fonction ne sont pas évalués lorsque la fonction est crée.
+L'ensemble de ces éléments sont évaluée au **moment où la fonction est exécutée**.
+
+Par conséquent, la valeur prise par une variable dans une fonction peut varier en fonction d'éléments extérieurs à la fonction (**attention, danger !**).
+
+Exemple : 
+```{r}
+x <- 10
+f <- function() {
+ x^2
+}
+
+f()
+
+x <- 100
+f()
+```
 
 ## La gestion des arguments
 
-- Les arguments (formels et valeurs remplacées par exécution : appels)
-- Les valeurs par défaut
+### Les arguments d'une fonction
+
+Les arguments sont simplement **les paramètres d'une fonction**, définis et prévus au moment de sa création (on parle d'arguments *formels*). Une fois créé, on ne peut passer à la fonction que les arguments prévus.
+ 
+Ici, `x` et `y` sont les arguements formels de `f` :
+```{r}
+f <- function(x, y) {
+  # blah blah blah
+}
+```
+
+Attention, le terme "arguments"" peut aussi faire référence aux **valeurs concrètes des paramètres d'une fonction** (on parle d'arguments **d'appel**). 
+
+Ici, la fonction `f` est appelé en lui passant les arguments `10` et `20` :
+```{r eval=F}
+f(x = 10, y = 20)
+```
+
+
+## La gestion des arguments {.reduceCode}
+### Les valeurs par défaut
+
+Il est possible d'attribuer à un argument une valeur par défaut, et donc de le rendre optionnel :
+
+- si une valeur est précisée lors de l'appel de la fonction, cette valeur sera utilisée
+- si aucune valeur n'est donnée lors de l'appel, la valeur par défaut sera utilisée
+
+```{r}
+f <- function(x, more = FALSE) {
+  print(length(x))
+  if (more) print(class(x))
+}
+x <- c(1:5)
+f(x)
+f(x, more = TRUE)
+```
 
 ## Les arguments
 
-- Par leur nom complet
-- Par leur nom partiel
-- Par leur position (ordre dans la définition de la fonction)
+Une fonction peut avoir un nombre important d'arguments. Comment faire lors de l'appel d'une fonction pour attribuer la bonne valeur au bon argument ?
 
+`R` fait appel à trois techniques possibles pour savoir à quel argument on fait référence dans l'appel d'une fonction :
+- Matching par leur nom complet
+- Matching par leur nom partiel
+- Matching par leur position (ordre dans la définition de la fonction)
 
 ## Les arguments
 ```{r}
@@ -300,7 +353,7 @@ f(foo = 1 , bar = 2)
 
 - Utilisant une partie de leur nom (*partial matching*)
 ```{r, results='hide'}
-f(f = 1, b = 2)
+f(f = 1, b = 2) #A noter, le caractère confusiogène de f() la fonction et f le paramètre "raccourci"
 ```
 
 - Utilisant leur position dans la définition de la fonction
@@ -310,11 +363,36 @@ f(1, 2)
 
 ## Manipulation des arguments {.reduceCode}
 
-Récupération de la liste des arguments avec `formals()`.
+La liste des arguments d'une fonction peut être récupérée avec `formals()`.
+
+Cela permet de retrouver à la fois les arguments, et les valeurs par défaut. 
+
+Exemple : 
 ```{r}
 formals(sample)
 ```
-Test sur la présence/absence d'un argument avec `missing()`.
+
+## Manipulation des arguments {.reduceCode}
+
+Il est possible de tester la présence/absence d'un argument avec `missing()`.
+La fonction renvoie `TRUE` si l'argument n'a pas de valeur (et `FALSE` sinon).
+
+Attention : `NULL` ou `NA` sont bien des valeurs...
+
+```{r}
+f <- function(x, y) {
+  if (missing(y)) {
+    return("La valeur y doit être précisée")
+  }
+  return("Les valeurs de x et y sont précisées")
+}
+```
+
+```{r}
+f(x = "foo", y = "bar")
+f(x = "foo")
+f(x = "foo", y = NULL)
+```
 
 ## Lazy evaluation
 L'évaluation d'un argument ne se fait qu'à l'instant *t* où l'argument est utilisé dans le corps de la fonction (et donc à l'instant *t* où l'évaluation devient nécessaire).
