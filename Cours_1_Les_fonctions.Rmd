@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE, comment = "#")
 
 La **TRES** grande majorité des informations données ici sont issues du livre de Hadley Wickham : **Advanced R**.
 
-Clairement la référence (en Anglais !) en "vulgarisation" des fonctionnalités avancées de R.
+Clairement la référence (en Anglais !) en "vulgarisation" des fonctionnalités avancées de `R`.
 
 <div class="centered">
 ![](img/AdvancedR.jpg)
@@ -26,8 +26,8 @@ Livre consultable intégralement en ligne, ou achetable sur internet (Amazon, et
 
 ## Une fonction : présentation simple
 
-Dans R, **une fonction est un objet**, au même titre qu'un vecteur, un dataframe, une liste...
-Dans R, **tout est fonction dans R**, y compris '`+`' ou '`(`' ou encore '`if`'.
+Dans `R`, **une fonction est un objet**, au même titre qu'un vecteur, un dataframe, une liste...
+Dans `R`, **tout est fonction dans `R`**, y compris '`+`' ou '`(`' ou encore '`if`'.
 
 Une fonction permet de créer une version abstraite et réutilisable d'une solution que l'on souhaite appliquer à un problème donné.
 
@@ -126,7 +126,7 @@ Chaque fonction utilise 3 environnements : *enclosing*, *execution*, *calling*.
 
 ## Execution environment
 
-Quand une fonction est lancée, le code contenu dans le corps est éxécuté dans un nouvel environnement, créé *de novo*.
+Quand une fonction est lancée, le code contenu dans le corps est executé dans un nouvel environnement, créé *de novo*.
 
 Sauf exception, cet environnement est détruit et les données sont perdues quand la fonction est finie.
 
@@ -200,9 +200,9 @@ f()
 ## Le lexical scoping en détails (1/4)
 ### Parcours des environnements
 
-Quand une variable n'est pas définie directement dans l'environnement de la fonction, R va la chercher ailleurs...
+Quand une variable n'est pas définie directement dans l'environnement de la fonction, `R` va la chercher ailleurs.
 
-Plus précisement, R va remonter progressivement le `searchPath` à la recherche d'une correspondance avec une variable/fonction portant ce nom.
+Plus précisement, `R` va remonter progressivement le `searchPath` à la recherche d'une correspondance avec une variable/fonction portant ce nom.
 
 Ici, la variable `x` est définie dans l'environnement de la fonction, donc R utilise cette correspondance :
 ```{r}
@@ -217,7 +217,7 @@ f()
 ## Le lexical scoping en détails (1/4)
 Ici, la variable `x` n'est pas définie dans l'environnement de la fonction, mais dans l'environnement global. 
 
-A l'exécution de la fonction `f`, R va d'abord chercher une correspondance pour `x` dans l'environnement de la fonction, puis va remonter jusqu'à la trouver dans l'environnement global.
+A l'exécution de la fonction `f`, `R` va d'abord chercher une correspondance pour `x` dans l'environnement de la fonction, puis va remonter jusqu'à la trouver dans l'environnement global.
 ```{r}
 x <- 10
 f <- function() {
@@ -230,10 +230,12 @@ f()
 ## Le lexical scoping en détails (2/4)
 ### Fonctions VS variables
 
-Fonctions et variables nommées ne sont pas identiques (quand bien même le nom est identique).
+Une fonction et une variable, nommée à l'identique, ne sont pour autant pas les mêmes objets.
 Ainsi, il est possible de manipuler des fonctions et des variables avec le même nom.
 
-**ATTENTION : pratique, mais c'est une potentielle source d'erreurs...**
+En fonction du contexte (appel d'une variable ou d'une fonction), `R` va chercher dans le type d'objet adéquat.
+
+**ATTENTION : c'est pratique, mais c'est une potentielle source d'erreurs**  (risque de confusion)
 
 Ici, on crée un variable min correspondant à un vecteur
 ```{r}
@@ -241,7 +243,7 @@ min <- c(5:10)
 min
 ```
 
-R fait bien la distinction entre la fonction min() et la variable min
+`R` fait bien la distinction entre la fonction min() et la variable min
 ```{r}
 min(min)
 ```
@@ -249,7 +251,7 @@ min(min)
 ## Le lexical scoping en détails (3/4) {.reduceCode}
 ### Variables éphémères
 
-Les variables encapsulées dans l'environnement de la fonction n'existent et/ou ne sont manipulées que pendant la durée de l'exécution de la fonction, puis disparaissent à la fin de l'exécution.
+Les variables définies dans l'environnement de la fonction n'existent et/ou ne sont manipulées que pendant la durée de l'exécution de la fonction, puis disparaissent à la fin de l'exécution.
 
 Exemple : 
 ```{r}
