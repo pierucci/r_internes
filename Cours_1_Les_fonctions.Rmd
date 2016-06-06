@@ -94,18 +94,78 @@ f <- function() {
 
 x
 f()
-  
 ```
 
-## Le lexical scoping
+## Le lexical scoping en détails (1/4)
+### Parcours des environnements
 
-- Pacours des environnements
+Quand une variable n'est pas définie directement dans l'environnement de la fonction, R va la chercher ailleurs...
 
-- Fonctions VS variables
+Plus précisement, R va remonter progressivement le `searchPath` à la recherche d'une correspondance avec une variable/fonction portant ce nom.
 
-- Variables éphémères
+Ici, la variable `x` est définie dans l'environnement de la fonction, donc R utilise cette correspondance :
+```{r}
+f <- function() {
+  x <- 1
+  x * 2
+}
 
-- Evaluation à l'exécution
+f()
+```
+
+## Le lexical scoping en détails (1/4)
+Ici, la variable `x` n'est pas définie dans l'environnement de la fonction, mais dans l'environnement global. 
+
+A l'exécution de la fonction `f`, R va d'abord chercher une correspondance pour `x` dans l'environnement de la fonction, puis va remonter jusqu'à la trouver dans l'environnement global.
+```{r}
+x <- 10
+f <- function() {
+  print(x)
+}
+
+f()
+```
+
+## Le lexical scoping en détails (2/4)
+### Fonctions VS variables
+
+Fonctions et variables nommées ne sont pas identiques (quand bien même le nom est identique).
+Ainsi, il est possible de manipuler des fonctions et des variables avec le même nom.
+
+**ATTENTION : pratique, mais c'est une potentielle source d'erreurs...**
+
+Ici, on crée un variable min correspondant à un vecteur
+```{r}
+min <- c(5:10)
+min
+```
+
+R fait bien la distinction entre la fonction min() et la variable min
+```{r}
+min(min)
+```
+
+## Le lexical scoping en détails (3/4) {.reduceCode}
+### Variables éphémères
+
+Les variables encapsulées dans l'environnement de la fonction n'existent et/ou ne sont manipulées que pendant la durée de l'exécution de la fonction, puis disparaissent à la fin de l'exécution.
+
+Exemple : 
+```{r}
+f <- function() {
+  x <- 1
+  x * 2
+}
+```
+
+Appels successifs de la fonction : x est créé, manipulé, puis détruit à chaque exécution
+```{r}
+f()
+f()
+```
+
+## Le lexical scoping en détails (4/4)
+### Evaluation à l'exécution
 
 Dynamic lookup + lazy evaluation
 
