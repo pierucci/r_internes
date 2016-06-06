@@ -1,0 +1,192 @@
+---
+title: "Cours 1 : Les fonctions"
+author: "Exercices"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(include = FALSE)
+```
+
+# Exemple d'utilisation
+
+Ecrire une fonction qui, à partir d'une variable, effectue les étapes suivantes :
+
+  * Affiche le nombre de données manquante s'il y en a ;
+  * Impute les données manquantes par la moyenne ;
+  * Représente un histogramme des données après imputation ;
+  * Et retourne à l'utilisateur un `summary()` de la variable après imputation.
+  
+```{r}
+impute_and_describe <- function(x) {
+  if (any(is.na(x))) {
+    message(paste(
+      "Le nombre de données manquantes est",
+      sum(is.na(x))
+    ))
+  }
+  x[is.na(x)] <- mean(x, na.rm = TRUE)
+  hist(x)
+  summary(x)
+}
+impute_and_describe(c(rnorm(10), NA))
+```
+
+# Le lexical scoping
+
+Ecrire une fonction spécifique à un jeu de données. Par exemple à partir du jeu de données `infert`, une fonction :
+
+  * Qui prend comme argument le nom d'une variable ;
+  * Et retourne la force d'association de cette variable avec la variable `case` (cas ou témoin) ;
+  * Sans prendre `infert` comme argument.
+
+```{r}
+assoc_case_infert <- function(x) {
+  if (is.numeric(infert[, x])) {
+    t.test(
+      infert[infert$case == 0, x],
+      infert[infert$case == 1, x]
+    )
+  } else {
+    chisq.test(table(
+      infert$case,
+      infert[, x]
+    ))
+  }
+}
+assoc_case_infert("age")
+assoc_case_infert("education")
+```
+
+`infert` est recherché dans l'environnement où `f()` est définie. Si on appelle `f()` depuis une fonction où on défini un autre jeu de données `infert` on risque d'avoir des surprises.
+
+Exemple : faire une fonction qui rééchantillonne `infert`, le modifie, et appelle à nouveau `assoc_case_infert()`.
+
+```{r}
+resample_and_test <- function(x) {
+  resamp <- sample(
+    seq_len(nrow(infert)),
+    size = nrow(infert),
+    replace = TRUE
+  )
+  infert <- infert[resamp, ]
+  assoc_case_infert(x)
+}
+resample_and_test("age")
+```
+
+Ca ne fonctionne pas car le `infert` utilisé par la fonction `assoc_case_infert()` est toujours celui de son *enclosing environment*, l'environnement global, et pas l'`infert` de son *calling environment*, l'*execution environment* de `resample_and_test()`.
+
+# Manipulation des arguments
+
+Ecrire une fonction qui a les proprités suivantes :
+
+  * Prend 2 arguments `x` et `y` ;
+  * Représente un nuage de points des arguments ;
+  * `x` a comme valeur par défault 10 valeurs aléatoires entre 0 et 1 ;
+  * Si `y` est manquant alors `x` est représenté en ordonnée, selon son index en abcisse.
+  
+```{r}
+myplot1 <- function(x = runif(10), y) {
+  if(missing(y)) {
+    y <- x
+    x <- seq_along(y)
+  }
+  plot(x, y)
+}
+```
+
+Autre exercice : pareil, mais si `y` est manquant il prend les valeurs des index de `x`.
+
+```{r}
+myplot2 <- function(x = runif(10), y = seq_along(x)) {
+  plot(x, y)
+}
+```
+
+# Dot Dot Dot (`...`)
+
+Faire un fonction qui prend comme argument un nombre de points et représente un nuage de points aléatoirement généré selon un distribution normale. Les paramètres de `plot()` doivent pouvoir être modifiés depuis la fonction.
+
+```{r}
+random_scatter <- function(n, ...) {
+  x <- rnorm(n)
+  y <- rnorm(n)
+  
+  plot(x, y, ...)
+}
+random_scatter(100)
+random_scatter(500, col = "red")
+random_scatter(1000, ylim = c(0, 1))
+```
+
+Faire une fonction qui à partir d'un nombre arbitraire de `t.test()` retourne le plus significatif.^[Plus avancé, utilise `lapply()` (prévu pour la leçon suivante).]
+
+```{r}
+most_signif_ttest <- function(...) {
+  list_ttest <- list(...)
+  
+  extract_p <- function(x)
+    x$p.value
+  
+  pvals <- unlist(lapply(list_ttest, extract_p))
+  
+  list_ttest[[which(pvals == min(pvals))]]
+}
+most_signif_ttest(
+  t.test(rnorm(10), rnorm(10)),
+  t.test(rnorm(10), rnorm(10)),
+  t.test(rnorm(10), rnorm(10)),
+  t.test(rnorm(10), rnorm(10))
+)
+```
+
+## Valeurs de retour complexes 
+
+Faire une fonction qui retourne pour une variable :
+
+  * Sa moyenne ;
+  * Son étendue ;
+  * La comparaison de sa moyenne à 0.
+  
+```{r}
+some_stats <- function(x) {
+  list(
+    moyenne = mean(x),
+    etendue = range(x),
+    test0 = t.test(x)
+  )
+}
+some_stats(rnorm(10))
+```
+
+Faire une fonction qui impute les valeurs manquantes par la moyenne, retourne un vecteur, mais garde la trace de quelles valeurs sont imputées.
+
+```{r}
+impute_mean <- function(x) {
+  res <- x
+  res[is.na(x)] <- mean(x, na.rm = TRUE)
+  
+  attr(res, "imputed") <- is.na(x)
+  res
+}
+
+(test <- impute_mean(c(1, 2, NA, 3)))
+attr(test, "imputed")
+```
+
+# Une fonction argument d'une fonction
+
+Reprendre l'exemple précédent, mais utiliser une fonction arbitraire pour faire l'imputation. Du coup la fonction arbitraire prend peut-être d'autres arguments arbitraires ?
+
+```{r}
+impute_generalized <- function(x, f, ...) {
+  res <- x
+  res[is.na(x)] <- f(na.omit(x), ...)
+  
+  attr(res, "imputed") <- is.na(x)
+  res
+}
+x <- c(1, 2, NA, 3)
+impute_generalized(x, quantile, probs = .25)
+```
