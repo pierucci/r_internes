@@ -12,6 +12,11 @@ slides > slide > hgroup + article {
 margin-top: 10px;
 }
 
+pre {
+  width: 100%;
+  left: 0px;
+}
+
 #cover img { 
   max-width:  200px; 
 }
