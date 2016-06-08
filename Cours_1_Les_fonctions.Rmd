@@ -201,7 +201,7 @@ f()
 ## Le lexical scoping en détails (1/4)
 ### Parcours des environnements
 
-Quand une variable n'est pas définie directement dans l'environnement de la fonction, `R` va la chercher ailleurs.
+Quand une variable n'est pas définie directement dans l'environnement de la fonction (*execution environment*), `R` va la chercher ailleurs.
 
 Plus précisement, `R` va remonter progressivement le `searchpaths()` à la recherche d'une correspondance avec une variable/fonction portant ce nom.
 
@@ -216,9 +216,9 @@ f()
 ```
 
 ## Le lexical scoping en détails (1/4)
-Ici, la variable `x` n'est pas définie dans l'environnement de la fonction, mais dans l'environnement global. 
+Ici, la variable `x` n'est pas définie dans l'environnement de la fonction, mais dans son *enclosing environment*, l'environnement global. 
 
-A l'exécution de la fonction `f`, `R` va d'abord chercher une correspondance pour `x` dans l'environnement de la fonction, puis va remonter jusqu'à la trouver dans l'environnement global.
+A l'exécution de la fonction `f`, `R` va d'abord chercher une correspondance pour `x` dans l'environnement de la fonction, puis va remonter à son *enclosing environment*, où il trouve une correspondance.
 ```{r}
 x <- 10
 f <- function() {
