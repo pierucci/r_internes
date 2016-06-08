@@ -333,6 +333,7 @@ f(x, more = TRUE)
 Une fonction peut avoir un nombre important d'arguments. Comment faire lors de l'appel d'une fonction pour attribuer la bonne valeur au bon argument ?
 
 `R` fait appel à trois techniques possibles pour savoir à quel argument on fait référence dans l'appel d'une fonction :
+
 - Matching par leur nom complet
 - Matching par leur nom partiel
 - Matching par leur position (ordre dans la définition de la fonction)
