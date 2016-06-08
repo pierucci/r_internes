@@ -37,8 +37,8 @@ Obtenir la dernière valeur d'une mesure :
   * A partir de deux vecteurs, _mesure_ et _temps_ ;
   * Ces vecteurs ne sont pas nécessairement ordonnés ;
   * _temps_ contient les temps où les mesures ont été effectuées ;
-  * retourner la dernière mesure ;
-  * bonus : ajouter une option pour retourner la première mesure.
+  * Retourner la dernière mesure ;
+  * Bonus : ajouter une option pour retourner la première mesure.
   
 ```{r}
 get_last <- function(x, time) {
@@ -65,7 +65,7 @@ get_last_or_first(m, ti, first = TRUE)
 
 # Le lexical scoping
 
-Ecrire une fonction spécifique à un jeu de données. Par exemple à partir du jeu de données `infert`, une fonction :
+Ecrire une fonction spécifique à un jeu de données. Par exemple à partir du jeu de données `infert`, une fonction `assoc_case_infert()` :
 
   * Qui prend comme argument le nom d'une variable ;
   * Et retourne la force d'association de cette variable avec la variable `case` (cas ou témoin) ;
@@ -89,9 +89,12 @@ assoc_case_infert("age")
 assoc_case_infert("education")
 ```
 
-`infert` est recherché dans l'environnement où `f()` est définie. Si on appelle `f()` depuis une fonction où on défini un autre jeu de données `infert` on risque d'avoir des surprises.
+`infert` est recherché dans l'environnement où `assoc_case_infert()` est définie. Si on appelle la fonction depuis une autre fonction où on a défini un autre jeu de données `infert` on risque d'avoir des surprises.
 
-Exemple : faire une fonction qui rééchantillonne `infert`, le modifie, et appelle à nouveau `assoc_case_infert()`.
+Faire une nouvelle fonction `resample_and_test()` qui :
+
+  * Rééchantillonne `infert`, et nomme la version modifiée `infert` ;
+  * Et appelle à nouveau `assoc_case_infert()` (donc au sein de la nouvelle fonction).
 
 ```{r}
 resample_and_test <- function(x) {
@@ -106,9 +109,11 @@ resample_and_test <- function(x) {
 resample_and_test("age")
 ```
 
-Ca ne fonctionne pas car le `infert` utilisé par la fonction `assoc_case_infert()` est toujours celui de son *enclosing environment*, l'environnement global, et pas l'`infert` de son *calling environment*, l'*execution environment* de `resample_and_test()`.
+Ca ne fonctionne pas car le `infert` utilisé par la fonction `assoc_case_infert()` est toujours celui de son *enclosing environment*, l'environnement global, et pas l'`infert` de l'*execution environment* de `resample_and_test()`.^[Qui est le *calling environment* d'`assoc_case_infert()`.]
 
 # Manipulation des arguments
+
+Refaire la fonction pour obtenir la dernière valeur d'une mesure dans la section 1, mais en faisant que par défaut la dernière mesure est retournée.
 
 Ecrire une fonction qui a les proprités suivantes :
 
@@ -135,7 +140,6 @@ myplot2 <- function(x = runif(10), y = seq_along(x)) {
 }
 ```
 
-Refaire la fonction pour obtenir la dernière valeur d'une mesure dans la section 1, mais en faisant que par défaut la dernière mesure est retournée.
 
 ```{r}
 get_last_or_first <- function(x, time, first = FALSE) {
@@ -149,7 +153,7 @@ get_last_or_first <- function(x, time, first = FALSE) {
 
 # Dot Dot Dot (`...`)
 
-Faire un fonction qui prend comme argument un nombre de points et représente un nuage de points aléatoirement généré selon un distribution normale. Les paramètres de `plot()` doivent pouvoir être modifiés depuis la fonction.
+Faire un fonction qui prend comme argument un nombre de points et représente un nuage de points aléatoirement généré selon des distributions normales. Les paramètres de `plot()` doivent pouvoir être modifiés depuis la fonction.
 
 ```{r}
 random_scatter <- function(n, ...) {

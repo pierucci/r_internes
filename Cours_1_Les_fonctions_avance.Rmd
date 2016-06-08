@@ -133,7 +133,7 @@ c2()
 c1()
 ```
 
-Meilleur solution : créer un nouvel environnement juste pour ça, définir `create_counter()` dedans pour que ça devienne son *enclosing environment*, et y stocker `n`. Seuls les compteurs auront accès à `n`.
+Meilleure solution : créer un nouvel environnement juste pour ça, définir `create_counter()` dedans pour que ça devienne son *enclosing environment*, et y stocker `n`. Seuls les compteurs auront accès à `n`.
 
 ```{r}
 # local() permet de créer un nouvel environment

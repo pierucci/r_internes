@@ -246,7 +246,7 @@ f()</pre>
 
 <pre class = 'prettyprint lang-r'>f()</pre>
 
-<pre ># &lt;environment: 0x0314c01c&gt;</pre>
+<pre ># &lt;environment: 0x035fbfd8&gt;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Calling environment</h2></hgroup><article  id="calling-environment" class="smaller ">
 
@@ -269,7 +269,7 @@ f()</pre>
 }
 g()</pre>
 
-<pre ># &lt;environment: 0x0601fe7c&gt;</pre>
+<pre ># &lt;environment: 0x05f935a8&gt;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Le lexical scoping</h2></hgroup><article  id="le-lexical-scoping" class="smaller ">
 
@@ -467,7 +467,8 @@ f(x)</pre>
 <li>Utilisant une partie de leur nom (<em>partial matching</em>)</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>f(f = 1, b = 2) #A noter, le caractère confusiogène de f() la fonction et f le paramètre &quot;raccourci&quot;</pre>
+<pre class = 'prettyprint lang-r'>f(f = 1, b = 2)
+#A noter, le caractère confusiogène de f() la fonction et f le paramètre &quot;raccourci&quot;</pre>
 
 <ul>
 <li>Utilisant leur position dans la définition de la fonction</li>
@@ -476,28 +477,6 @@ f(x)</pre>
 <pre class = 'prettyprint lang-r'>f(1, 2)</pre>
 
 </article></slide><slide class=''><hgroup><h2>Manipulation des arguments</h2></hgroup><article  id="manipulation-des-arguments" class="smaller reduceCode">
-
-<p>La liste des arguments d&#39;une fonction peut être récupérée avec <code>formals()</code>.</p>
-
-<p>Cela permet de retrouver à la fois les arguments, et les valeurs par défaut.</p>
-
-<p>Exemple :</p>
-
-<pre class = 'prettyprint lang-r'>formals(sample)</pre>
-
-<pre ># $x
-# 
-# 
-# $size
-# 
-# 
-# $replace
-# [1] FALSE
-# 
-# $prob
-# NULL</pre>
-
-</article></slide><slide class=''><hgroup><h2>Manipulation des arguments</h2></hgroup><article  id="manipulation-des-arguments-1" class="smaller reduceCode">
 
 <p>Il est possible de tester la présence/absence d&#39;un argument avec <code>missing()</code>. La fonction renvoie <code>TRUE</code> si l&#39;argument n&#39;a pas de valeur (et <code>FALSE</code> sinon).</p>
 
@@ -567,11 +546,11 @@ all_numeric(2, c(1, 2, 3), 4:8)</pre>
 }
 mult_and_resamp(0:5, 10)</pre>
 
-<pre ># [1] 20 40 50 10  0 30</pre>
+<pre ># [1] 40 10 50 30 20  0</pre>
 
 <pre class = 'prettyprint lang-r'>mult_and_resamp(0:2, 2, replace = TRUE, size = 10)</pre>
 
-<pre >#  [1] 4 4 0 2 4 0 2 2 4 2</pre>
+<pre >#  [1] 4 4 2 2 2 4 2 2 4 2</pre>
 
 </article></slide><slide class=''><hgroup><h2>Valeur de retour</h2></hgroup><article  id="valeur-de-retour" class="smaller reduceCode">
 
@@ -669,109 +648,7 @@ do_something_to_x(1:10, mean)</pre>
 
 <pre class = 'prettyprint lang-r'>do_something_to_x(1:10, range)</pre>
 
-<pre ># [1]  1 10</pre>
-
-</article></slide><slide class=''><hgroup><h2>Closures (1)</h2></hgroup><article  id="closures-1" class="smaller ">
-
-<p>Le résultat d&#39;une fonction est un objet. Une fonction est un objet comme un autre.</p>
-
-<p>Une fonction peut donc renvoyer une autre fonction : ce sont les <strong>closures</strong>.</p>
-
-<pre class = 'prettyprint lang-r'>f &lt;- function(x){
-  g &lt;- function(y){
-    x^y
-  }
-}</pre>
-
-<pre class = 'prettyprint lang-r'>carre &lt;- f(2)
-carre(2)</pre>
-
-<pre ># [1] 4</pre>
-
-<pre class = 'prettyprint lang-r'>cube &lt;- f(3)
-cube(2)</pre>
-
-<pre ># [1] 9</pre>
-
-</article></slide><slide class=''><hgroup><h2>Closures (2)</h2></hgroup><article  id="closures-2" class="smaller ">
-
-<p>Un exemple plus appliqué : un rééchantilloneur.</p>
-
-<pre class = 'prettyprint lang-r'>create_resampler &lt;- function(x) {
-  function(n) sample(x, size = n, replace = TRUE)
-}
-rs1 &lt;- create_resampler(1:10)
-rs1(2)</pre>
-
-<pre ># [1] 3 4</pre>
-
-<pre class = 'prettyprint lang-r'>rs1(9)</pre>
-
-<pre ># [1]  2  9  9  4  5  5  2 10  8</pre>
-
-<pre class = 'prettyprint lang-r'>rs2 &lt;- create_resampler(c(&quot;M&quot;, &quot;F&quot;))
-rs2(5)</pre>
-
-<pre ># [1] &quot;M&quot; &quot;F&quot; &quot;M&quot; &quot;F&quot; &quot;F&quot;</pre>
-
-</article></slide><slide class=''><hgroup><h2>Pour combiner les concepts (1)</h2></hgroup><article  id="pour-combiner-les-concepts-1" class="smaller reduceCode">
-
-<p>Closure + <em>enclosing environment</em> + scoping. On fait un compteur.</p>
-
-<pre class = 'prettyprint lang-r'>create_counter &lt;- function() {
-  n &lt;- 0
-  function() {
-    n &lt;&lt;- n + 1
-    return(n)
-  }
-}
-c1 &lt;- create_counter()
-c1()</pre>
-
-<pre ># [1] 1</pre>
-
-<pre class = 'prettyprint lang-r'>c1()</pre>
-
-<pre ># [1] 2</pre>
-
-<p>Le compteur n&#39;est pas partagé car si on appelle à nouveau <code>create_counter()</code>, un second <em>execution environment</em> indépendant est créé.</p>
-
-<pre class = 'prettyprint lang-r'>c2 &lt;- create_counter()
-c2()</pre>
-
-<pre ># [1] 1</pre>
-
-<pre class = 'prettyprint lang-r'>c1()</pre>
-
-<pre ># [1] 3</pre>
-
-</article></slide><slide class=''><hgroup><h2>Pour combiner les concepts (2)</h2></hgroup><article  id="pour-combiner-les-concepts-2" class="smaller reduceCode">
-
-<p>Il faut remonter d&#39;un niveau l&#39;<em>enclosing environment</em> pour partager le compteur.</p>
-
-<pre class = 'prettyprint lang-r'># local() permet de créer un nouvel environment
-create_counter &lt;- local({
-  n &lt;- 0
-  function() {
-    function() {
-      n &lt;&lt;- n + 1
-      return(n)
-    }
-  }
-})
-c1 &lt;- create_counter()
-c1()</pre>
-
-<pre ># [1] 1</pre>
-
-<pre class = 'prettyprint lang-r'>c2 &lt;- create_counter()
-c2()</pre>
-
-<pre ># [1] 2</pre>
-
-<pre class = 'prettyprint lang-r'>c1()</pre>
-
-<pre ># [1] 3</pre></article></slide>
+<pre ># [1]  1 10</pre></article></slide>
 
 
   <slide class="backdrop"></slide>
