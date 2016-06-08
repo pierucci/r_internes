@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Exercices" />
+<meta name="author" content="Encore plus avancé" />
 
 
 <title>Cours 1 : Les fonctions</title>
@@ -116,97 +116,73 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Cours 1 : Les fonctions</h1>
-<h4 class="author"><em>Exercices</em></h4>
+<h4 class="author"><em>Encore plus avancé</em></h4>
 
 </div>
 
 
-<div id="exemple-dutilisation" class="section level1">
-<h1>Exemple d’utilisation</h1>
-<p>Ecrire une fonction qui, à partir d’une variable, effectue les étapes suivantes :</p>
-<ul>
-<li>Affiche le nombre de données manquante s’il y en a ;</li>
-<li>Impute les données manquantes par la moyenne ;</li>
-<li>Représente un histogramme des données après imputation ;</li>
-<li>Et retourne à l’utilisateur un <code>summary()</code> de la variable après imputation.</li>
-</ul>
-<p>Obtenir la dernière valeur d’une mesure :</p>
-<ul>
-<li>A partir de deux vecteurs, <em>mesure</em> et <em>temps</em> ;</li>
-<li>Ces vecteurs ne sont pas nécessairement ordonnés ;</li>
-<li><em>temps</em> contient les temps où les mesures ont été effectuées ;</li>
-<li>retourner la dernière mesure ;</li>
-<li>bonus : ajouter une option pour retourner la première mesure.</li>
-</ul>
-</div>
-<div id="le-lexical-scoping" class="section level1">
-<h1>Le lexical scoping</h1>
-<p>Ecrire une fonction spécifique à un jeu de données. Par exemple à partir du jeu de données <code>infert</code>, une fonction :</p>
-<ul>
-<li>Qui prend comme argument le nom d’une variable ;</li>
-<li>Et retourne la force d’association de cette variable avec la variable <code>case</code> (cas ou témoin) ;</li>
-<li>Sans prendre <code>infert</code> comme argument.</li>
-</ul>
-<p><code>infert</code> est recherché dans l’environnement où <code>f()</code> est définie. Si on appelle <code>f()</code> depuis une fonction où on défini un autre jeu de données <code>infert</code> on risque d’avoir des surprises.</p>
-<p>Exemple : faire une fonction qui rééchantillonne <code>infert</code>, le modifie, et appelle à nouveau <code>assoc_case_infert()</code>.</p>
-<p>Ca ne fonctionne pas car le <code>infert</code> utilisé par la fonction <code>assoc_case_infert()</code> est toujours celui de son <em>enclosing environment</em>, l’environnement global, et pas l’<code>infert</code> de son <em>calling environment</em>, l’<em>execution environment</em> de <code>resample_and_test()</code>.</p>
-</div>
-<div id="manipulation-des-arguments" class="section level1">
-<h1>Manipulation des arguments</h1>
-<p>Ecrire une fonction qui a les proprités suivantes :</p>
-<ul>
-<li>Prend 2 arguments <code>x</code> et <code>y</code> ;</li>
-<li>Représente un nuage de points des arguments ;</li>
-<li><code>x</code> a comme valeur par défault 10 valeurs aléatoires entre 0 et 1 ;</li>
-<li>Si <code>y</code> est manquant alors <code>x</code> est représenté en ordonnée, selon son index en abcisse.</li>
-</ul>
-<p>Autre exercice : pareil, mais si <code>y</code> est manquant il prend les valeurs des index de <code>x</code>.</p>
-<p>Refaire la fonction pour obtenir la dernière valeur d’une mesure dans la section 1, mais en faisant que par défaut la dernière mesure est retournée.</p>
-</div>
-<div id="dot-dot-dot-..." class="section level1">
-<h1>Dot Dot Dot (<code>...</code>)</h1>
-<p>Faire un fonction qui prend comme argument un nombre de points et représente un nuage de points aléatoirement généré selon un distribution normale. Les paramètres de <code>plot()</code> doivent pouvoir être modifiés depuis la fonction.</p>
-<p>Faire une fonction qui à partir d’un nombre arbitraire de <code>t.test()</code> retourne le plus significatif.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
-<div id="valeurs-de-retour-complexes" class="section level2">
-<h2>Valeurs de retour complexes</h2>
-<p>Faire une fonction qui retourne pour une variable :</p>
-<ul>
-<li>Sa moyenne ;</li>
-<li>Son étendue ;</li>
-<li>La comparaison de sa moyenne à 0.</li>
-</ul>
-<p>Faire une fonction qui impute les valeurs manquantes par la moyenne, retourne un vecteur, mais garde la trace de quelles valeurs sont imputées.</p>
-</div>
-</div>
-<div id="une-fonction-argument-dune-fonction" class="section level1">
-<h1>Une fonction argument d’une fonction</h1>
-<p>Reprendre l’exemple précédent, mais utiliser une fonction arbitraire pour faire l’imputation. Du coup la fonction arbitraire prend peut-être d’autres arguments arbitraires ?</p>
-</div>
-<div id="concepts-plus-avances" class="section level1">
-<h1>Concepts plus avancés</h1>
-<p>Censurés de la présentation pour en pas faire trop peur !</p>
-<div id="closures" class="section level2">
-<h2>Closures</h2>
+<p>Concepts plus avancés censurés de la présentation pour ne pas faire trop peur !</p>
+<div id="closures" class="section level1">
+<h1>Closures</h1>
 <p>Le résultat d’une fonction est un objet. Une fonction est un objet comme un autre.</p>
 <p>Une fonction peut donc retourner une autre fonction : ce sont les <strong>closures</strong>.</p>
+<pre class="r"><code>f &lt;- function(x){
+  g &lt;- function(y){
+    x^y
+  }
+}</code></pre>
+<pre class="r"><code>carre &lt;- f(2)
+carre(2)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code>cube &lt;- f(3)
+cube(2)</code></pre>
+<pre><code>## [1] 9</code></pre>
 <p>Un exemple plus appliqué : un rééchantilloneur.</p>
+<pre class="r"><code>create_resampler &lt;- function(x) {
+  function(n) sample(x, size = n, replace = TRUE)
+}
+rs1 &lt;- create_resampler(1:10)
+rs1(2)</code></pre>
+<pre><code>## [1] 3 2</code></pre>
+<pre class="r"><code>rs1(9)</code></pre>
+<pre><code>## [1] 3 6 8 6 7 9 4 4 1</code></pre>
+<pre class="r"><code>rs2 &lt;- create_resampler(c(&quot;M&quot;, &quot;F&quot;))
+rs2(5)</code></pre>
+<pre><code>## [1] &quot;F&quot; &quot;F&quot; &quot;M&quot; &quot;M&quot; &quot;M&quot;</code></pre>
 <p>Ce rééchantilloneur a un problème potentiel causé par la <em>lazy evaluation</em> : <code>x</code> n’est pas évalué à l’execution de <code>create_resampler()</code> car il n’est pas nécessaire au calcul. Il n’est évalué que à l’execution de <code>rs1()</code>. Et s’il a changé entre temps, c’est un problème…</p>
+<pre class="r"><code>ma_distribution &lt;- 1:10
+rs &lt;- create_resampler(ma_distribution)
+
+ma_distribution &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)
+rs(5)</code></pre>
+<pre><code>## [1] &quot;b&quot; &quot;a&quot; &quot;c&quot; &quot;a&quot; &quot;c&quot;</code></pre>
 <p>Il faut donc <em>forcer</em> l’évalution de <code>x</code> dès l’appel de <code>create_resampler()</code>. En pratique il suffit d’ajouter une ligne arbitraire dans <code>create_resampler()</code> qui nécessite l’évaluation de <code>x</code>. Mais pour plus de lisibilité on peut aussi utiliser la fonction <code>force()</code>.</p>
+<pre class="r"><code>create_resampler &lt;- function(x) {
+  x # pour évaluer x, si on veut être plus lisible: force(x)
+  function(n) sample(x, size = n, replace = TRUE)
+}
+
+ma_distribution &lt;- 1:10
+rs &lt;- create_resampler(ma_distribution)
+
+ma_distribution &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)
+rs(5)</code></pre>
+<pre><code>## [1] 8 4 3 6 9</code></pre>
 </div>
-<div id="pour-combiner-les-concepts" class="section level2">
-<h2>Pour combiner les concepts</h2>
+<div id="pour-combiner-les-concepts" class="section level1">
+<h1>Pour combiner les concepts</h1>
 <p>Closure + <em>enclosing environment</em> + scoping. On fait un compteur.</p>
 <p>Pour qu’une fonction puisse stocker une valeur il faut qu’elle la garde dans un environnement :</p>
 <ul>
 <li>Permanent, non détruit entre deux appels de la fonction (donc pas dans l’<em>execution environment</em>) ;</li>
 <li>Et accessible facilement par la fonction.</li>
 </ul>
-<p>L’<em>enclosing environment</em> correspond bien à ces deux critère. Le seul problème est que si lire une variable dans l’<em>enclosing environment</em> est facile (il suffit de l’appeler alors qu’elle n’est pas définie dans l’<em>execution environment</em>), écrire est par contre plus difficile.</p>
+<p>L’<em>enclosing environment</em> correspond bien à ces deux critères. Le seul problème est que si lire une variable dans l’<em>enclosing environment</em> est facile (il suffit de l’appeler alors qu’elle n’est pas définie dans l’<em>execution environment</em>), écrire est par contre plus difficile.</p>
 <p>C’est là qu’on introduit <code>&lt;&lt;-</code>, la <em>super-assignation</em>. Contrairement à <code>&lt;-</code>, l’assignation classique, qui agit ainsi :</p>
 <ul>
 <li><code>x &lt;- 2</code> ;</li>
 <li>Si <code>x</code> existe dans l’environnement, remplacer sa valeur par <code>2</code> ;</li>
-<li>Sinon créer <code>x</code>.</li>
+<li>Sinon créer <code>x</code> dans l’environnement.</li>
 </ul>
 <p><code>&lt;&lt;-</code> agit ainsi :</p>
 <ul>
@@ -215,7 +191,24 @@ $(document).ready(function () {
 <li>Sinon remonter le <em>searchpath</em> jusqu’à trouver une variable nommée <code>x</code>, et remplacer sa valeur.</li>
 </ul>
 <p>On voit donc que comme le premier élément sur le <em>searchpath</em> après l’<em>execution environment</em> est l’<em>enclosing environment</em>, il suffit d’y créer à priori une variable <code>x</code>, puis de la modifier avec <code>&lt;&lt;-</code>.</p>
+<pre class="r"><code>create_counter &lt;- function() {
+  n &lt;- 0
+  function() {
+    n &lt;&lt;- n + 1
+    return(n)
+  }
+}
+c1 &lt;- create_counter()
+c1()</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>c1()</code></pre>
+<pre><code>## [1] 2</code></pre>
 <p>Le compte n’est pas partagé entre les compteurs car si on appelle à nouveau <code>create_counter()</code>, un second <em>execution environment</em> de <code>create_counter()</code> indépendant est créé, avec un nouvel <code>n</code>, initialisé à 0.</p>
+<pre class="r"><code>c2 &lt;- create_counter()
+c2()</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>c1()</code></pre>
+<pre><code>## [1] 3</code></pre>
 <p>Il faut stocker <code>n</code> dans un environement partagé par tous les compteurs créés.</p>
 <ul>
 <li>Les compteurs ont comme <em>enclosing environment</em> l’<em>execution environment</em> de l’appel spécifique de <code>create_counter()</code> qui les a créé ;</li>
@@ -224,14 +217,41 @@ $(document).ready(function () {
 </ul>
 <p>On voit que là pour trouver <code>n</code>, notre compteur doit remonter de deux positions dans le <em>searchpath</em> : d’abord dans l’<em>enclosing environment</em> du compteur, qui est l’<em>execution environment</em> de <code>create_counter()</code>, puis dans l’<em>enclosing environment</em> de <code>create_counter()</code>.</p>
 <p>Solution paresseuse et dangereuse : stocker <code>n</code> dans l’environnement global.</p>
+<pre class="r"><code>n &lt;- 0
+create_counter &lt;- function() {
+  function() {
+    n &lt;&lt;- n + 1
+    return(n)
+  }
+}
+
+c1 &lt;- create_counter()
+c1()</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>c2 &lt;- create_counter()
+c2()</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code>c1()</code></pre>
+<pre><code>## [1] 3</code></pre>
 <p>Meilleur solution : créer un nouvel environnement juste pour ça, définir <code>create_counter()</code> dedans pour que ça devienne son <em>enclosing environment</em>, et y stocker <code>n</code>.</p>
-</div>
-</div>
-<div class="footnotes">
-<hr />
-<ol>
-<li id="fn1"><p>Plus avancé, utilise <code>lapply()</code> (prévu pour la leçon suivante).<a href="#fnref1">↩</a></p></li>
-</ol>
+<pre class="r"><code># local() permet de créer un nouvel environment
+create_counter &lt;- local({
+  n &lt;- 0
+  function() {
+    function() {
+      n &lt;&lt;- n + 1
+      return(n)
+    }
+  }
+})
+c1 &lt;- create_counter()
+c1()</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>c2 &lt;- create_counter()
+c2()</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code>c1()</code></pre>
+<pre><code>## [1] 3</code></pre>
 </div>
 
 

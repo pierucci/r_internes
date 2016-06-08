@@ -1,0 +1,154 @@
+---
+title: "Cours 1 : Les fonctions"
+author: "Encore plus avancé"
+output: html_document
+---
+
+Concepts plus avancés censurés de la présentation pour ne pas faire trop peur !
+
+# Closures
+
+Le résultat d'une fonction est un objet. Une fonction est un objet comme un autre.
+
+Une fonction peut donc retourner une autre fonction : ce sont les **closures**.
+
+```{r}
+f <- function(x){
+  g <- function(y){
+    x^y
+  }
+}
+```
+
+```{r}
+carre <- f(2)
+carre(2)
+
+cube <- f(3)
+cube(2)
+```
+
+Un exemple plus appliqué : un rééchantilloneur.
+```{r}
+create_resampler <- function(x) {
+  function(n) sample(x, size = n, replace = TRUE)
+}
+rs1 <- create_resampler(1:10)
+rs1(2)
+rs1(9)
+rs2 <- create_resampler(c("M", "F"))
+rs2(5)
+```
+
+Ce rééchantilloneur a un problème potentiel causé par la *lazy evaluation* : `x` n'est pas évalué à l'execution de `create_resampler()` car il n'est pas nécessaire au calcul. Il n'est évalué que à l'execution de `rs1()`. Et s'il a changé entre temps, c'est un problème...
+
+```{r}
+ma_distribution <- 1:10
+rs <- create_resampler(ma_distribution)
+
+ma_distribution <- c("a", "b", "c")
+rs(5)
+```
+
+Il faut donc *forcer* l'évalution de `x` dès l'appel de `create_resampler()`. En pratique il suffit d'ajouter une ligne arbitraire dans `create_resampler()` qui nécessite l'évaluation de `x`. Mais pour plus de lisibilité on peut aussi utiliser la fonction `force()`.
+
+```{r}
+create_resampler <- function(x) {
+  x # pour évaluer x, si on veut être plus lisible: force(x)
+  function(n) sample(x, size = n, replace = TRUE)
+}
+
+ma_distribution <- 1:10
+rs <- create_resampler(ma_distribution)
+
+ma_distribution <- c("a", "b", "c")
+rs(5)
+```
+
+# Pour combiner les concepts
+
+Closure + *enclosing environment* + scoping. On fait un compteur.
+
+Pour qu'une fonction puisse stocker une valeur il faut qu'elle la garde dans un environnement :
+
+  * Permanent, non détruit entre deux appels de la fonction (donc pas dans l'_execution environment_) ;
+  * Et accessible facilement par la fonction.
+
+L'*enclosing environment* correspond bien à ces deux critères. Le seul problème est que si lire une variable dans l'*enclosing environment* est facile (il suffit de l'appeler alors qu'elle n'est pas définie dans l'*execution environment*), écrire est par contre plus difficile.
+
+C'est là qu'on introduit `<<-`, la *super-assignation*. Contrairement à `<-`, l'assignation classique, qui agit ainsi :
+  
+  * `x <- 2` ;
+  * Si `x` existe dans l'environnement, remplacer sa valeur par `2` ;
+  * Sinon créer `x` dans l'environnement.
+
+`<<-` agit ainsi :
+
+  * `x <<- 2` ;
+  * Si `x` existe dans l'environnement, remplacer sa valeur par `2` ;
+  * Sinon remonter le _searchpath_ jusqu'à trouver une variable nommée `x`, et remplacer sa valeur.
+  
+On voit donc que comme le premier élément sur le *searchpath* après l'*execution environment* est l'*enclosing environment*, il suffit d'y créer à priori une variable `x`, puis de la modifier avec `<<-`.
+```{r}
+create_counter <- function() {
+  n <- 0
+  function() {
+    n <<- n + 1
+    return(n)
+  }
+}
+c1 <- create_counter()
+c1()
+c1()
+```
+Le compte n'est pas partagé entre les compteurs car si on appelle à nouveau `create_counter()`, un second *execution environment* de `create_counter()` indépendant est créé, avec un nouvel `n`, initialisé à 0.
+```{r}
+c2 <- create_counter()
+c2()
+c1()
+```
+
+Il faut stocker `n` dans un environement partagé par tous les compteurs créés.
+
+  * Les compteurs ont comme _enclosing environment_ l'_execution environment_ de l'appel spécifique de `create_counter()` qui les a créé ;
+  * Par contre tous les appels de `create_counter()` ont le même _enclosing environment_ ;
+  * C'est donc là qu'il faut stocker `n` : dans l'_enclosing environment_ de `create_counter()`.
+  
+On voit que là pour trouver `n`, notre compteur doit remonter de deux positions dans le *searchpath* : d'abord dans l'*enclosing environment* du compteur, qui est l'*execution environment* de `create_counter()`, puis dans l'*enclosing environment* de `create_counter()`.
+  
+Solution paresseuse et dangereuse : stocker `n` dans l'environnement global. C'est embêtant car `n` est trop facilement accessible et modifiable par n'importe quelle autre fonction.
+```{r}
+n <- 0
+create_counter <- function() {
+  function() {
+    n <<- n + 1
+    return(n)
+  }
+}
+
+c1 <- create_counter()
+c1()
+c2 <- create_counter()
+c2()
+c1()
+```
+
+Meilleur solution : créer un nouvel environnement juste pour ça, définir `create_counter()` dedans pour que ça devienne son *enclosing environment*, et y stocker `n`. Seuls les compteurs auront accès à `n`.
+
+```{r}
+# local() permet de créer un nouvel environment
+create_counter <- local({
+  n <- 0
+  function() {
+    function() {
+      n <<- n + 1
+      return(n)
+    }
+  }
+})
+c1 <- create_counter()
+c1()
+c2 <- create_counter()
+c2()
+c1()
+```
