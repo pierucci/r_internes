@@ -354,7 +354,8 @@ f(foo = 1 , bar = 2)
 
 - Utilisant une partie de leur nom (*partial matching*)
 ```{r, results='hide'}
-f(f = 1, b = 2) #A noter, le caractère confusiogène de f() la fonction et f le paramètre "raccourci"
+f(f = 1, b = 2)
+#A noter, le caractère confusiogène de f() la fonction et f le paramètre "raccourci"
 ```
 
 - Utilisant leur position dans la définition de la fonction

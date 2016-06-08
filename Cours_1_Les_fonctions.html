@@ -246,7 +246,7 @@ f()</pre>
 
 <pre class = 'prettyprint lang-r'>f()</pre>
 
-<pre ># &lt;environment: 0x0314b674&gt;</pre>
+<pre ># &lt;environment: 0x0314c01c&gt;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Calling environment</h2></hgroup><article  id="calling-environment" class="smaller ">
 
@@ -269,7 +269,7 @@ f()</pre>
 }
 g()</pre>
 
-<pre ># &lt;environment: 0x06020f94&gt;</pre>
+<pre ># &lt;environment: 0x0601fe7c&gt;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Le lexical scoping</h2></hgroup><article  id="le-lexical-scoping" class="smaller ">
 
@@ -441,7 +441,13 @@ f(x)</pre>
 
 <p>Une fonction peut avoir un nombre important d&#39;arguments. Comment faire lors de l&#39;appel d&#39;une fonction pour attribuer la bonne valeur au bon argument ?</p>
 
-<p><code>R</code> fait appel à trois techniques possibles pour savoir à quel argument on fait référence dans l&#39;appel d&#39;une fonction : - Matching par leur nom complet - Matching par leur nom partiel - Matching par leur position (ordre dans la définition de la fonction)</p>
+<p><code>R</code> fait appel à trois techniques possibles pour savoir à quel argument on fait référence dans l&#39;appel d&#39;une fonction :</p>
+
+<ul>
+<li>Matching par leur nom complet</li>
+<li>Matching par leur nom partiel</li>
+<li>Matching par leur position (ordre dans la définition de la fonction)</li>
+</ul>
 
 </article></slide><slide class=''><hgroup><h2>Les arguments</h2></hgroup><article  id="les-arguments-1" class="smaller ">
 
@@ -561,11 +567,11 @@ all_numeric(2, c(1, 2, 3), 4:8)</pre>
 }
 mult_and_resamp(0:5, 10)</pre>
 
-<pre ># [1] 50 20 40 10 30  0</pre>
+<pre ># [1] 20 40 50 10  0 30</pre>
 
 <pre class = 'prettyprint lang-r'>mult_and_resamp(0:2, 2, replace = TRUE, size = 10)</pre>
 
-<pre >#  [1] 2 0 0 0 0 0 0 4 2 4</pre>
+<pre >#  [1] 4 4 0 2 4 0 2 2 4 2</pre>
 
 </article></slide><slide class=''><hgroup><h2>Valeur de retour</h2></hgroup><article  id="valeur-de-retour" class="smaller reduceCode">
 
@@ -697,16 +703,16 @@ cube(2)</pre>
 rs1 &lt;- create_resampler(1:10)
 rs1(2)</pre>
 
-<pre ># [1] 6 9</pre>
+<pre ># [1] 3 4</pre>
 
 <pre class = 'prettyprint lang-r'>rs1(9)</pre>
 
-<pre ># [1]  9  9  4  3  1  5  7 10  1</pre>
+<pre ># [1]  2  9  9  4  5  5  2 10  8</pre>
 
 <pre class = 'prettyprint lang-r'>rs2 &lt;- create_resampler(c(&quot;M&quot;, &quot;F&quot;))
 rs2(5)</pre>
 
-<pre ># [1] &quot;F&quot; &quot;F&quot; &quot;M&quot; &quot;M&quot; &quot;M&quot;</pre>
+<pre ># [1] &quot;M&quot; &quot;F&quot; &quot;M&quot; &quot;F&quot; &quot;F&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Pour combiner les concepts (1)</h2></hgroup><article  id="pour-combiner-les-concepts-1" class="smaller reduceCode">
 
