@@ -32,6 +32,37 @@ impute_and_describe <- function(x) {
 impute_and_describe(c(rnorm(10), NA))
 ```
 
+Obtenir la dernière valeur d'une mesure :
+
+  * A partir de deux vecteurs, _mesure_ et _temps_ ;
+  * Ces vecteurs ne sont pas nécessairement ordonnés ;
+  * _temps_ contient les temps où les mesures ont été effectuées ;
+  * retourner la dernière mesure ;
+  * bonus : ajouter une option pour retourner la première mesure.
+  
+```{r}
+get_last <- function(x, time) {
+  x[time == max(time)]
+}
+(m <- rnorm(5))
+(ti <- runif(5))
+get_last(m, ti)
+
+get_last_or_first <- function(x, time, first) {
+  if (first) {
+    x[time == min(time)]
+  } else {
+    x[time == max(time)]
+  }
+}
+get_last_or_first(m, ti, first = TRUE)
+
+# notez que ces fonctions ont un problème potentiel :
+# si plusieurs mesures correspondent à la dernière mesure
+# elles ne retournent pas une valeur unique mais un vecteur
+```
+
+
 # Le lexical scoping
 
 Ecrire une fonction spécifique à un jeu de données. Par exemple à partir du jeu de données `infert`, une fonction :
@@ -101,6 +132,18 @@ Autre exercice : pareil, mais si `y` est manquant il prend les valeurs des index
 ```{r}
 myplot2 <- function(x = runif(10), y = seq_along(x)) {
   plot(x, y)
+}
+```
+
+Refaire la fonction pour obtenir la dernière valeur d'une mesure dans la section 1, mais en faisant que par défaut la dernière mesure est retournée.
+
+```{r}
+get_last_or_first <- function(x, time, first = FALSE) {
+  if (first) {
+    x[time == min(time)]
+  } else {
+    x[time == max(time)]
+  }
 }
 ```
 
