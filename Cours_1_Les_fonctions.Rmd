@@ -365,17 +365,6 @@ f(1, 2)
 
 ## Manipulation des arguments {.reduceCode}
 
-La liste des arguments d'une fonction peut être récupérée avec `formals()`.
-
-Cela permet de retrouver à la fois les arguments, et les valeurs par défaut. 
-
-Exemple : 
-```{r}
-formals(sample)
-```
-
-## Manipulation des arguments {.reduceCode}
-
 Il est possible de tester la présence/absence d'un argument avec `missing()`.
 La fonction renvoie `TRUE` si l'argument n'a pas de valeur (et `FALSE` sinon).
 
