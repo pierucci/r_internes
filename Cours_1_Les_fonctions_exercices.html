@@ -143,20 +143,23 @@ $(document).ready(function () {
 <h1>Le lexical scoping</h1>
 <p>Ecrire une fonction spécifique à un jeu de données. Par exemple à partir du jeu de données <code>infert</code>, une fonction <code>assoc_case_infert()</code> :</p>
 <ul>
-<li>Qui prend comme argument le nom d’une variable ;</li>
+<li>Qui prend comme argument le nom d’une colonne ;</li>
 <li>Et retourne la force d’association de cette variable avec la variable <code>case</code> (cas ou témoin) ;</li>
 <li>Sans prendre <code>infert</code> comme argument.</li>
 </ul>
+<p><em>Conseils : utiliser <code>t.test()</code> et <code>chisq.test()</code> pour déterminer la force de l’association.</em></p>
 <p><code>infert</code> est recherché dans l’environnement où <code>assoc_case_infert()</code> est définie. Si on appelle la fonction depuis une autre fonction où on a défini un autre jeu de données <code>infert</code> on risque d’avoir des surprises.</p>
 <p>Faire une nouvelle fonction <code>resample_and_test()</code> qui :</p>
 <ul>
 <li>Rééchantillonne <code>infert</code>, et nomme la version modifiée <code>infert</code> ;</li>
 <li>Et appelle à nouveau <code>assoc_case_infert()</code> (donc au sein de la nouvelle fonction).</li>
 </ul>
+<p><em>Conseils : utiliser <code>sample()</code> pour effectuer le rééchantillonage.</em></p>
 <p>Ca ne fonctionne pas car le <code>infert</code> utilisé par la fonction <code>assoc_case_infert()</code> est toujours celui de son <em>enclosing environment</em>, l’environnement global, et pas l’<code>infert</code> de l’<em>execution environment</em> de <code>resample_and_test()</code>.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
 </div>
 <div id="manipulation-des-arguments" class="section level1">
 <h1>Manipulation des arguments</h1>
+<p>Refaire la fonction pour obtenir la dernière valeur d’une mesure dans la section 1, mais en faisant que par défaut la dernière mesure est retournée.</p>
 <p>Ecrire une fonction qui a les proprités suivantes :</p>
 <ul>
 <li>Prend 2 arguments <code>x</code> et <code>y</code> ;</li>
@@ -164,12 +167,13 @@ $(document).ready(function () {
 <li><code>x</code> a comme valeur par défault 10 valeurs aléatoires entre 0 et 1 ;</li>
 <li>Si <code>y</code> est manquant alors <code>x</code> est représenté en ordonnée, selon son index en abcisse.</li>
 </ul>
+<p><em>Conseil : utliliser la fonction <code>plot()</code> pour représenter le nuage de points et <code>runif()</code> pour générer les valeurs aléatoires.</em></p>
 <p>Autre exercice : pareil, mais si <code>y</code> est manquant il prend les valeurs des index de <code>x</code>.</p>
-<p>Refaire la fonction pour obtenir la dernière valeur d’une mesure dans la section 1, mais en faisant que par défaut la dernière mesure est retournée.</p>
 </div>
 <div id="dot-dot-dot-..." class="section level1">
 <h1>Dot Dot Dot (<code>...</code>)</h1>
-<p>Faire un fonction qui prend comme argument un nombre de points et représente un nuage de points aléatoirement généré selon un distribution normale. Les paramètres de <code>plot()</code> doivent pouvoir être modifiés depuis la fonction.</p>
+<p>Faire un fonction qui prend comme argument un nombre de points et représente un nuage de points aléatoirement généré selon des distributions normales. Les paramètres de <code>plot()</code> doivent pouvoir être modifiés depuis la fonction.</p>
+<p><em>Conseil : utliliser la fonction <code>rnorm()</code> pour générer les valeurs aléatoires.</em></p>
 <p>Faire une fonction qui à partir d’un nombre arbitraire de <code>t.test()</code> retourne le plus significatif.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
 <div id="valeurs-de-retour-complexes" class="section level2">
 <h2>Valeurs de retour complexes</h2>

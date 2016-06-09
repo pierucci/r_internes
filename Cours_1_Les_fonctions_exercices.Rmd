@@ -67,9 +67,11 @@ get_last_or_first(m, ti, first = TRUE)
 
 Ecrire une fonction spécifique à un jeu de données. Par exemple à partir du jeu de données `infert`, une fonction `assoc_case_infert()` :
 
-  * Qui prend comme argument le nom d'une variable ;
+  * Qui prend comme argument le nom d'une colonne ;
   * Et retourne la force d'association de cette variable avec la variable `case` (cas ou témoin) ;
   * Sans prendre `infert` comme argument.
+
+*Conseils : utiliser `t.test()` et `chisq.test()` pour déterminer la force de l'association.*
 
 ```{r}
 assoc_case_infert <- function(x) {
@@ -96,6 +98,8 @@ Faire une nouvelle fonction `resample_and_test()` qui :
   * Rééchantillonne `infert`, et nomme la version modifiée `infert` ;
   * Et appelle à nouveau `assoc_case_infert()` (donc au sein de la nouvelle fonction).
 
+*Conseils : utiliser `sample()` pour effectuer le rééchantillonage.*
+
 ```{r}
 resample_and_test <- function(x) {
   resamp <- sample(
@@ -115,6 +119,16 @@ Ca ne fonctionne pas car le `infert` utilisé par la fonction `assoc_case_infert
 
 Refaire la fonction pour obtenir la dernière valeur d'une mesure dans la section 1, mais en faisant que par défaut la dernière mesure est retournée.
 
+```{r}
+get_last_or_first <- function(x, time, first = FALSE) {
+  if (first) {
+    x[time == min(time)]
+  } else {
+    x[time == max(time)]
+  }
+}
+```
+
 Ecrire une fonction qui a les proprités suivantes :
 
   * Prend 2 arguments `x` et `y` ;
@@ -122,6 +136,8 @@ Ecrire une fonction qui a les proprités suivantes :
   * `x` a comme valeur par défault 10 valeurs aléatoires entre 0 et 1 ;
   * Si `y` est manquant alors `x` est représenté en ordonnée, selon son index en abcisse.
   
+*Conseil : utliliser la fonction `plot()` pour représenter le nuage de points et `runif()` pour générer les valeurs aléatoires.*
+
 ```{r}
 myplot1 <- function(x = runif(10), y) {
   if(missing(y)) {
@@ -140,20 +156,11 @@ myplot2 <- function(x = runif(10), y = seq_along(x)) {
 }
 ```
 
-
-```{r}
-get_last_or_first <- function(x, time, first = FALSE) {
-  if (first) {
-    x[time == min(time)]
-  } else {
-    x[time == max(time)]
-  }
-}
-```
-
 # Dot Dot Dot (`...`)
 
 Faire un fonction qui prend comme argument un nombre de points et représente un nuage de points aléatoirement généré selon des distributions normales. Les paramètres de `plot()` doivent pouvoir être modifiés depuis la fonction.
+
+*Conseil : utliliser la fonction `rnorm()` pour générer les valeurs aléatoires.*
 
 ```{r}
 random_scatter <- function(n, ...) {
