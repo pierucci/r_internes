@@ -202,7 +202,9 @@ Faire une fonction qui retourne pour une variable :
   * Sa moyenne ;
   * Son étendue ;
   * La comparaison de sa moyenne à 0.
-  
+
+*Conseil : utiliser les fonctions `mean()`, `range()` et `t.test()` (cette dernière avec un seul argument).*
+
 ```{r}
 some_stats <- function(x) {
   list(
@@ -231,7 +233,7 @@ attr(test, "imputed")
 
 # Une fonction argument d'une fonction
 
-Reprendre l'exemple précédent, mais utiliser une fonction arbitraire pour faire l'imputation. Du coup la fonction arbitraire prend peut-être d'autres arguments arbitraires ?
+Reprendre l'exemple précédent, mais utiliser une fonction arbitraire fournie par l'utilisateur pour faire l'imputation. Du coup la fonction arbitraire prend peut-être d'autres arguments arbitraires ?
 
 ```{r}
 impute_generalized <- function(x, f, ...) {
