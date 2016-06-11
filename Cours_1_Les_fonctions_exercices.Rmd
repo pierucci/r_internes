@@ -1,11 +1,11 @@
 ---
-title: "Cours 1 : Les fonctions"
+title: 'Cours 1 : Les fonctions'
 author: "Exercices"
-output: html_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(include = FALSE)
+knitr::opts_chunk$set(include = TRUE)
 ```
 
 # Exemple d'utilisation
