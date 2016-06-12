@@ -1,0 +1,186 @@
+---
+title: 'Cours 2 : Les boucles'
+author: "Exercices"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(include = TRUE)
+```
+
+Pour ces exemples on chargera le package `ggplot2` car il contient `economics`, les données qu'on utilisera en exemple.
+
+```{r}
+library(ggplot2)
+tab <- economics
+```
+
+On prépare les données en créant des variables année et mois à partir de la date avec le package `lubridate`.
+
+```{r}
+library(lubridate)
+tab$annee <- year(tab$date)
+tab$mois <- month(tab$date)
+```
+
+# Les boucles `for`
+
+Si on souhaite obtenir des données à partir d'une année précise, un approche est de travailler sur un subset d'une année. Par exemple pour `pce`, personal consumption expenditures, in billions of dollars :
+
+```{r}
+temp <- tab$pce[tab$annee == 1967]
+
+mean(temp)
+```
+
+Mais effectuer cette opération année par année est laborieux. On utilise donc une boucle :
+
+```{r}
+annees <- 1967:1980
+
+for(i in annees){
+  temp <- tab$pce[tab$annee == i]  
+  mean(temp)
+}
+```
+
+Toutefois cette boucle n'affiche rien. C'est parceque le contenu de la boucle n'est pas automatiquement "printé".^[Appeler `print` automatiquement est le comportement par défaut de `R` dans la console, et les utilisateurs pourraient penser que c'est habituel. En réalité c'est une exception, la règle est de ne pas appeler `print`.] Cette nuance est très importante, surtout pour des objets dont on oublie qu'ils ont besoin de passer par `print` pour être affichés (en particulier les graphiques de `ggplot2`).
+
+```{r}
+for(i in annees){
+  temp <- tab$pce[tab$annee == i]  
+  print(mean(temp))
+}
+```
+
+On peut vouloir stocker le résultat au lieu de juste l'afficher dans la console.
+
+```{r}
+output <- numeric()
+for(i in annees){
+  temp <- tab$pce[tab$annee == i]  
+  output <- c(output, mean(temp))
+}
+
+output
+```
+
+Si on souhaite découper le jeu de données en tables mensuelles on peut utiliser des doubles boucles : d'abord par année, puis par mois.
+
+```{r}
+# dossier pour les tables crées
+dir.create("./exercice_temp")
+
+for(i in 1970:1971){
+  yr <- tab[tab$annee == i, ]
+  
+  for(j in 1:12){
+    temp <- yr[yr$mois == j, ]
+    
+    file_name <- paste0(
+      "./exercice_temp/donnees_",
+      i,
+      "_",
+      month.name[j],
+      ".csv")
+    
+    write.csv2(x = temp, file = file_name, row.names = FALSE)
+  }
+}
+```
+
+# Les `lapply`
+
+Si on souhaite faire l'opération inverse il faut donc lire une série de table, puis les concaténer. Le problème est où stocker la série de table ? Il n'est pas très pratique de créer une série d'objets dans l'environnement global.
+
+C'est là que les listes deviennent pratiques : on peut tout mettre dans une liste de tables. C'est possible de faire ça dans une boucle `for`, mais `lapply` est encore plus pratique.
+
+```{r}
+fichiers <- list.files("./exercice_temp")
+head(fichiers)
+fichiers <- file.path("./exercice_temp", fichiers)
+head(fichiers)
+
+list_tables <- lapply(fichiers, read.csv2)
+head(list_tables)
+
+for (i in 1:length(list_tables)) {
+  if (i == 1) {
+    result <- list_tables[[i]]
+  } else {
+    result <- rbind(
+      result,
+      list_tables[[i]]
+    )
+  }
+}
+
+head(result)
+```
+
+# Les `apply`
+
+Pour appliquer ligne à ligne une fonction sur une table (ou colonne par colonne).
+
+```{r}
+x <- data.frame(
+  x1 = c(rep(3, 7), NA),
+  x2 = c(4:2, NA, 2:4, NA)
+)
+x
+```
+
+Par exemple pour calculer une moyenne par ligne. On peut passer tous les arguments qu'on veut à `mean` par l'intermédiaire de la fonction `apply`, par exemple ici `na.rm = TRUE`.
+
+```{r}
+apply(x, 1, mean)
+apply(x, 1, mean, na.rm = TRUE)
+```
+
+Il est possible d'utiliser une fonction qu'on a écrit avec `apply`. ^[Avec `lapply` aussi d'ailleurs.] Par exemple pour compter les données manquantes par variables :
+
+```{r}
+n_na <- function(x) {
+  return(sum(is.na(x)))
+}
+apply(x, 2, n_na)
+```
+
+Ou faire un LOCF :
+
+```{r}
+locf <- function(x) {
+  x_ok <- na.omit(x)
+  if (length(x_ok) > 0) {
+    return(x_ok[length(x_ok)])
+  } else {
+    return(NA)
+  }
+}
+
+x$x3 <- apply(x, 1, locf)
+x
+```
+
+# Pour aller plus loin
+
+Si on connait la longueur du résultat, on peut créer le vecteur de résultat d'avance et le peupler au fur et à mesure. Cette approche a l'avantage d'être calculée beaucoup plus rapidement. Par contre comme on ne boucle plus sur `annees` il faut modifier un peu le code.
+
+```{r}
+output <- numeric(length = length(annees))
+
+for(i in 1:length(annees)){
+  temp <- tab$pce[tab$annee == annees[i]]  
+  output[i] <- mean(temp, na.rm = TRUE)
+}
+
+output
+```
+
+Dans l'exemple avec `lapply` on peut éviter l'appel à la boucle `for` avec cette opération magique :
+
+```{r}
+result <- Reduce(rbind, list_tables)
+head(list_tables)
+```
+

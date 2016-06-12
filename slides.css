@@ -2,6 +2,21 @@ html {
   line-height: 1.0;
 }
 
+h2 {
+font-size: 45px;
+letter-spacing: -2px;
+color: #08088A;
+}
+
+slides > slide > hgroup + article {
+margin-top: 10px;
+}
+
+pre {
+  width: 100%;
+  left: 0px;
+}
+
 #cover img { 
   max-width:  200px; 
 }

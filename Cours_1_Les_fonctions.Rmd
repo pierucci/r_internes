@@ -1,9 +1,10 @@
 ---
 title: 'Cours 1 : Les fonctions'
-output: 
+output:
   ioslides_presentation:
-    smaller : true
-    css : slides.css
+    css: slides.css
+    smaller: yes
+  beamer_presentation: default
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, comment = "#")
 
 La **TRES** grande majorité des informations données ici sont issues du livre de Hadley Wickham : **Advanced R**.
 
-Clairement la référence (en Anglais !) en "vulgarisation" des fonctionnalités avancées de R.
+Clairement la référence (en Anglais !) en "vulgarisation" des fonctionnalités avancées de `R`.
 
 <div class="centered">
 ![](img/AdvancedR.jpg)
@@ -26,8 +27,8 @@ Livre consultable intégralement en ligne, ou achetable sur internet (Amazon, et
 
 ## Une fonction : présentation simple
 
-Dans R, **une fonction est un objet**, au même titre qu'un vecteur, un dataframe, une liste...
-Dans R, **tout est fonction dans R**, y compris '`+`' ou '`(`' ou encore '`if`'.
+Dans `R`, **une fonction est un objet**, au même titre qu'un vecteur, un dataframe, une liste...
+Dans `R`, **tout est fonction dans `R`**, y compris '`+`' ou '`(`' ou encore '`if`'.
 
 Une fonction permet de créer une version abstraite et réutilisable d'une solution que l'on souhaite appliquer à un problème donné.
 
@@ -126,7 +127,7 @@ Chaque fonction utilise 3 environnements : *enclosing*, *execution*, *calling*.
 
 ## Execution environment
 
-Quand une fonction est lancée, le code contenu dans le corps est éxécuté dans un nouvel environnement, créé *de novo*.
+Quand une fonction est lancée, le code contenu dans le corps est executé dans un nouvel environnement, créé *de novo*.
 
 Sauf exception, cet environnement est détruit et les données sont perdues quand la fonction est finie.
 
@@ -187,6 +188,7 @@ g()
 
 Ensemble de règles permettant à `R` de faire correspondre une valeur à un symbole.
 ```{r}
+# x est le symbole, 10 est la valeur
 x <- 10
 f <- function() {
   x <- 20
@@ -195,32 +197,147 @@ f <- function() {
 
 x
 f()
-  
 ```
 
-## Le lexical scoping
+## Le lexical scoping en détails (1/4)
+### Parcours des environnements
 
-- Pacours des environnements
+Quand une variable n'est pas définie directement dans l'environnement de la fonction (*execution environment*), `R` va la chercher ailleurs.
 
-- Fonctions VS variables
+Plus précisement, `R` va remonter progressivement le `searchpaths()` à la recherche d'une correspondance avec une variable/fonction portant ce nom.
 
-- Variables éphémères
+Ici, la variable `x` est définie dans l'environnement de la fonction, donc R utilise cette correspondance :
+```{r}
+f <- function() {
+  x <- 1
+  x * 2
+}
 
-- Evaluation à l'exécution
+f()
+```
 
-Dynamic lookup + lazy evaluation
+## Le lexical scoping en détails (1/4)
+Ici, la variable `x` n'est pas définie dans l'environnement de la fonction, mais dans son *enclosing environment*, l'environnement global. 
+
+A l'exécution de la fonction `f`, `R` va d'abord chercher une correspondance pour `x` dans l'environnement de la fonction, puis va remonter à son *enclosing environment*, où il trouve une correspondance.
+```{r}
+x <- 10
+f <- function() {
+  print(x)
+}
+
+f()
+```
+
+## Le lexical scoping en détails (2/4)
+### Fonctions VS variables
+
+Une fonction et une variable, nommée à l'identique, ne sont pour autant pas les mêmes objets.
+Ainsi, il est possible de manipuler des fonctions et des variables avec le même nom.
+
+En fonction du contexte (appel d'une variable ou d'une fonction), `R` va chercher dans le type d'objet adéquat.
+
+**ATTENTION : c'est pratique, mais c'est une potentielle source d'erreurs** (risque de confusion)
+
+Ici, on crée un variable min correspondant à un vecteur
+```{r}
+min <- c(5:10)
+min
+```
+
+`R` fait bien la distinction entre la fonction min() et la variable min
+```{r}
+min(min)
+```
+
+## Le lexical scoping en détails (3/4) {.reduceCode}
+### Variables éphémères
+
+Les variables définies dans l'environnement de la fonction n'existent et/ou ne sont manipulées que pendant la durée de l'exécution de la fonction, puis disparaissent à la fin de l'exécution.
+
+Exemple : 
+```{r}
+f <- function() {
+  x <- 1
+  x * 2
+}
+```
+
+Appels successifs de la fonction : x est créé, manipulé, puis détruit à chaque exécution
+```{r}
+f()
+f()
+```
+
+## Le lexical scoping en détails (4/4) {.reduceCode}
+### Evaluation à l'exécution
+
+Les différentes variables utilisées par une fonction ne sont pas évalués lorsque la fonction est crée.
+L'ensemble de ces éléments sont évaluée au **moment où la fonction est exécutée**.
+
+Par conséquent, la valeur prise par une variable dans une fonction peut varier en fonction d'éléments extérieurs à la fonction (**attention, danger !**).
+
+Exemple : 
+```{r}
+x <- 10
+f <- function() {
+ x^2
+}
+
+f()
+
+x <- 100
+f()
+```
 
 ## La gestion des arguments
 
-- Les arguments (formels et valeurs remplacées par exécution : appels)
-- Les valeurs par défaut
+### Les arguments d'une fonction
+
+Les arguments sont simplement **les paramètres d'une fonction**, définis et prévus au moment de sa création (on parle d'arguments *formels*). Une fois créé, on ne peut passer à la fonction que les arguments prévus.
+ 
+Ici, `x` et `y` sont les arguements formels de `f` :
+```{r}
+f <- function(x, y) {
+  # blah blah blah
+}
+```
+
+Attention, le terme "arguments"" peut aussi faire référence aux **valeurs concrètes des paramètres d'une fonction** (on parle d'arguments **d'appel**). 
+
+Ici, la fonction `f` est appelé en lui passant les arguments `10` et `20` :
+```{r eval=F}
+f(x = 10, y = 20)
+```
+
+
+## La gestion des arguments {.reduceCode}
+### Les valeurs par défaut
+
+Il est possible d'attribuer à un argument une valeur par défaut, et donc de le rendre optionnel :
+
+- si une valeur est précisée lors de l'appel de la fonction, cette valeur sera utilisée
+- si aucune valeur n'est donnée lors de l'appel, la valeur par défaut sera utilisée
+
+```{r}
+f <- function(x, more = FALSE) {
+  print(length(x))
+  if (more) print(class(x))
+}
+x <- c(1:5)
+f(x)
+f(x, more = TRUE)
+```
 
 ## Les arguments
 
-- Par leur nom complet
-- Par leur nom partiel
-- Par leur position (ordre dans la définition de la fonction)
+Une fonction peut avoir un nombre important d'arguments. Comment faire lors de l'appel d'une fonction pour attribuer la bonne valeur au bon argument ?
 
+`R` fait appel à trois techniques possibles pour savoir à quel argument on fait référence dans l'appel d'une fonction :
+
+- Matching par leur nom complet
+- Matching par leur nom partiel
+- Matching par leur position (ordre dans la définition de la fonction)
 
 ## Les arguments
 ```{r}
@@ -239,6 +356,7 @@ f(foo = 1 , bar = 2)
 - Utilisant une partie de leur nom (*partial matching*)
 ```{r, results='hide'}
 f(f = 1, b = 2)
+#A noter, le caractère confusiogène de f() la fonction et f le paramètre "raccourci"
 ```
 
 - Utilisant leur position dans la définition de la fonction
@@ -248,11 +366,25 @@ f(1, 2)
 
 ## Manipulation des arguments {.reduceCode}
 
-Récupération de la liste des arguments avec `formals()`.
+Il est possible de tester la présence/absence d'un argument avec `missing()`.
+La fonction renvoie `TRUE` si l'argument n'a pas de valeur (et `FALSE` sinon).
+
+Attention : `NULL` ou `NA` sont bien des valeurs...
+
 ```{r}
-formals(sample)
+f <- function(x, y) {
+  if (missing(y)) {
+    return("La valeur y doit être précisée")
+  }
+  return("Les valeurs de x et y sont précisées")
+}
 ```
-Test sur la présence/absence d'un argument avec `missing()`.
+
+```{r}
+f(x = "foo", y = "bar")
+f(x = "foo")
+f(x = "foo", y = NULL)
+```
 
 ## Lazy evaluation
 L'évaluation d'un argument ne se fait qu'à l'instant *t* où l'argument est utilisé dans le corps de la fonction (et donc à l'instant *t* où l'évaluation devient nécessaire).
@@ -374,81 +506,4 @@ do_something_to_x <- function(x, func) {
 }
 do_something_to_x(1:10, mean)
 do_something_to_x(1:10, range)
-```
-
-## Closures (1)
-Le résultat d'une fonction est un objet. Une fonction est un objet comme un autre.
-
-Une fonction peut donc renvoyer une autre fonction : ce sont les **closures**.
-```{r}
-f <- function(x){
-  g <- function(y){
-    x^y
-  }
-}
-```
-
-```{r}
-carre <- f(2)
-carre(2)
-
-cube <- f(3)
-cube(2)
-```
-
-## Closures (2)
-
-Un exemple plus appliqué : un rééchantilloneur.
-```{r}
-create_resampler <- function(x) {
-  function(n) sample(x, size = n, replace = TRUE)
-}
-rs1 <- create_resampler(1:10)
-rs1(2)
-rs1(9)
-rs2 <- create_resampler(c("M", "F"))
-rs2(5)
-```
-
-## Pour combiner les concepts (1) {.reduceCode}
-
-Closure + *enclosing environment* + scoping. On fait un compteur.
-```{r}
-create_counter <- function() {
-  n <- 0
-  function() {
-    n <<- n + 1
-    return(n)
-  }
-}
-c1 <- create_counter()
-c1()
-c1()
-```
-Le compteur n'est pas partagé car si on appelle à nouveau `create_counter()`, un second *execution environment* indépendant est créé.
-```{r}
-c2 <- create_counter()
-c2()
-c1()
-```
-
-## Pour combiner les concepts (2) {.reduceCode}
-
-Il faut remonter d'un niveau l'*enclosing environment* pour partager le compteur.
-```{r}
-# local() permet de créer un nouvel environment
-create_counter <- local({
-  n <- 0
-  function() {
-    function() {
-      n <<- n + 1
-      return(n)
-    }
-  }
-})
-c1 <- create_counter()
-c1()
-c2 <- create_counter()
-c2()
-c1()
 ```
