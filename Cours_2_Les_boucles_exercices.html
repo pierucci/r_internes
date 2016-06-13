@@ -146,7 +146,7 @@ head(tab[c(&quot;date&quot;, &quot;annee&quot;, &quot;mois&quot;)])</code></pre>
 ## 4 1967-10-01  1967   10
 ## 5 1967-11-01  1967   11
 ## 6 1967-12-01  1967   12</code></pre>
-<p>Si on souhaite obtenir des données à partir d’une année précise, un approche est de travailler sur un subset d’une année. Par exemple pour <code>pce</code>, personal consumption expenditures, in billions of dollars :</p>
+<p>Si on souhaite obtenir des données à partir d’une année précise, une approche est de travailler sur un subset d’une année. Par exemple pour <code>pce</code>, personal consumption expenditures, in billions of dollars :</p>
 <pre class="r"><code>temp &lt;- tab$pce[tab$annee == 1967]
 
 mean(temp)</code></pre>
@@ -269,20 +269,9 @@ lapply(X = vecteur, FUN = exp)</code></pre>
 </ol>
 <p>Si on souhaite faire l’opération inverse il faut donc lire une série de table, puis les concaténer. Le problème est où stocker la série de table ? Il n’est pas très pratique de créer une série d’objets dans l’environnement global.</p>
 <p>C’est là que les listes deviennent pratiques : on peut tout mettre dans une liste de tables. C’est possible de faire ça dans une boucle <code>for</code>, mais <code>lapply</code> est encore plus pratique.</p>
-<pre class="r"><code>fichiers &lt;- list.files(&quot;./exercice_temp&quot;)
-head(fichiers)</code></pre>
-<pre><code>## [1] &quot;donnees_1970_April.csv&quot;    &quot;donnees_1970_August.csv&quot;  
-## [3] &quot;donnees_1970_December.csv&quot; &quot;donnees_1970_February.csv&quot;
-## [5] &quot;donnees_1970_January.csv&quot;  &quot;donnees_1970_July.csv&quot;</code></pre>
-<pre class="r"><code>fichiers &lt;- file.path(&quot;./exercice_temp&quot;, fichiers)
-head(fichiers)</code></pre>
-<pre><code>## [1] &quot;./exercice_temp/donnees_1970_April.csv&quot;   
-## [2] &quot;./exercice_temp/donnees_1970_August.csv&quot;  
-## [3] &quot;./exercice_temp/donnees_1970_December.csv&quot;
-## [4] &quot;./exercice_temp/donnees_1970_February.csv&quot;
-## [5] &quot;./exercice_temp/donnees_1970_January.csv&quot; 
-## [6] &quot;./exercice_temp/donnees_1970_July.csv&quot;</code></pre>
-<pre class="r"><code>list_tables &lt;- lapply(fichiers, read.csv2)
+<pre class="r"><code>fichiers &lt;- list.files(&quot;./exercice_temp/&quot;, full.names = TRUE)
+
+list_tables &lt;- lapply(fichiers, read.csv2)
 head(list_tables)</code></pre>
 <pre><code>## [[1]]
 ##         date pce    pop psavert uempmed unemploy annee mois

@@ -146,13 +146,7 @@ Si on souhaite faire l'opération inverse il faut donc lire une série de table,
 C'est là que les listes deviennent pratiques : on peut tout mettre dans une liste de tables. C'est possible de faire ça dans une boucle `for`, mais `lapply` est encore plus pratique.
 
 ```{r}
-fichiers <- list.files("./exercice_temp")
-head(fichiers)
-fichiers <- file.path("./exercice_temp", fichiers)
-head(fichiers)
-
-## Au passage, on obtient la même chose avec :
-fichiers <- list.files("./exercice_temp/", full.names = T)
+fichiers <- list.files("./exercice_temp/", full.names = TRUE)
 
 list_tables <- lapply(fichiers, read.csv2)
 head(list_tables)
