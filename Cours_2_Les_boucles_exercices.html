@@ -298,18 +298,18 @@ head(result)</code></pre>
 <div id="les-apply" class="section level1">
 <h1>Les <code>apply</code></h1>
 <p>Pour appliquer ligne à ligne une fonction sur une table (ou colonne par colonne). Un <code>apply</code> est construit de la façon suivante :</p>
-<pre class="r"><code>tab &lt;- data.frame(
+<pre class="r"><code>test &lt;- data.frame(
   x = 1:2,
   y = 3:4
 )
 
-tab</code></pre>
+test</code></pre>
 <pre><code>##   x y
 ## 1 1 3
 ## 2 2 4</code></pre>
-<pre class="r"><code>apply(X = tab, MARGIN = 1, FUN = sum)</code></pre>
+<pre class="r"><code>apply(X = test, MARGIN = 1, FUN = sum)</code></pre>
 <pre><code>## [1] 4 6</code></pre>
-<pre class="r"><code>apply(X = tab, MARGIN = 2, FUN = sum)</code></pre>
+<pre class="r"><code>apply(X = test, MARGIN = 2, FUN = sum)</code></pre>
 <pre><code>## x y 
 ## 3 7</code></pre>
 <ul>
@@ -372,50 +372,11 @@ x</code></pre>
 for(i in 1:length(annees)){
   temp &lt;- tab$pce[tab$annee == annees[i]]  
   output[i] &lt;- mean(temp, na.rm = TRUE)
-}</code></pre>
-<pre><code>## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
+}
 
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA
-
-## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
-## logical: returning NA</code></pre>
-<pre class="r"><code>output</code></pre>
-<pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
+output</code></pre>
+<pre><code>##  [1]  515.1667  557.4583  604.4833  647.6917  701.0000  769.4333  851.1417
+##  [8]  932.0000 1032.7667 1150.1667 1276.6750 1426.1750 1589.4833 1754.6250</code></pre>
 <p>Dans l’exemple avec <code>lapply</code> on peut éviter l’appel à la boucle <code>for</code> avec cette opération magique :</p>
 <pre class="r"><code>result &lt;- Reduce(rbind, list_tables)
 head(list_tables)</code></pre>

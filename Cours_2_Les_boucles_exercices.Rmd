@@ -152,15 +152,15 @@ head(result)
 Pour appliquer ligne à ligne une fonction sur une table (ou colonne par colonne). Un `apply` est construit de la façon suivante :
 
 ```{r}
-tab <- data.frame(
+test <- data.frame(
   x = 1:2,
   y = 3:4
 )
 
-tab
+test
 
-apply(X = tab, MARGIN = 1, FUN = sum)
-apply(X = tab, MARGIN = 2, FUN = sum)
+apply(X = test, MARGIN = 1, FUN = sum)
+apply(X = test, MARGIN = 2, FUN = sum)
 ```
 
   * `apply` est fait pour travailler sur des tables ;
