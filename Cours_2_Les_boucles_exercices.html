@@ -123,23 +123,54 @@ $(document).ready(function () {
 
 <p>Pour ces exemples on chargera le package <code>ggplot2</code> car il contient <code>economics</code>, les données qu’on utilisera en exemple.</p>
 <pre class="r"><code>library(ggplot2)
-dt &lt;- economics</code></pre>
-<p>On prépare les données en créant une variable année à partir de la date.</p>
-<pre class="r"><code>dt$annee &lt;- format(dt$date,&quot;%Y&quot;)</code></pre>
+tab &lt;- economics</code></pre>
+<p>On prépare les données en créant des variables année et mois à partir de la date avec le package <code>lubridate</code>.</p>
+<pre class="r"><code>library(lubridate)</code></pre>
+<pre><code>## 
+## Attaching package: 'lubridate'</code></pre>
+<pre><code>## The following object is masked from 'package:base':
+## 
+##     date</code></pre>
+<pre class="r"><code>tab$annee &lt;- year(tab$date)
+tab$mois &lt;- month(tab$date)</code></pre>
 <p>Si on souhaite obtenir des données à partir d’une année précise, un approche est de travailler sur un subset d’une année. Par exemple pour <code>pce</code>, personal consumption expenditures, in billions of dollars :</p>
-<pre class="r"><code>temp &lt;- dt$pce[dt$annee == 1967]
+<pre class="r"><code>temp &lt;- tab$pce[tab$annee == 1967]
 
 mean(temp)</code></pre>
 <pre><code>## [1] 515.1667</code></pre>
 <p>Mais effectuer cette opération année par année est laborieux. On utilise donc une boucle :</p>
-<pre class="r"><code>for(i in 1967:1980){
-  temp &lt;- dt$pce[dt$annee == i]  
-  mean(temp, na.rm=T)
+<div id="les-boucles-for" class="section level1">
+<h1>Les boucles <code>for</code></h1>
+<p>Une boucle <code>for</code> est construite de la façon suivante :</p>
+<pre class="r"><code>vecteur &lt;- c(1, 3, 5)
+
+for (variable in vecteur) {
+  print(variable)
+  
+  autre_variable &lt;- variable * 10
+  print(autre_variable)
+}</code></pre>
+<pre><code>## [1] 1
+## [1] 10
+## [1] 3
+## [1] 30
+## [1] 5
+## [1] 50</code></pre>
+<ul>
+<li>Le code contenu dans la boucle est répété autant de fois qu’il y a de valeurs dans <code>vecteur</code> ;</li>
+<li><code>variable</code> prend successivement toutes les valeurs de <code>vecteur</code> ;</li>
+<li>Il est possible d’exectuer n’importe quel type de code dans la boucle</li>
+</ul>
+<pre class="r"><code>annees &lt;- 1967:1980
+
+for(i in annees){
+  temp &lt;- tab$pce[tab$annee == i]  
+  mean(temp)
 }</code></pre>
 <p>Toutefois cette boucle n’affiche rien. C’est parceque le contenu de la boucle n’est pas automatiquement “printé”.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> Cette nuance est très importante, surtout pour des objets dont on oublie qu’ils ont besoin de passer par <code>print</code> pour être affichés (en particulier les graphiques de <code>ggplot2</code>).</p>
-<pre class="r"><code>for(i in 1967:1980){
-  temp &lt;- dt$pce[dt$annee == i]  
-  print(mean(temp, na.rm=T))
+<pre class="r"><code>for(i in annees){
+  temp &lt;- tab$pce[tab$annee == i]  
+  print(mean(temp))
 }</code></pre>
 <pre><code>## [1] 515.1667
 ## [1] 557.4583
@@ -155,10 +186,268 @@ mean(temp)</code></pre>
 ## [1] 1426.175
 ## [1] 1589.483
 ## [1] 1754.625</code></pre>
+<p>On peut vouloir stocker le résultat au lieu de juste l’afficher dans la console.</p>
+<pre class="r"><code>output &lt;- numeric()
+for(i in annees){
+  temp &lt;- tab$pce[tab$annee == i]  
+  output &lt;- c(output, mean(temp))
+}
+
+output</code></pre>
+<pre><code>##  [1]  515.1667  557.4583  604.4833  647.6917  701.0000  769.4333  851.1417
+##  [8]  932.0000 1032.7667 1150.1667 1276.6750 1426.1750 1589.4833 1754.6250</code></pre>
+<p>Si on souhaite découper le jeu de données en tables mensuelles on peut utiliser des doubles boucles : d’abord par année, puis par mois.</p>
+<pre class="r"><code># dossier pour les tables crées
+dir.create(&quot;./exercice_temp&quot;)
+
+for(i in 1970:1971){
+  yr &lt;- tab[tab$annee == i, ]
+  
+  for(j in 1:12){
+    temp &lt;- yr[yr$mois == j, ]
+    
+    file_name &lt;- paste0(
+      &quot;./exercice_temp/donnees_&quot;,
+      i,
+      &quot;_&quot;,
+      month.name[j],
+      &quot;.csv&quot;)
+    
+    write.csv2(x = temp, file = file_name, row.names = FALSE)
+  }
+}</code></pre>
+</div>
+<div id="les-lapply" class="section level1">
+<h1>Les <code>lapply</code></h1>
+<p>Un <code>lapply</code> est construit de la façon suivante :</p>
+<pre class="r"><code>vecteur &lt;- c(.5, 1, 2)
+lapply(X = vecteur, FUN = exp)</code></pre>
+<pre><code>## [[1]]
+## [1] 1.648721
+## 
+## [[2]]
+## [1] 2.718282
+## 
+## [[3]]
+## [1] 7.389056</code></pre>
+<ul>
+<li><code>lapply</code> prend deux arguments, un vecteur et une fonction ;</li>
+<li>La fonction est appliquées succesivement à tous les éléments du vecteur ;</li>
+<li>Le résultat est retourné dans une liste.</li>
+</ul>
+<p>Si on souhaite faire l’opération inverse il faut donc lire une série de table, puis les concaténer. Le problème est où stocker la série de table ? Il n’est pas très pratique de créer une série d’objets dans l’environnement global.</p>
+<p>C’est là que les listes deviennent pratiques : on peut tout mettre dans une liste de tables. C’est possible de faire ça dans une boucle <code>for</code>, mais <code>lapply</code> est encore plus pratique.</p>
+<pre class="r"><code>fichiers &lt;- list.files(&quot;./exercice_temp&quot;)
+head(fichiers)</code></pre>
+<pre><code>## [1] &quot;donnees_1970_April.csv&quot;    &quot;donnees_1970_August.csv&quot;  
+## [3] &quot;donnees_1970_December.csv&quot; &quot;donnees_1970_February.csv&quot;
+## [5] &quot;donnees_1970_January.csv&quot;  &quot;donnees_1970_July.csv&quot;</code></pre>
+<pre class="r"><code>fichiers &lt;- file.path(&quot;./exercice_temp&quot;, fichiers)
+head(fichiers)</code></pre>
+<pre><code>## [1] &quot;./exercice_temp/donnees_1970_April.csv&quot;   
+## [2] &quot;./exercice_temp/donnees_1970_August.csv&quot;  
+## [3] &quot;./exercice_temp/donnees_1970_December.csv&quot;
+## [4] &quot;./exercice_temp/donnees_1970_February.csv&quot;
+## [5] &quot;./exercice_temp/donnees_1970_January.csv&quot; 
+## [6] &quot;./exercice_temp/donnees_1970_July.csv&quot;</code></pre>
+<pre class="r"><code>list_tables &lt;- lapply(fichiers, read.csv2)
+head(list_tables)</code></pre>
+<pre><code>## [[1]]
+##         date pce    pop psavert uempmed unemploy annee mois
+## 1 1970-04-01 637 204401    13.3     4.1     3797  1970    4
+## 
+## [[2]]
+##         date   pce    pop psavert uempmed unemploy annee mois
+## 1 1970-08-01 653.9 205295    13.1     5.4     4256  1970    8
+## 
+## [[3]]
+##         date   pce    pop psavert uempmed unemploy annee mois
+## 1 1970-12-01 666.6 206238    12.9     5.9     5076  1970   12
+## 
+## [[4]]
+##         date   pce    pop psavert uempmed unemploy annee mois
+## 1 1970-02-01 634.9 204008    11.6     4.5     3453  1970    2
+## 
+## [[5]]
+##         date   pce    pop psavert uempmed unemploy annee mois
+## 1 1970-01-01 629.6 203849    11.7     4.6     3201  1970    1
+## 
+## [[6]]
+##         date   pce    pop psavert uempmed unemploy annee mois
+## 1 1970-07-01 649.5 205052    13.2     5.1     4175  1970    7</code></pre>
+<pre class="r"><code>for (i in 1:length(list_tables)) {
+  if (i == 1) {
+    result &lt;- list_tables[[i]]
+  } else {
+    result &lt;- rbind(
+      result,
+      list_tables[[i]]
+    )
+  }
+}
+
+head(result)</code></pre>
+<pre><code>##         date   pce    pop psavert uempmed unemploy annee mois
+## 1 1970-04-01 637.0 204401    13.3     4.1     3797  1970    4
+## 2 1970-08-01 653.9 205295    13.1     5.4     4256  1970    8
+## 3 1970-12-01 666.6 206238    12.9     5.9     5076  1970   12
+## 4 1970-02-01 634.9 204008    11.6     4.5     3453  1970    2
+## 5 1970-01-01 629.6 203849    11.7     4.6     3201  1970    1
+## 6 1970-07-01 649.5 205052    13.2     5.1     4175  1970    7</code></pre>
+</div>
+<div id="les-apply" class="section level1">
+<h1>Les <code>apply</code></h1>
+<p>Pour appliquer ligne à ligne une fonction sur une table (ou colonne par colonne). Un <code>apply</code> est construit de la façon suivante :</p>
+<pre class="r"><code>tab &lt;- data.frame(
+  x = 1:2,
+  y = 3:4
+)
+
+tab</code></pre>
+<pre><code>##   x y
+## 1 1 3
+## 2 2 4</code></pre>
+<pre class="r"><code>apply(X = tab, MARGIN = 1, FUN = sum)</code></pre>
+<pre><code>## [1] 4 6</code></pre>
+<pre class="r"><code>apply(X = tab, MARGIN = 2, FUN = sum)</code></pre>
+<pre><code>## x y 
+## 3 7</code></pre>
+<ul>
+<li><code>apply</code> est fait pour travailler sur des tables ;</li>
+<li>La fonction qu’on lui passe peut être appliquée ligne par ligne (<code>MARGIN = 1</code>) ou colonne par colonne (<code>MARGIN = 2</code>).</li>
+</ul>
+<p>Par exemple pour calculer une moyenne par ligne. On peut passer tous les arguments qu’on veut à <code>mean</code> par l’intermédiaire de la fonction <code>apply</code>, par exemple ici <code>na.rm = TRUE</code>.</p>
+<pre class="r"><code>x &lt;- data.frame(
+  x1 = c(rep(3, 7), NA),
+  x2 = c(4:2, NA, 2:4, NA)
+)
+x</code></pre>
+<pre><code>##   x1 x2
+## 1  3  4
+## 2  3  3
+## 3  3  2
+## 4  3 NA
+## 5  3  2
+## 6  3  3
+## 7  3  4
+## 8 NA NA</code></pre>
+<pre class="r"><code>apply(x, 1, mean)</code></pre>
+<pre><code>## [1] 3.5 3.0 2.5  NA 2.5 3.0 3.5  NA</code></pre>
+<pre class="r"><code>apply(x, 1, mean, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 3.5 3.0 2.5 3.0 2.5 3.0 3.5 NaN</code></pre>
+<p>Il est possible d’utiliser avec <code>apply</code> une fonction qu’on a écrit. <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> Par exemple pour compter les données manquantes par variables :</p>
+<pre class="r"><code>n_na &lt;- function(x) {
+  return(sum(is.na(x)))
+}
+apply(x, 2, n_na)</code></pre>
+<pre><code>## x1 x2 
+##  1  2</code></pre>
+<p>Ou faire un LOCF :</p>
+<pre class="r"><code>locf &lt;- function(x) {
+  x_ok &lt;- na.omit(x)
+  if (length(x_ok) &gt; 0) {
+    return(x_ok[length(x_ok)])
+  } else {
+    return(NA)
+  }
+}
+
+x$x3 &lt;- apply(x, 1, locf)
+x</code></pre>
+<pre><code>##   x1 x2 x3
+## 1  3  4  4
+## 2  3  3  3
+## 3  3  2  2
+## 4  3 NA  3
+## 5  3  2  2
+## 6  3  3  3
+## 7  3  4  4
+## 8 NA NA NA</code></pre>
+</div>
+<div id="pour-aller-plus-loin" class="section level1">
+<h1>Pour aller plus loin</h1>
+<p>Si on connait la longueur du résultat, on peut créer le vecteur de résultat d’avance et le peupler au fur et à mesure. Cette approche a l’avantage d’être calculée beaucoup plus rapidement. Par contre comme on ne boucle plus sur <code>annees</code> il faut modifier un peu le code.</p>
+<pre class="r"><code>output &lt;- numeric(length = length(annees))
+
+for(i in 1:length(annees)){
+  temp &lt;- tab$pce[tab$annee == annees[i]]  
+  output[i] &lt;- mean(temp, na.rm = TRUE)
+}</code></pre>
+<pre><code>## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA
+
+## Warning in mean.default(temp, na.rm = TRUE): argument is not numeric or
+## logical: returning NA</code></pre>
+<pre class="r"><code>output</code></pre>
+<pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
+<p>Dans l’exemple avec <code>lapply</code> on peut éviter l’appel à la boucle <code>for</code> avec cette opération magique :</p>
+<pre class="r"><code>result &lt;- Reduce(rbind, list_tables)
+head(list_tables)</code></pre>
+<pre><code>## [[1]]
+##         date pce    pop psavert uempmed unemploy annee mois
+## 1 1970-04-01 637 204401    13.3     4.1     3797  1970    4
+## 
+## [[2]]
+##         date   pce    pop psavert uempmed unemploy annee mois
+## 1 1970-08-01 653.9 205295    13.1     5.4     4256  1970    8
+## 
+## [[3]]
+##         date   pce    pop psavert uempmed unemploy annee mois
+## 1 1970-12-01 666.6 206238    12.9     5.9     5076  1970   12
+## 
+## [[4]]
+##         date   pce    pop psavert uempmed unemploy annee mois
+## 1 1970-02-01 634.9 204008    11.6     4.5     3453  1970    2
+## 
+## [[5]]
+##         date   pce    pop psavert uempmed unemploy annee mois
+## 1 1970-01-01 629.6 203849    11.7     4.6     3201  1970    1
+## 
+## [[6]]
+##         date   pce    pop psavert uempmed unemploy annee mois
+## 1 1970-07-01 649.5 205052    13.2     5.1     4175  1970    7</code></pre>
+</div>
 <div class="footnotes">
 <hr />
 <ol>
 <li id="fn1"><p>Appeler <code>print</code> automatiquement est le comportement par défaut de <code>R</code> dans la console, et les utilisateurs pourraient penser que c’est habituel. En réalité c’est une exception, la règle est de ne pas appeler <code>print</code>.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Avec <code>lapply</code> aussi d’ailleurs.<a href="#fnref2">↩</a></p></li>
 </ol>
 </div>
 

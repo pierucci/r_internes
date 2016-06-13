@@ -6,6 +6,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(include = TRUE)
+unlink("./exercice_temp", recursive = TRUE)
 ```
 
 Pour ces exemples on chargera le package `ggplot2` car il contient `economics`, les données qu'on utilisera en exemple.
@@ -23,8 +24,6 @@ tab$annee <- year(tab$date)
 tab$mois <- month(tab$date)
 ```
 
-# Les boucles `for`
-
 Si on souhaite obtenir des données à partir d'une année précise, un approche est de travailler sur un subset d'une année. Par exemple pour `pce`, personal consumption expenditures, in billions of dollars :
 
 ```{r}
@@ -34,6 +33,25 @@ mean(temp)
 ```
 
 Mais effectuer cette opération année par année est laborieux. On utilise donc une boucle :
+
+# Les boucles `for`
+
+Une boucle `for` est construite de la façon suivante :
+
+```{r}
+vecteur <- c(1, 3, 5)
+
+for (variable in vecteur) {
+  print(variable)
+  
+  autre_variable <- variable * 10
+  print(autre_variable)
+}
+```
+
+  * Le code contenu dans la boucle est répété autant de fois qu'il y a de valeurs dans `vecteur` ;
+  * `variable` prend successivement toutes les valeurs de `vecteur` ;
+  * Il est possible d'exectuer n'importe quel type de code dans la boucle
 
 ```{r}
 annees <- 1967:1980
@@ -91,6 +109,17 @@ for(i in 1970:1971){
 
 # Les `lapply`
 
+Un `lapply` est construit de la façon suivante :
+
+```{r}
+vecteur <- c(.5, 1, 2)
+lapply(X = vecteur, FUN = exp)
+```
+
+  * `lapply` prend deux arguments, un vecteur et une fonction ;
+  * La fonction est appliquées succesivement à tous les éléments du vecteur ;
+  * Le résultat est retourné dans une liste.
+
 Si on souhaite faire l'opération inverse il faut donc lire une série de table, puis les concaténer. Le problème est où stocker la série de table ? Il n'est pas très pratique de créer une série d'objets dans l'environnement global.
 
 C'est là que les listes deviennent pratiques : on peut tout mettre dans une liste de tables. C'est possible de faire ça dans une boucle `for`, mais `lapply` est encore plus pratique.
@@ -120,7 +149,24 @@ head(result)
 
 # Les `apply`
 
-Pour appliquer ligne à ligne une fonction sur une table (ou colonne par colonne).
+Pour appliquer ligne à ligne une fonction sur une table (ou colonne par colonne). Un `apply` est construit de la façon suivante :
+
+```{r}
+tab <- data.frame(
+  x = 1:2,
+  y = 3:4
+)
+
+tab
+
+apply(X = tab, MARGIN = 1, FUN = sum)
+apply(X = tab, MARGIN = 2, FUN = sum)
+```
+
+  * `apply` est fait pour travailler sur des tables ;
+  * La fonction qu'on lui passe peut être appliquée ligne par ligne (`MARGIN = 1`) ou colonne par colonne (`MARGIN = 2`).
+
+Par exemple pour calculer une moyenne par ligne. On peut passer tous les arguments qu'on veut à `mean` par l'intermédiaire de la fonction `apply`, par exemple ici `na.rm = TRUE`.
 
 ```{r}
 x <- data.frame(
@@ -128,16 +174,12 @@ x <- data.frame(
   x2 = c(4:2, NA, 2:4, NA)
 )
 x
-```
 
-Par exemple pour calculer une moyenne par ligne. On peut passer tous les arguments qu'on veut à `mean` par l'intermédiaire de la fonction `apply`, par exemple ici `na.rm = TRUE`.
-
-```{r}
 apply(x, 1, mean)
 apply(x, 1, mean, na.rm = TRUE)
 ```
 
-Il est possible d'utiliser une fonction qu'on a écrit avec `apply`. ^[Avec `lapply` aussi d'ailleurs.] Par exemple pour compter les données manquantes par variables :
+Il est possible d'utiliser avec `apply` une fonction qu'on a écrit. ^[Avec `lapply` aussi d'ailleurs.] Par exemple pour compter les données manquantes par variables :
 
 ```{r}
 n_na <- function(x) {
