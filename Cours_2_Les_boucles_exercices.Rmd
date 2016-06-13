@@ -29,7 +29,7 @@ tab$mois <- month(tab$date)
 head(tab[c("date", "annee", "mois")])
 ```
 
-Si on souhaite obtenir des données à partir d'une année précise, un approche est de travailler sur un subset d'une année. Par exemple pour `pce`, personal consumption expenditures, in billions of dollars :
+Si on souhaite obtenir des données à partir d'une année précise, une approche est de travailler sur un subset d'une année. Par exemple pour `pce`, personal consumption expenditures, in billions of dollars :
 
 ```{r}
 temp <- tab$pce[tab$annee == 1967]
@@ -150,6 +150,9 @@ fichiers <- list.files("./exercice_temp")
 head(fichiers)
 fichiers <- file.path("./exercice_temp", fichiers)
 head(fichiers)
+
+## Au passage, on obtient la même chose avec :
+fichiers <- list.files("./exercice_temp/", full.names = T)
 
 list_tables <- lapply(fichiers, read.csv2)
 head(list_tables)
