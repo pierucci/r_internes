@@ -11,13 +11,77 @@ output:
 knitr::opts_chunk$set(echo = TRUE, comment = "#")
 ```
 
-## Définition {.reduceCode}
+## Définition
 
-Une expressions régulières est un motif (*pattern*) qui décrit un ensemble de chaînes de caractères possibles.
+Une expression régulière est un motif (*pattern*) qui décrit un ensemble de chaînes de caractères possibles.
 
 ```{r}
-exemple <- c("Alice", "Bob", "Carol")
-grep("^[AC]", exemple, value = TRUE)
-grep("^[AC].*l$", exemple, value = TRUE)
+exemple <- c("Alice", "Bob", "Caroll", "Mary Caroll")
 ```
 
+```{r}
+grep(pattern = "^[AC]", x = exemple, value = TRUE)
+grep(pattern = "^[AC].*l$", x = exemple, value = TRUE)
+```
+
+## Contruction
+
+Comme une expression mathématique : on combine des expressions simples (des "blocs") pour en faire des expressions plus complexes.
+
+## Bloc de base
+
+C'est tout simplement le caractère unique.
+
+```{r}
+grep(pattern = "o", x = letters, value = TRUE)
+```
+
+Ou une classe de caractères entre `[]` :
+
+```{r}
+grep(pattern = "[bxe]", x = letters, value = TRUE)
+```
+
+Il existe des symboles pour spécifier des classes particulières : les lettres `[:alpha:]`, les chiffres `[:digit:]`, la ponctuation `[:punct:]`, n'importe quel caractère `.`, etc. Voir les exercices, et surtout :
+
+```{r}
+?regexp
+```
+
+## Combiner les blocs
+
+Tout simplement en les positionnant côte à côte.
+
+```{r}
+grep(pattern = "li", x = exemple, value = TRUE)
+grep(pattern = "[Br]o", x = exemple, value = TRUE)
+```
+
+## Les quantificateurs
+
+Pour spécifier combien de fois un bloc est présent.
+
+  * `*`: 0 ou plus
+  * `+`: 1 ou plus
+  * `?`: 0 ou 1
+  * `{n}`: exactement `n`
+  * `{n,}`: au moins `n`
+  * `{n,m}`: entre `n` et `m`
+
+```{r}
+grep(pattern = "l{2}", x = exemple, value = TRUE)
+```
+
+## Les indicateurs de position
+
+  * `^`: début de la chaîne
+  * `$`: fin de la chaîne
+  * `\b`: début ou fin d'un mot
+  
+```{r}
+grep(pattern = "l$", x = exemple, value = TRUE)
+grep(pattern = "^C", x = exemple, value = TRUE)
+grep(pattern = "\\bC", x = exemple, value = TRUE)
+```
+
+  
