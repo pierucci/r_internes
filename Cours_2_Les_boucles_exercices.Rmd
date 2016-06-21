@@ -1,7 +1,7 @@
 ---
 title: 'Cours 2 : Les boucles'
 author: "Exercices"
-output: html_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
@@ -235,9 +235,59 @@ x
 
 # Pour aller plus loin
 
+## `for`
+Dans une boucle `for` on peut boucler comme dans l'exemple sur un vecteur numérique, mais aussi bien entendu sur un vecteur d'un autre type (`character` par exemple), ou même sur une liste. Par exemple :
+
+```{r}
+for (tab in list_tables[1:3]) {
+  print(summary(tab))
+}
+```
+
+## Listes
+
+Dans une liste `[]` sélectionne une autre liste alors que `[[]]` sélectionne le *contenu* d'un élément de la liste. Si une liste est un train composé de wagons qui contiennent des vaches^[Fallait pas confier cette partie du cours à un Lorrain.] alors `[]` sélectionne un ou plusieurs wagons et retourne donc un autre train alors que `[[]]` sélectionne les vaches contenues dans un wagon particulier.
+
+```{r error=TRUE}
+# un train avec 3 wagons
+exemple_liste <- list(
+  c(1, 3, 5), # des vaches
+  c("a, b"), # d'autres vaches
+  c(TRUE, FALSE) # encore d'autres vaches
+)
+exemple_liste
+
+# un train avec 2 wagons
+exemple_liste[1:2]
+
+# un train avec 1 wagon
+exemple_liste[2]
+
+# le contenu du wagon 2
+exemple_liste[[2]]
+
+# donc ca ne marche pas car c'est une liste
+exemple_liste[1] * 2
+
+# mais ca marche
+exemple_liste[[1]] * 2
+
+# de meme on ne peut selectionner que le contenu
+# d'un seul wagon a la fois
+exemple_liste[[2:3]]
+```
+
+## Mmmmmmagic
+
 Dans l'exemple avec `lapply` on peut éviter l'appel à la boucle `for` avec cette opération magique :
 
 ```{r}
 result <- Reduce(rbind, list_tables)
 head(result)
+```
+
+`?Reduce` pour les plus curieux<
+
+```{r include=FALSE}
+unlink("./exercice_temp", recursive = TRUE)
 ```

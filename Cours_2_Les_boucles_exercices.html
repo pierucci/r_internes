@@ -398,6 +398,92 @@ x</code></pre>
 </div>
 <div id="pour-aller-plus-loin" class="section level1">
 <h1>Pour aller plus loin</h1>
+<p>Dans une boucle <code>for</code> on peut boucler comme dans l’exemple sur un vecteur numérique, mais aussi bien entendu sur un vecteur d’un autre type (<code>character</code> par exemple), ou même sur une liste. Par exemple :</p>
+<pre class="r"><code>for (tab in list_tables[1:3]) {
+  print(summary(tab))
+}</code></pre>
+<pre><code>##          date        pce           pop            psavert    
+##  1970-04-01:1   Min.   :637   Min.   :204401   Min.   :13.3  
+##                 1st Qu.:637   1st Qu.:204401   1st Qu.:13.3  
+##                 Median :637   Median :204401   Median :13.3  
+##                 Mean   :637   Mean   :204401   Mean   :13.3  
+##                 3rd Qu.:637   3rd Qu.:204401   3rd Qu.:13.3  
+##                 Max.   :637   Max.   :204401   Max.   :13.3  
+##     uempmed       unemploy        annee           mois  
+##  Min.   :4.1   Min.   :3797   Min.   :1970   Min.   :4  
+##  1st Qu.:4.1   1st Qu.:3797   1st Qu.:1970   1st Qu.:4  
+##  Median :4.1   Median :3797   Median :1970   Median :4  
+##  Mean   :4.1   Mean   :3797   Mean   :1970   Mean   :4  
+##  3rd Qu.:4.1   3rd Qu.:3797   3rd Qu.:1970   3rd Qu.:4  
+##  Max.   :4.1   Max.   :3797   Max.   :1970   Max.   :4  
+##          date        pce             pop            psavert    
+##  1970-08-01:1   Min.   :653.9   Min.   :205295   Min.   :13.1  
+##                 1st Qu.:653.9   1st Qu.:205295   1st Qu.:13.1  
+##                 Median :653.9   Median :205295   Median :13.1  
+##                 Mean   :653.9   Mean   :205295   Mean   :13.1  
+##                 3rd Qu.:653.9   3rd Qu.:205295   3rd Qu.:13.1  
+##                 Max.   :653.9   Max.   :205295   Max.   :13.1  
+##     uempmed       unemploy        annee           mois  
+##  Min.   :5.4   Min.   :4256   Min.   :1970   Min.   :8  
+##  1st Qu.:5.4   1st Qu.:4256   1st Qu.:1970   1st Qu.:8  
+##  Median :5.4   Median :4256   Median :1970   Median :8  
+##  Mean   :5.4   Mean   :4256   Mean   :1970   Mean   :8  
+##  3rd Qu.:5.4   3rd Qu.:4256   3rd Qu.:1970   3rd Qu.:8  
+##  Max.   :5.4   Max.   :4256   Max.   :1970   Max.   :8  
+##          date        pce             pop            psavert    
+##  1970-12-01:1   Min.   :666.6   Min.   :206238   Min.   :12.9  
+##                 1st Qu.:666.6   1st Qu.:206238   1st Qu.:12.9  
+##                 Median :666.6   Median :206238   Median :12.9  
+##                 Mean   :666.6   Mean   :206238   Mean   :12.9  
+##                 3rd Qu.:666.6   3rd Qu.:206238   3rd Qu.:12.9  
+##                 Max.   :666.6   Max.   :206238   Max.   :12.9  
+##     uempmed       unemploy        annee           mois   
+##  Min.   :5.9   Min.   :5076   Min.   :1970   Min.   :12  
+##  1st Qu.:5.9   1st Qu.:5076   1st Qu.:1970   1st Qu.:12  
+##  Median :5.9   Median :5076   Median :1970   Median :12  
+##  Mean   :5.9   Mean   :5076   Mean   :1970   Mean   :12  
+##  3rd Qu.:5.9   3rd Qu.:5076   3rd Qu.:1970   3rd Qu.:12  
+##  Max.   :5.9   Max.   :5076   Max.   :1970   Max.   :12</code></pre>
+<p>Dans une list <code>[]</code> sélectionne une autre liste alors que <code>[[]]</code> sélectionne le <em>contenu</em> d’un élément de la liste. Si une liste est un train composé de wagons qui contiennent des vaches<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> alors <code>[]</code> sélectionne un ou plusieurs wagons et retourne donc un autre train alors que <code>[[]]</code> sélectionne les vaches contenues dans un wagon particulier.</p>
+<pre class="r"><code># un train avec 3 wagons
+exemple_liste &lt;- list(
+  c(1, 3, 5), # des vaches
+  c(&quot;a, b&quot;), # d'autres vaches
+  c(TRUE, FALSE) # encore d'autres vaches
+)
+exemple_liste</code></pre>
+<pre><code>## [[1]]
+## [1] 1 3 5
+## 
+## [[2]]
+## [1] &quot;a, b&quot;
+## 
+## [[3]]
+## [1]  TRUE FALSE</code></pre>
+<pre class="r"><code># un train avec 2 wagons
+exemple_liste[1:2]</code></pre>
+<pre><code>## [[1]]
+## [1] 1 3 5
+## 
+## [[2]]
+## [1] &quot;a, b&quot;</code></pre>
+<pre class="r"><code># un train avec 1 wagon
+exemple_liste[2]</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;a, b&quot;</code></pre>
+<pre class="r"><code># le contenu du wagon 2
+exemple_liste[[2]]</code></pre>
+<pre><code>## [1] &quot;a, b&quot;</code></pre>
+<pre class="r"><code># donc ca ne marche pas car c'est une liste
+exemple_liste[1] * 2</code></pre>
+<pre><code>## Error in exemple_liste[1] * 2: non-numeric argument to binary operator</code></pre>
+<pre class="r"><code># mais ca marche
+exemple_liste[[1]] * 2</code></pre>
+<pre><code>## [1]  2  6 10</code></pre>
+<pre class="r"><code># de meme on ne peut selectionner que le contenu
+# d'un seul wagon a la fois
+exemple_liste[[2:3]]</code></pre>
+<pre><code>## Error in exemple_liste[[2:3]]: subscript out of bounds</code></pre>
 <p>Dans l’exemple avec <code>lapply</code> on peut éviter l’appel à la boucle <code>for</code> avec cette opération magique :</p>
 <pre class="r"><code>result &lt;- Reduce(rbind, list_tables)
 head(result)</code></pre>
@@ -414,6 +500,7 @@ head(result)</code></pre>
 <ol>
 <li id="fn1"><p>Appeler <code>print</code> automatiquement est le comportement par défaut de <code>R</code> dans la console, et les utilisateurs pourraient penser que c’est habituel. En réalité c’est une exception, la règle est de ne pas appeler <code>print</code>.<a href="#fnref1">↩</a></p></li>
 <li id="fn2"><p>Avec <code>lapply</code> aussi d’ailleurs.<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>Fallait pas confier cette partie du cours à un Lorrain.<a href="#fnref3">↩</a></p></li>
 </ol>
 </div>
 

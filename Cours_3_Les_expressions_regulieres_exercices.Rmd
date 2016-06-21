@@ -1,0 +1,87 @@
+---
+title: "Cours 3 : Les expressions régulières"
+author: "Exercices"
+output: html_document
+---
+
+```{r}
+textGuide <- scan(
+  "Downloads/chromium/sts_20150005_0002_p000.txt",
+  what = character()
+)
+
+patternAct <- "[[:upper:]]{4}[[:digit:]]{3}"
+indexAct <- grep(pattern = patternAct,
+                 x = textGuide)
+
+patternGHM <- "[[:digit:]]{2}[CKMZH]{1}[[:digit:]]{2}[1234ABCDZTEJ]?"
+indexGHM <- grep(pattern = patternGHM,
+                 x = textGuide)
+
+patternListes <- "A-[[:digit:]]{3}"
+indexListes <- grep(pattern = patternListes,
+                    x = textGuide)
+
+cleanText <- function(x, pattern) {
+  res <- regmatches(x, regexpr(pattern, x))
+}
+
+
+textGuide[indexAct] <- cleanText(textGuide[indexAct], patternAct)
+textGuide[indexGHM] <- cleanText(textGuide[indexGHM], patternGHM)
+textGuide[indexListes] <- cleanText(textGuide[indexListes], patternListes)
+
+vecA <- rep("A", length(indexAct))
+names(vecA) <- indexAct
+
+vecG <- rep("G", length(indexGHM))
+names(vecG) <- indexGHM
+
+vecL <- rep("L", length(indexListes))
+names(vecL) <- indexListes
+
+res <- c(vecA, vecG, vecL)
+res <- res[order(as.integer(names(res)))]
+
+res[res[-length(res)] == "L" & res[-1] == "A"] <- "LT"
+
+listGHM <- list()
+
+for (i in seq_along(res_2)) {
+  if (res_2[i] == "G") {
+    nomGHM <- textGuide[as.integer(names(res_2[i]))]
+  } else if (res_2[i] == "L") {
+    listGHM[[nomGHM]] <- c(listGHM[[nomGHM]], textGuide[as.integer(names(res_2[i]))])
+  }
+}
+
+head(listGHM)
+
+listAct <- list()
+
+for (i in seq_along(res_2)) {
+  if (res_2[i] == "LT") {
+    nomAct <- textGuide[as.integer(names(res_2[i]))]
+  } else if (res_2[i] == "A") {
+    listAct[[nomAct]] <- c(listAct[[nomAct]],
+                           textGuide[as.integer(names(res_2[i]))])
+  }
+}
+
+head(listAct)
+
+tabAct <- data.frame(cdc_act = unlist(listAct, use.names = FALSE),
+                     lis_act = rep(names(listAct), unlist(lapply(listAct, length))),
+                     stringsAsFactors = FALSE)
+head(tabAct)
+
+tabGHM <- data.frame(lis_act = unlist(listGHM, use.names = FALSE),
+                     grg_ghm = rep(names(listGHM), unlist(lapply(listGHM, length))),
+                     stringsAsFactors = FALSE)
+head(tabGHM)
+
+tab <- merge(tabGHM, tabAct, all = TRUE)
+head(tab)
+
+```
+
