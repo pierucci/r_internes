@@ -4,84 +4,141 @@ author: "Exercices"
 output: html_document
 ---
 
+# Exercice 1
+
+Ecrire des *patterns* d'expression régulière pour matcher :
+
+  * Un GHM (04M08T, 17K051, 13C033, 08M274...)
+  * Un acte CCAM (LAFA004, BGJA002, ECQH003, YYYY184...)
+  * Un code CIM-10 (O450, A68, V643, F153...)
+  * Une autre façon d'écrire les codes CIM-10 (O45.0, A68, V64.3, F15.3...)
+
+# Exercice 2
+
+Ecrire un code pour extraire le code CIM-10 standard d'un code thésaurus (A10CX, I480CX, ...). Donc enlever le CX.
+
+# Exercice 3
+
+Trouver les services de surveillance continue ou de réanimation parmi la liste.
+
+```{r include = FALSE}
+library(dplyr)
+tab_serv <- data_frame(
+  serv = c(
+    "PNEUMOLOGIE-SOINS INTENSIFS",
+    "PNEUMOLOGIE-HOSPIT COMPL CONVENT", 
+"CARDIOLOGIE-HOSPIT COMPL CONVENT", "URGENCES ADULTES-HOSPIT COMPL CONVENT", 
+"MEDECINE INTERNE-HOSPIT COMPL CONVENT", "CARDIOLOGIE-SOINS INTENSIFS", 
+"MALAD. INFECTIEUSES-HOSPIT COMPL CONVENT", "CARDIOLOGIE-HOSPITALISATION JOUR", 
+"REANIMATION MEDICALE-REANIMATION", "NEURO-VASCULAIRE-SOINS INTENSIFS", 
+"NEURO-VASCULAIRE-HOSPIT COMPL CONVENT", "UROLOGIE-HOSPIT COMPL CONVENT", 
+"CHIRURGIE VISCERALE-HOSPIT COMPL CONVENT", "PNEUMOLOGIE-HOSPITAL.SEMAINE", 
+"RHUMATOLOGIE-HOSPIT COMPL CONVENT", "HEPATO-GASTRO-ENTERO-HOSPIT COMPL CONVENT", 
+"NEPHROLOGIE-SOINS INTENSIFS", "NEPHROLOGIE-HOSPIT COMPL CONVENT", 
+"ENDOCRINOLOGIE-HOSPIT COMPL CONVENT", "MED.INT.GERIATRIQUE-HOSPIT COMPL CONVENT", 
+"ANESTHESIE-REA.CHIR.-SURVEILLANCE CONTINU", "CHIR.CARDIO-VASC.-HOSPIT COMPL CONVENT", 
+"ANESTHESIE-REA.CHIR.-REANIMATION", "DERMATOLOGIE-HOSPIT COMPL CONVENT", 
+"REANIMATION MEDICALE-SURVEILLANCE CONTINU", "MAL RARES-HOSPITALISATION JOUR", 
+"O.R.L.-HOSPIT COMPL CONVENT", "MEDECINE INTERNE-HOSPITAL.SEMAINE", 
+"REANIMATION POLYVALENTE-REANIMATION", "REANIMATION POLYVALENTE-SURVEILLANCE CONTINU", 
+"ADDICTO MCO-HOSPIT COMPL CONVENT", "CARDIOLOGIE-HOSPITAL.SEMAINE", 
+"CANCERO ADULTE-HOSPIT COMPL CONVENT", "CHIR.THORACIQUE-HOSPIT COMPL CONVENT", 
+"HEPATO-GASTRO-ENTERO-HOSPITAL.SEMAINE", "HEMATOLOGIE CLINIQUE-HOSPIT COMPL CONVENT", 
+"UROLOGIE-HOSPITAL.SEMAINE", "NEUROLOGIE-HOSPITAL.SEMAINE", "IMMUNOLOGIE CLINIQUE-HOSPIT COMPL CONVENT", 
+"CHIRURGIE VASCULAIRE-HOSPIT COMPL CONVENT", "HEMATOLOGIE CLINIQUE-SOINS INTENSIFS", 
+"NEUROLOGIE-HOSPIT COMPL CONVENT", "ENDOCRINOLOGIE-HOSPITAL.SEMAINE", 
+"CHIR.CARDIO-VASC.-SOINS INTENSIFS", "NUTRITION-HOSPIT COMPL CONVENT", 
+"DETENUS-HOSPIT COMPL CONVENT")
+) %>% 
+  mutate(n = row_number()) %>% 
+  select(n, serv)
+```
+
+```{r results = 'asis'}
+knitr::kable(tab_serv)
+```
+
+
+# Pour aller plus loin
+
 ```{r}
-textGuide <- scan(
-  "Downloads/chromium/sts_20150005_0002_p000.txt",
-  what = character()
-)
-
-patternAct <- "[[:upper:]]{4}[[:digit:]]{3}"
-indexAct <- grep(pattern = patternAct,
-                 x = textGuide)
-
-patternGHM <- "[[:digit:]]{2}[CKMZH]{1}[[:digit:]]{2}[1234ABCDZTEJ]?"
-indexGHM <- grep(pattern = patternGHM,
-                 x = textGuide)
-
-patternListes <- "A-[[:digit:]]{3}"
-indexListes <- grep(pattern = patternListes,
-                    x = textGuide)
-
-cleanText <- function(x, pattern) {
-  res <- regmatches(x, regexpr(pattern, x))
-}
-
-
-textGuide[indexAct] <- cleanText(textGuide[indexAct], patternAct)
-textGuide[indexGHM] <- cleanText(textGuide[indexGHM], patternGHM)
-textGuide[indexListes] <- cleanText(textGuide[indexListes], patternListes)
-
-vecA <- rep("A", length(indexAct))
-names(vecA) <- indexAct
-
-vecG <- rep("G", length(indexGHM))
-names(vecG) <- indexGHM
-
-vecL <- rep("L", length(indexListes))
-names(vecL) <- indexListes
-
-res <- c(vecA, vecG, vecL)
-res <- res[order(as.integer(names(res)))]
-
-res[res[-length(res)] == "L" & res[-1] == "A"] <- "LT"
-
-listGHM <- list()
-
-for (i in seq_along(res_2)) {
-  if (res_2[i] == "G") {
-    nomGHM <- textGuide[as.integer(names(res_2[i]))]
-  } else if (res_2[i] == "L") {
-    listGHM[[nomGHM]] <- c(listGHM[[nomGHM]], textGuide[as.integer(names(res_2[i]))])
-  }
-}
-
-head(listGHM)
-
-listAct <- list()
-
-for (i in seq_along(res_2)) {
-  if (res_2[i] == "LT") {
-    nomAct <- textGuide[as.integer(names(res_2[i]))]
-  } else if (res_2[i] == "A") {
-    listAct[[nomAct]] <- c(listAct[[nomAct]],
-                           textGuide[as.integer(names(res_2[i]))])
-  }
-}
-
-head(listAct)
-
-tabAct <- data.frame(cdc_act = unlist(listAct, use.names = FALSE),
-                     lis_act = rep(names(listAct), unlist(lapply(listAct, length))),
-                     stringsAsFactors = FALSE)
-head(tabAct)
-
-tabGHM <- data.frame(lis_act = unlist(listGHM, use.names = FALSE),
-                     grg_ghm = rep(names(listGHM), unlist(lapply(listGHM, length))),
-                     stringsAsFactors = FALSE)
-head(tabGHM)
-
-tab <- merge(tabGHM, tabAct, all = TRUE)
-head(tab)
+# textGuide <- scan(
+#   "Downloads/chromium/sts_20150005_0002_p000.txt",
+#   what = character()
+# )
+# 
+# patternAct <- "[[:upper:]]{4}[[:digit:]]{3}"
+# indexAct <- grep(pattern = patternAct,
+#                  x = textGuide)
+# 
+# patternGHM <- "[[:digit:]]{2}[CKMZH]{1}[[:digit:]]{2}[1234ABCDZTEJ]?"
+# indexGHM <- grep(pattern = patternGHM,
+#                  x = textGuide)
+# 
+# patternListes <- "A-[[:digit:]]{3}"
+# indexListes <- grep(pattern = patternListes,
+#                     x = textGuide)
+# 
+# cleanText <- function(x, pattern) {
+#   res <- regmatches(x, regexpr(pattern, x))
+# }
+# 
+# 
+# textGuide[indexAct] <- cleanText(textGuide[indexAct], patternAct)
+# textGuide[indexGHM] <- cleanText(textGuide[indexGHM], patternGHM)
+# textGuide[indexListes] <- cleanText(textGuide[indexListes], patternListes)
+# 
+# vecA <- rep("A", length(indexAct))
+# names(vecA) <- indexAct
+# 
+# vecG <- rep("G", length(indexGHM))
+# names(vecG) <- indexGHM
+# 
+# vecL <- rep("L", length(indexListes))
+# names(vecL) <- indexListes
+# 
+# res <- c(vecA, vecG, vecL)
+# res <- res[order(as.integer(names(res)))]
+# 
+# res[res[-length(res)] == "L" & res[-1] == "A"] <- "LT"
+# 
+# listGHM <- list()
+# 
+# for (i in seq_along(res_2)) {
+#   if (res_2[i] == "G") {
+#     nomGHM <- textGuide[as.integer(names(res_2[i]))]
+#   } else if (res_2[i] == "L") {
+#     listGHM[[nomGHM]] <- c(listGHM[[nomGHM]], textGuide[as.integer(names(res_2[i]))])
+#   }
+# }
+# 
+# head(listGHM)
+# 
+# listAct <- list()
+# 
+# for (i in seq_along(res_2)) {
+#   if (res_2[i] == "LT") {
+#     nomAct <- textGuide[as.integer(names(res_2[i]))]
+#   } else if (res_2[i] == "A") {
+#     listAct[[nomAct]] <- c(listAct[[nomAct]],
+#                            textGuide[as.integer(names(res_2[i]))])
+#   }
+# }
+# 
+# head(listAct)
+# 
+# tabAct <- data.frame(cdc_act = unlist(listAct, use.names = FALSE),
+#                      lis_act = rep(names(listAct), unlist(lapply(listAct, length))),
+#                      stringsAsFactors = FALSE)
+# head(tabAct)
+# 
+# tabGHM <- data.frame(lis_act = unlist(listGHM, use.names = FALSE),
+#                      grg_ghm = rep(names(listGHM), unlist(lapply(listGHM, length))),
+#                      stringsAsFactors = FALSE)
+# head(tabGHM)
+# 
+# tab <- merge(tabGHM, tabAct, all = TRUE)
+# head(tab)
 
 ```
 
