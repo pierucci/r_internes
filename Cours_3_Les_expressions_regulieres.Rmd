@@ -1,0 +1,23 @@
+---
+title: 'Cours 3 : Les expressions régulières'
+output:
+  ioslides_presentation:
+    css: slides.css
+    smaller: yes
+  beamer_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = "#")
+```
+
+## Définition {.reduceCode}
+
+Une expressions régulières est un motif (*pattern*) qui décrit un ensemble de chaînes de caractères possibles.
+
+```{r}
+exemple <- c("Alice", "Bob", "Carol")
+grep("^[AC]", exemple, value = TRUE)
+grep("^[AC].*l$", exemple, value = TRUE)
+```
+
