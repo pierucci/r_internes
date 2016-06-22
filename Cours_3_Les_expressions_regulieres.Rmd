@@ -44,7 +44,15 @@ Ou une classe de caractères entre `[]` :
 grep(pattern = "[be]", x = exemple, value = TRUE)
 ```
 
-Il existe des symboles pour spécifier des classes particulières : les lettres `[:alpha:]`, les chiffres `[:digit:]`, la ponctuation `[:punct:]`, n'importe quel caractère `.`, etc. Voir les exercices, et surtout :
+Le point `.` est utilisé pour spécifier n'importe quel caractère.
+
+## Précisions sur les classes 
+
+`[]`:	un parmi les caractères indiqués entre les crochets. Par exemple, [ABC] matche A ou B ou C.
+
+La négation se fait avec le caractère `^`. `[^A]` : Tous les caractères sauf le A
+
+Il existe des symboles pour spécifier des classes particulières : les lettres `[:alpha:]`, les chiffres `[:digit:]`, la ponctuation `[:punct:]`, etc. Voir les exercices, et surtout :
 
 `?regexp`
 
@@ -93,19 +101,27 @@ grep(pattern = "^C", x = exemple, value = TRUE)
 grep(pattern = "\\bC", x = exemple, value = TRUE)
 ```
 
-=======
+`^` n'a donc pas la même signification que lorsqu'il s'utilise à l'intérieur des crochets pour définir une classe.
+
+## Les backreferences
+
+  * `()`: Groupe des caractères dans une seule expression et les garde en mémoire
+  * `\1`, `\2`: Rappelle la sous-expression enregistrée
+
+```{r}
+grep(pattern = "(.)\\1", x = exemple, value = TRUE)
+```
 
 ## Les principales fonctions
 
 Il existe de nombreuses fonctions de `R` qui utilisent et exploitent les expressions régulières, parmi lesquelles :
 
   * `grep` : recherche d'un motif, renvoie les indices des éléments correspondants ou les valeurs correspondantes (si `value = TRUE`)
-  * `grepl` : recherche d'une motif, renvoie TRUE/FALSE en fonction de la présence du motif
+  * `grepl` : recherche d'une motif, renvoie `TRUE`/`FALSE` en fonction de la présence du motif
   * `sub` : recherche et remplace un motif, se limite à la première occurence
   * `gsub` : recherche et remplace un motif, le remplacement se fait sur toutes les occurences
   * `regexpr` : recherche un motif et renvoie la position et la longueur du match
   * `regmatches` : combiné à un regexpr, permet d'extraire la chaine de caractère retrouvée par le motif
-
 
 ## Les principales fonctions
   * `grep` : recherche d'un motif, renvoie les indices des éléments correspondants ou les valeurs correspondantes (si `value = TRUE`)
@@ -140,3 +156,7 @@ regexpr(pattern = "([A-z])\\1", text = exemple)
 ```{r}
 regmatches(x = exemple, m = regexpr(pattern = "([A-z])\\1", text = exemple))
 ```
+
+## Documentation 
+
+  * [R4CIAM](http://informatique-mia.inra.fr/r4ciam/node/148) : Aide mémoire sur les expressions régulières avec quelques exemples

@@ -122,13 +122,62 @@ knitr::kable(tab_serv)
 
 # Pour aller plus loin
 
+## Convertir un nom de film
+
+Convertir un nom de film comme ça :
+
+`[ www.adresse.fr ] Ma.Super.Serie.S01E05.VOSTFR.720p.HDTV.x264-ARK01.mkv`
+
+En quelque chose comme ça :
+
+`Ma Super Serie S01E05 VOSTFR.mkv`
+
+```{r}
+fichier <- "[ www.adresse.fr ] Ma.Super.Serie.S01E05.VOSTFR.720p.HDTV.x264-ARK01.mkv"
+
+titre <- gsub(
+  ".*\\]\\s+(.+)\\.[Ss][[:digit:]]{1,2}[Ee][[:digit:]]+.*",
+  "\\1",
+  fichier
+)
+titre <- gsub("\\.", " ", titre)
+
+episode <- stringr::str_extract(
+  fichier,
+  "[Ss][[:digit:]]{1,2}[Ee][[:digit:]]+"
+)
+
+type <- stringr::str_extract(
+  toupper(fichier),
+  "VOSTFR|FRENCH"
+)
+
+ext <-stringr::str_extract(
+  tolower(fichier),
+  "avi$|mp4$|mkv$|divx$"
+)
+
+paste0(titre, " ", episode, " ", type, ".", ext)
+```
+
+Tentative (partielle) en une ligne. J'arrive pas à enlever les points dans le titre. Voir : regex golf.
+
+```{r}
+gsub(
+  pattern = ".*\\]\\s+(.+)\\.(S[[:digit:]]{1,2}E[[:digit:]]+)\\.(VOSTFR|FRENCH).*\\.(avi$|mp4$|mkv$|divx$)",
+  replacement = "\\1 \\2 \\3\\.\\4",
+  fichier,
+  ignore.case = TRUE
+)
+```
+
 ## Trouver les actes classants
 
 Comment trouver les actes classants à partir du volume 2 du manuel de groupage ?
 
 *Attention ça marche pas pour les listes "sauf", qui sont comptées comme classant dans le GHM. Faut-il faire une étape à la main comme y’en a peu ? Ou bien affiner le scraping ? Pour l’usage que je fais de la liste ça me dérange pas, donc pour l’instant j’y touche pas.*
 
-Déjà convertir le PDF en texte (des outils en ligne existent). Pour l'execice une version texte est déjà en ligne :
+Déjà convertir le PDF en texte (des outils en ligne existent). Pour l'exercice une version texte est déjà en ligne :
 
 ```{r}
 textGuide <- scan(
