@@ -164,7 +164,7 @@ paste0(titre, " ", episode, " ", type, ".", ext)
 
 ```{r}
 gsub(
-  pattern = ".*\\]\\s+(.+)\\.(S[[:digit:]]{1,2}E[[:digit:]]+)\\.(VOSTFR|FRENCH).*\\.(avi$|mp4$|mkv$|divx$)",
+  pattern = ".*\\]\\s+(.+)\\.(S\\d{1,2}E\\d+)\\.(VOSTFR|FRENCH).*\\.(avi$|mp4$|mkv$|divx$)",
   replacement = "\\1 \\2 \\3\\.\\4",
   fichier,
   ignore.case = TRUE

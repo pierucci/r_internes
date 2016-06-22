@@ -52,9 +52,11 @@ Le point `.` est utilisé pour spécifier n'importe quel caractère.
 
 La négation se fait avec le caractère `^`. `[^A]` : Tous les caractères sauf le A
 
-Il existe des symboles pour spécifier des classes particulières : les lettres `[:alpha:]`, les chiffres `[:digit:]`, la ponctuation `[:punct:]`, etc. Voir les exercices, et surtout :
+Il existe des symboles pour spécifier des classes particulières : les lettres `[:alpha:]`, les chiffres `[:digit:]`, les deux `[:alnum:]`, la ponctuation `[:punct:]`, etc. Voir les exercices, et surtout :
 
 `?regexp`
+
+Du plus il existe une autre façon d'écrire certaines classes comme lettre ou chiffre `\\w`, caractères blancs `\\s`, chiffres `\\d`.
 
 ## Combiner les blocs
 
