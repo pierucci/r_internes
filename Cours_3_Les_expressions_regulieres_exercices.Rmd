@@ -9,13 +9,49 @@ output: html_document
 Ecrire des *patterns* d'expression régulière pour matcher :
 
   * Un GHM (04M08T, 17K051, 13C033, 08M274...)
+  * Un GHM ou une racine GHM (04M08T, 17K05, 13C03, 08M274...)
   * Un acte CCAM (LAFA004, BGJA002, ECQH003, YYYY184...)
   * Un code CIM-10 (O450, A68, V643, F153...)
-  * Une autre façon d'écrire les codes CIM-10 (O45.0, A68, V64.3, F15.3...)
+  * Une autre façon d'écrire les codes CIM-10 (O45.0, A68, V64.37, F15.3...)
+
+```{r}
+ghm <- "[[:digit:]]{2}[CKMZH]{1}[[:digit:]]{2}[1234ABCDZTEJ]"
+
+ghm_racine <- "[[:digit:]]{2}[CKMZH]{1}[[:digit:]]{2}[1234ABCDZTEJ]?"
+
+ccam <- "[[:upper:]]{4}[[:digit:]]{3}"
+
+cim10 <- "[[:upper:]][[:digit:]]{2,}"
+
+cim10_2 <- "[[:upper:]][[:digit:]]{2}(\\.[[:digit:]]+)?"
+```
+
+```{r include = FALSE}
+grep(pattern = ghm, x = c("04M08T", "17K051", "13C033", "08M274"))
+grep(pattern = ghm_racine, x = c("04M08T", "17K05", "13C03", "08M274"))
+grep(pattern = ccam, x = c("LAFA004", "BGJA002", "ECQH003", "YYYY184"))
+grep(pattern = cim10, x = c("O450", "A68", "V643", "F153"))
+grep(pattern = cim10_2, x = c("O45.0", "A68", "V64.37", "F15.3"))
+
+```
 
 # Exercice 2
 
 Ecrire un code pour extraire le code CIM-10 standard d'un code thésaurus (A10CX, I480CX, ...). Donc enlever le CX.
+
+```{r}
+gsub(pattern = "CX", replacement = "", x = c("A10CX", "I480CX"))
+
+regmatches(
+  c("A10CX", "I480CX"),
+  regexpr(
+    "[[:upper:]][[:digit:]]{2,}",
+    c("A10CX", "I480CX")
+  )
+)
+
+stringr::str_extract(c("A10CX", "I480CX"), "[[:upper:]][[:digit:]]{2,}")
+```
 
 # Exercice 3
 
@@ -54,91 +90,171 @@ tab_serv <- data_frame(
   select(n, serv)
 ```
 
-```{r results = 'asis'}
+```{r results = 'asis', echo = FALSE}
 knitr::kable(tab_serv)
 ```
 
+```{r}
+grep("REANIMATION|SURVEILLANCE CONTINU", tab_serv$serv, value = TRUE)
+```
+
+Parmi cette même liste, faire deux colonnes :
+
+  * Une colonne discipline (avant le `-`)
+  * Une colonne type de service (après le `-`)
+  
+```{r}
+split <- strsplit(tab_serv$serv, split = "-")
+split[c(1, 2, 11, 16, 44)]
+
+get_discip <- function(x) {
+  paste(x[- length(x)], collapse = "-")
+}
+get_type <- function(x) {
+  x[length(x)]
+}
+
+tab_serv$discip <- unlist(lapply(split, get_discip))
+tab_serv$type <- unlist(lapply(split, get_type))
+
+knitr::kable(tab_serv)
+```
 
 # Pour aller plus loin
 
-```{r}
-# textGuide <- scan(
-#   "Downloads/chromium/sts_20150005_0002_p000.txt",
-#   what = character()
-# )
-# 
-# patternAct <- "[[:upper:]]{4}[[:digit:]]{3}"
-# indexAct <- grep(pattern = patternAct,
-#                  x = textGuide)
-# 
-# patternGHM <- "[[:digit:]]{2}[CKMZH]{1}[[:digit:]]{2}[1234ABCDZTEJ]?"
-# indexGHM <- grep(pattern = patternGHM,
-#                  x = textGuide)
-# 
-# patternListes <- "A-[[:digit:]]{3}"
-# indexListes <- grep(pattern = patternListes,
-#                     x = textGuide)
-# 
-# cleanText <- function(x, pattern) {
-#   res <- regmatches(x, regexpr(pattern, x))
-# }
-# 
-# 
-# textGuide[indexAct] <- cleanText(textGuide[indexAct], patternAct)
-# textGuide[indexGHM] <- cleanText(textGuide[indexGHM], patternGHM)
-# textGuide[indexListes] <- cleanText(textGuide[indexListes], patternListes)
-# 
-# vecA <- rep("A", length(indexAct))
-# names(vecA) <- indexAct
-# 
-# vecG <- rep("G", length(indexGHM))
-# names(vecG) <- indexGHM
-# 
-# vecL <- rep("L", length(indexListes))
-# names(vecL) <- indexListes
-# 
-# res <- c(vecA, vecG, vecL)
-# res <- res[order(as.integer(names(res)))]
-# 
-# res[res[-length(res)] == "L" & res[-1] == "A"] <- "LT"
-# 
-# listGHM <- list()
-# 
-# for (i in seq_along(res_2)) {
-#   if (res_2[i] == "G") {
-#     nomGHM <- textGuide[as.integer(names(res_2[i]))]
-#   } else if (res_2[i] == "L") {
-#     listGHM[[nomGHM]] <- c(listGHM[[nomGHM]], textGuide[as.integer(names(res_2[i]))])
-#   }
-# }
-# 
-# head(listGHM)
-# 
-# listAct <- list()
-# 
-# for (i in seq_along(res_2)) {
-#   if (res_2[i] == "LT") {
-#     nomAct <- textGuide[as.integer(names(res_2[i]))]
-#   } else if (res_2[i] == "A") {
-#     listAct[[nomAct]] <- c(listAct[[nomAct]],
-#                            textGuide[as.integer(names(res_2[i]))])
-#   }
-# }
-# 
-# head(listAct)
-# 
-# tabAct <- data.frame(cdc_act = unlist(listAct, use.names = FALSE),
-#                      lis_act = rep(names(listAct), unlist(lapply(listAct, length))),
-#                      stringsAsFactors = FALSE)
-# head(tabAct)
-# 
-# tabGHM <- data.frame(lis_act = unlist(listGHM, use.names = FALSE),
-#                      grg_ghm = rep(names(listGHM), unlist(lapply(listGHM, length))),
-#                      stringsAsFactors = FALSE)
-# head(tabGHM)
-# 
-# tab <- merge(tabGHM, tabAct, all = TRUE)
-# head(tab)
+## Trouver les actes classants
 
+Comment trouver les actes classants à partir du volume 2 du manuel de groupage ?
+
+*Attention ça marche pas pour les listes "sauf", qui sont comptées comme classant dans le GHM. Faut-il faire une étape à la main comme y’en a peu ? Ou bien affiner le scraping ? Pour l’usage que je fais de la liste ça me dérange pas, donc pour l’instant j’y touche pas.*
+
+Déjà convertir le PDF en texte (des outils en ligne existent). Pour l'execice une version texte est déjà en ligne :
+
+```{r}
+textGuide <- scan(
+  "https://pierucci.github.io/docs/exo/sts_20140005_0002_p000.txt",
+  what = character(),
+  encoding = "latin1"
+)
 ```
 
+Détecter la position des actes, des GHM et des listes d’actes.
+
+```{r}
+patternAct <- "[[:upper:]]{4}[[:digit:]]{3}"
+indexAct <- grep(pattern = patternAct,
+                 x = textGuide)
+
+patternGHM <- "[[:digit:]]{2}[CKMZH]{1}[[:digit:]]{2}[1234ABCDZTEJ]?"
+indexGHM <- grep(pattern = patternGHM,
+                 x = textGuide)
+
+patternListes <- "A-[[:digit:]]{3}"
+indexListes <- grep(pattern = patternListes,
+                    x = textGuide)
+```
+
+On nettoye les données.
+
+```{r}
+cleanText <- function(x, pattern) {
+  res <- regmatches(x, regexpr(pattern, x))
+}
+
+textGuide[indexAct] <- cleanText(textGuide[indexAct], patternAct)
+textGuide[indexGHM] <- cleanText(textGuide[indexGHM], patternGHM)
+textGuide[indexListes] <- cleanText(textGuide[indexListes], patternListes)
+```
+
+On créé un vecteur avec les valeurs `A` (actes), `G` (GHM) et `L` (listes). Les noms du vecteur correspondent à l’index de la position de la chaîne de charactère dans le fichier, ce qui permet de les ordonner par leur ordre d'apparition dans le fichier.
+
+```{r}
+vecA <- rep("A", length(indexAct))
+names(vecA) <- indexAct
+
+vecG <- rep("G", length(indexGHM))
+names(vecG) <- indexGHM
+
+vecL <- rep("L", length(indexListes))
+names(vecL) <- indexListes
+
+res <- c(vecA, vecG, vecL)
+res <- res[order(as.integer(names(res)))]
+```
+
+Une difficulté est que les listes d’actes apparaissent en deux endroits :
+
+  * Dans les descriptions des GHM ;
+  * Avant les actes qu’elles contiennent.
+
+En lisant le fichier il faut différencier ces deux situations.
+
+  * Un nom de liste suivi d’un acte est un titre de liste qu'on appelera `LT` ;
+  * Un nom de liste suivi d’un GHM ou d’un autre nom de liste est situé dans la description d’un GHM, on gardera le nom `L`.
+
+```{r}
+res[res[-length(res)] == "L" & res[-1] == "A"] <- "LT"
+```
+
+On fait une liste avec pour chaque GHM les noms de liste qui le concernent.
+
+```{r}
+listGHM <- list()
+
+for (i in seq_along(res)) {
+  if (res[i] == "G") {
+    nomGHM <- textGuide[as.integer(names(res[i]))]
+  } else if (res[i] == "L") {
+    listGHM[[nomGHM]] <- c(
+      listGHM[[nomGHM]],
+      textGuide[as.integer(names(res[i]))]
+    )
+  }
+}
+
+head(listGHM)
+```
+
+On fait une liste avec pour chaque liste d’acte les actes qui la concernent.
+
+```{r}
+listAct <- list()
+
+for (i in seq_along(res)) {
+  if (res[i] == "LT") {
+    nomAct <- textGuide[as.integer(names(res[i]))]
+  } else if (res[i] == "A") {
+    listAct[[nomAct]] <- c(
+      listAct[[nomAct]],
+      textGuide[as.integer(names(res[i]))]
+    )
+  }
+}
+
+head(listAct, 2)
+```
+
+On fait une table avec en face de chaque acte le nom des listes auxquelles il appartient.
+
+```{r}
+tabAct <- data.frame(cdc_act = unlist(listAct, use.names = FALSE),
+                     lis_act = rep(names(listAct), unlist(lapply(listAct, length))),
+                     stringsAsFactors = FALSE)
+head(tabAct)
+```
+
+On fait une table avec en face de chaque GHM les listes qui le concernent.
+
+```{r}
+tabGHM <- data.frame(lis_act = unlist(listGHM, use.names = FALSE),
+                     grg_ghm = rep(names(listGHM), unlist(lapply(listGHM, length))),
+                     stringsAsFactors = FALSE)
+head(tabGHM)
+```
+
+En fusionnant les deux on a toutes les combinaisons GHM / Liste d’acte / Actes.
+
+```{r}
+tab <- merge(tabGHM, tabAct, all = TRUE)
+head(tab)
+```

@@ -92,5 +92,3 @@ grep(pattern = "l$", x = exemple, value = TRUE)
 grep(pattern = "^C", x = exemple, value = TRUE)
 grep(pattern = "\\bC", x = exemple, value = TRUE)
 ```
-
-  
