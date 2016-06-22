@@ -160,7 +160,7 @@ ext <-stringr::str_extract(
 paste0(titre, " ", episode, " ", type, ".", ext)
 ```
 
-Tentative (partielle) en une ligne. J'arrive pas à enlever les points dans le titre. Voir : regex golf.
+*Tentative (partielle) en une ligne. J'arrive pas à enlever les points dans le titre. Voir : regex golf.*
 
 ```{r}
 gsub(
