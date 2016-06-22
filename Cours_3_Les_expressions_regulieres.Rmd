@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE, comment = "#")
 Une expression régulière est un motif (*pattern*) qui décrit un ensemble de chaînes de caractères possibles.
 
 ```{r}
-exemple <- c("Alice", "Bob", "Caroll", "Mary Caroll")
+exemple <- c("Alice", "Bob", "Caroll", "Alec Caroll")
 ```
 
 ```{r}
@@ -24,29 +24,29 @@ grep(pattern = "^[AC]", x = exemple, value = TRUE)
 grep(pattern = "^[AC].*l$", x = exemple, value = TRUE)
 ```
 
+*Note : si on veut être pédant l'appellation correcte en français est "expression rationnelle"...*
+
 ## Contruction
 
-Comme une expression mathématique : on combine des expressions simples (des "blocs") pour en faire des expressions plus complexes.
+Comme une expression mathématique : on combine des expressions simples (des "blocs de base") pour en faire des expressions plus complexes.
 
 ## Bloc de base
 
 C'est tout simplement le caractère unique.
 
 ```{r}
-grep(pattern = "o", x = letters, value = TRUE)
+grep(pattern = "o", x = exemple, value = TRUE)
 ```
 
 Ou une classe de caractères entre `[]` :
 
 ```{r}
-grep(pattern = "[bxe]", x = letters, value = TRUE)
+grep(pattern = "[be]", x = exemple, value = TRUE)
 ```
 
 Il existe des symboles pour spécifier des classes particulières : les lettres `[:alpha:]`, les chiffres `[:digit:]`, la ponctuation `[:punct:]`, n'importe quel caractère `.`, etc. Voir les exercices, et surtout :
 
-```{r}
-?regexp
-```
+`?regexp`
 
 ## Combiner les blocs
 
@@ -55,6 +55,7 @@ Tout simplement en les positionnant côte à côte.
 ```{r}
 grep(pattern = "li", x = exemple, value = TRUE)
 grep(pattern = "[Br]o", x = exemple, value = TRUE)
+grep(pattern = "l.c", x = exemple, value = TRUE)
 ```
 
 ## Les quantificateurs
@@ -70,6 +71,14 @@ Pour spécifier combien de fois un bloc est présent.
 
 ```{r}
 grep(pattern = "l{2}", x = exemple, value = TRUE)
+```
+
+## Combiner des expressions alternatives
+
+Pour appliquer plusieurs expressions alternatives on les sépare par `|`.
+
+```{r}
+grep(pattern = "Bob|Caroll", x = exemple, value = TRUE)
 ```
 
 ## Les indicateurs de position
