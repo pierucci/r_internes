@@ -93,4 +93,48 @@ grep(pattern = "^C", x = exemple, value = TRUE)
 grep(pattern = "\\bC", x = exemple, value = TRUE)
 ```
 
-  
+## Les principales fonctions
+
+Il existe de nombreuses fonctions de `R` qui utilisent et exploitent les expressions régulières, parmi lesquelles :
+
+  * `grep` : recherche d'un motif, renvoie les indices des éléments correspondants ou les valeurs correspondantes (si `value = TRUE`)
+  * `grepl` : recherche d'une motif, renvoie TRUE/FALSE en fonction de la présence du motif
+  * `sub` : recherche et remplace un motif, se limite à la première occurence
+  * `gsub` : recherche et remplace un motif, le remplacement se fait sur toutes les occurences
+  * `regexpr` : recherche un motif et renvoie la position et la longueur du match
+  * `regmatches` : combiné à un regexpr, permet d'extraire la chaine de caractère retrouvée par le motif
+
+
+## Les principales fonctions
+  * `grep` : recherche d'un motif, renvoie les indices des éléments correspondants ou les valeurs correspondantes (si `value = TRUE`)
+```{r}
+grep(pattern = "^[AC]", x = exemple)
+grep(pattern = "^[AC]", x = exemple, value = TRUE)
+```
+
+  * `grepl` : recherche d'une motif, renvoie TRUE/FALSE en fonction de la présence du motif
+```{r}
+grepl(pattern = "^[AC]", x = exemple)
+```
+
+## Les principales fonctions
+  * `sub` : recherche et remplace un motif, se limite à la première occurence
+```{r}
+sub(pattern = "l", x = exemple, replacement = "L")
+```
+
+  * `gsub` : recherche et remplace un motif, le remplacement se fait sur toutes les occurences
+```{r}
+gsub(pattern = "l", x = exemple, replacement = "L")
+```
+
+## Les principales fonctions
+  * `regexpr` : recherche un motif et renvoie la position et la longueur du match
+```{r}
+regexpr(pattern = "([A-z])\\1", text = exemple)
+```
+
+  * `regmatches` : combiné à un regexpr, permet d'extraire la chaine de caractère retrouvée par le motif
+```{r}
+regmatches(x = exemple, m = regexpr(pattern = "([A-z])\\1", text = exemple))
+```
