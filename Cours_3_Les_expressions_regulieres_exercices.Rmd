@@ -120,6 +120,37 @@ tab_serv$type <- unlist(lapply(split, get_type))
 knitr::kable(tab_serv)
 ```
 
+
+# Exercice 4
+
+Ecrire un code pour extraire le code FINESS du référentiel (attention aux erreurs et à la Corse...). 
+
+```{r}
+ref <- read.csv2('./FINESS_data.csv', stringsAsFactors = F)
+
+# Première approche : on recupère les match qui correspondent au format d'un FINESS
+finess <- regexpr("[[:digit:]]{1}[[:digit:]|A|B]{1}[[:digit:]]{7}", ref$info)
+# Le invert = NA et le nettoyage derrière permet de ne pas supprimer les non-match, et de leur attribuer un NA
+finMatch <- regmatches(ref$info, finess, invert = NA)
+finMatch <- sapply(finMatch, function(x) {if(length(x)==1) NA else x[2]})
+
+# Autre approche : ici on capture tout ce qui est avant le FINESS, le FINESS et tout ce qui est après, pour ne retourner que le FINESS
+# gsub est lui capable de garder les non-match et de leur donner un NA, ce qui evite le nettoyage vu au dessus
+finSub <- gsub(pattern = "(.)+([[:digit:]]{1}[[:digit:]|A|B]{1}[[:digit:]]{7})(.)+", replacement = "\\2", ref$info)
+
+```
+
+Extraire aussi le nom de la ville (mentionnée après le code postal, sans prendre le CEDEX !)
+
+```{r}
+ville <- gsub(pattern = "^.+[0-9]{4}\\s(.+)(CEDEX)?.*", replacement = "\\1", ref$info)
+
+# On obtient bien dans les deux cas des vecteurs de même longueur que le dataframe initial, ce qui permet de les manipuler aisément
+ref <- cbind(ref, finSub, ville)
+```
+
+On pourrait aller plus loin et récupérer aussi aisément la raison sociale qui correspond au début de nos chaines de caractères...
+
 # Pour aller plus loin
 
 ## Convertir un nom de film
