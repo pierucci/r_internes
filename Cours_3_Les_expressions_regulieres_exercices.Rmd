@@ -1,7 +1,7 @@
 ---
-title: "Cours 3 : Les expressions régulières"
+title: 'Cours 3 : Les expressions régulières'
 author: "Exercices"
-output: html_document
+output: word_document
 ---
 
 # Exercice 1
@@ -15,9 +15,9 @@ Ecrire des *patterns* d'expression régulière pour matcher :
   * Une autre façon d'écrire les codes CIM-10 (O45.0, A68, V64.37, F15.3...)
 
 ```{r}
-ghm <- "[[:digit:]]{2}[CKMZH]{1}[[:digit:]]{2}[1234ABCDZTEJ]"
+ghm <- "[[:digit:]]{2}[CKMZH][[:digit:]]{2}[1234ABCDZTEJ]"
 
-ghm_racine <- "[[:digit:]]{2}[CKMZH]{1}[[:digit:]]{2}[1234ABCDZTEJ]?"
+ghm_racine <- "[[:digit:]]{2}[CKMZH][[:digit:]]{2}[1234ABCDZTEJ]?"
 
 ccam <- "[[:upper:]]{4}[[:digit:]]{3}"
 
@@ -91,7 +91,7 @@ tab_serv <- data_frame(
 ```
 
 ```{r results = 'asis', echo = FALSE}
-knitr::kable(tab_serv)
+knitr::kable(head(tab_serv))
 ```
 
 ```{r}
@@ -102,7 +102,16 @@ Parmi cette même liste, faire deux colonnes :
 
   * Une colonne discipline (avant le `-`)
   * Une colonne type de service (après le `-`)
-  
+
+Le problème est que certaines disciplines ont des traits d'union dans leur intitulé, le libellé est donc coupé en plus de deux parties.
+
+On écrit donc deux fonctions :
+
+ * Une pour récupérer le type : récupère le dernier élément, qui est toujours le type.
+ * Une pour récupérer la discipline : récupère tous les éléments sauf le dernier et les "recompose" avec `paste(..., collapse = "-")`.^[Par défaut `paste()` colle ensemble les éléments de 2 vecteurs, élément par élément. Pour coller ensemble tous les éléments d'un vecteur (l'effondrer) il faut utiliser l'argument `collapse`.]
+
+Puis on fait un `lapply()` suivit d'un `unlist()` (pour transformer le résultat liste en vecteur).
+
 ```{r}
 split <- strsplit(tab_serv$serv, split = "-")
 split[c(1, 2, 11, 16, 44)]
@@ -117,36 +126,63 @@ get_type <- function(x) {
 tab_serv$discip <- unlist(lapply(split, get_discip))
 tab_serv$type <- unlist(lapply(split, get_type))
 
-knitr::kable(tab_serv)
+knitr::kable(head(tab_serv))
 ```
-
 
 # Exercice 4
 
-Ecrire un code pour extraire le code FINESS du référentiel (attention aux erreurs et à la Corse...). 
+Ecrire un code pour extraire le code FINESS du référentiel (attention aux erreurs et à la Corse...).
+```{r result = 'asis'}
+ref <- read.csv2(
+  '~/Documents/r_isp/FINESS_data.csv',
+  stringsAsFactors = FALSE,
+  fileEncoding = "latin1"
+)
+knitr::kable(cbind(n = 1:6, head(ref)))
+```
+
+Première approche : on recupère les match qui correspondent au format d'un FINESS. Le `invert = NA` et le nettoyage derrière permet de ne pas supprimer les non-match, et de leur attribuer un `NA`.
 
 ```{r}
-ref <- read.csv2('./FINESS_data.csv', stringsAsFactors = F)
-
-# Première approche : on recupère les match qui correspondent au format d'un FINESS
-finess <- regexpr("[[:digit:]]{1}[[:digit:]|A|B]{1}[[:digit:]]{7}", ref$info)
-# Le invert = NA et le nettoyage derrière permet de ne pas supprimer les non-match, et de leur attribuer un NA
+finess <- regexpr(
+  "[[:digit:]][[:digit:]|A|B][[:digit:]]{7}",
+  ref$info
+)
 finMatch <- regmatches(ref$info, finess, invert = NA)
-finMatch <- sapply(finMatch, function(x) {if(length(x)==1) NA else x[2]})
+finMatch[c(1:6, 600, 3574)]
 
-# Autre approche : ici on capture tout ce qui est avant le FINESS, le FINESS et tout ce qui est après, pour ne retourner que le FINESS
-# gsub est lui capable de garder les non-match et de leur donner un NA, ce qui evite le nettoyage vu au dessus
-finSub <- gsub(pattern = "(.)+([[:digit:]]{1}[[:digit:]|A|B]{1}[[:digit:]]{7})(.)+", replacement = "\\2", ref$info)
+f_nettoy <- function(x) {
+  if(length(x) == 1) NA else x[2]
+}
+finMatch <- sapply(finMatch, f_nettoy)
+```
 
+Autre approche : ici on capture le FINESS. `gsub()` est lui capable de garder les non-match et de leur donner un `NA`, ce qui evite le nettoyage vu au dessus.
+
+```{r}
+finSub <- gsub(pattern = ".+([[:digit:]][[:digit:]|A|B][[:digit:]]{7}).+", replacement = "\\1", ref$info)
+```
+
+Et sinon heureusement il y a Hadley...
+
+```{r}
+finHad <- stringr::str_extract(
+  ref$info, 
+  "[[:digit:]][[:digit:]|A|B][[:digit:]]{7}"
+)
 ```
 
 Extraire aussi le nom de la ville (mentionnée après le code postal, sans prendre le CEDEX !)
 
 ```{r}
 ville <- gsub(pattern = "^.+[0-9]{4}\\s(.+)(CEDEX)?.*", replacement = "\\1", ref$info)
+```
 
-# On obtient bien dans les deux cas des vecteurs de même longueur que le dataframe initial, ce qui permet de les manipuler aisément
+On obtient bien dans les deux cas des vecteurs de même longueur que le dataframe initial, ce qui permet de les manipuler aisément.
+
+```{r result = 'asis'}
 ref <- cbind(ref, finSub, ville)
+knitr::kable(head(ref))
 ```
 
 On pourrait aller plus loin et récupérer aussi aisément la raison sociale qui correspond au début de nos chaines de caractères...
