@@ -1,0 +1,46 @@
+---
+title: 'Cours 4 : Hadleyverse'
+output:
+  ioslides_presentation:
+    css: slides.css
+    smaller: yes
+  beamer_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = "#")
+library(dplyr)
+```
+
+## Le Hadleyverse
+
+Ensemble de packages autours de la manipulation de données développés par Hadley Wickham. Ces packages sont tous développés de façon à être le plus expressif possible (= facilité à lire et comprendre le code) et le plus cohérent (= convention de nommage, consistence des arguments)
+
+Principaux packages :
+
+  - `dplyr` : package généraliste sur manipulation de données, **TRES** utile
+  - `tidyr` : dédié à la mise en forme des données, sur le modèle de `reshape2` (format long/format wide)
+  - `readr` : lecture des données (remplace read.csv et consort avec des fonctions cohérentes)
+  - `ggplot2` : génération de graphique, **TRES** utile 
+  - `lubridate`: manipulation de dates
+  - `stringr` : manipulation de chaînes de caractère
+  - `readxl`: lecture simple des fichiers Excel natif (.xls et .xlsx)
+
+## Le package `dplyr`
+
+Organisé autours de verbes décrivant la manipulation générique que l'on souhaite appliquer, en particulier :
+  
+  - `filter()` : permet de sélectionner des lignes d'intérêt (comme `subset()`)
+  - `arrange()`: permet de trier le jeu de données selon une ou plusieurs variables
+  - `select()` : permet de sélectionner des variables
+  - `mutate()` : permet de créer une nouvelle variable
+  - `summarise()` : permet de faire une aggrégation
+
+## Le chainage avec dplyr
+
+Pour garder le code le plus lisible et simple possible, il est possible de chainer les manipulations : la sortie d'une manipulation sert automatiquement d'entrée pour la manipulation suivante. Le passage des informations d'une étape à l'autre se fait par le biais d'un opérateur spécial : le `%>%`.
+
+Cela permet de limiter les répétitions inutiles (e.g. définir à chaque fois le nom du dataset qu'on manipule) et de faciliter la compréhension.
+
+Ce n'est pas une partie spécifique à `dplyr`, car cette fonctionnalité est introduite par un package indépendant (`magrittr`) mais celle-ci prend tout son sens dans le contexte des manipulations de données.
+
