@@ -14,13 +14,16 @@ library(dplyr)
 
 ## Le Hadleyverse
 
-Ensemble de packages autours de la manipulation de données développés par Hadley Wickham. Ces packages sont tous développés de façon à être le plus expressif possible (= facilité à lire et comprendre le code) et le plus cohérent (= convention de nommage, consistence des arguments)
+Ensemble de packages autours de la manipulation de données développés par Hadley Wickham. Ces packages sont tous développés de façon à être:
 
-Principaux packages :
+  * le plus expressif possible (= facilité à lire et comprendre le code)
+  * le plus cohérent possible (= convention de nommage, consistence des arguments)
+
+## Quelques packages
 
   - `dplyr` : package généraliste sur manipulation de données, **TRES** utile
-  - `tidyr` : dédié à la mise en forme des données, sur le modèle de `reshape2` (format long/format wide)
-  - `readr` : lecture des données (remplace read.csv et consort avec des fonctions cohérentes)
+  - `tidyr` : dédié à la mise en forme des données (format long/wide)
+  - `readr` : lecture des données (remplace `read.csv()` et consort)
   - `ggplot2` : génération de graphique, **TRES** utile 
   - `lubridate`: manipulation de dates
   - `stringr` : manipulation de chaînes de caractère
@@ -30,17 +33,75 @@ Principaux packages :
 
 Organisé autours de verbes décrivant la manipulation générique que l'on souhaite appliquer, en particulier :
   
-  - `filter()` : permet de sélectionner des lignes d'intérêt (comme `subset()`)
-  - `arrange()`: permet de trier le jeu de données selon une ou plusieurs variables
+  - `filter()` : permet de sélectionner des lignes d'intérêt (comme `subset()` ou `[]`)
+  - `arrange()`: permet de trier le jeu de données (comme `order()`)
   - `select()` : permet de sélectionner des variables
-  - `mutate()` : permet de créer une nouvelle variable
-  - `summarise()` : permet de faire une aggrégation
+  - `group_by()` : permet d'effectuer des opérations par sous-catégories
+  - `mutate()` : permet de créer ou modifier des variables
+  - `summarise()` : permet de faire une aggrégation (souvent utilisé qvec `group_by()`)
 
 ## Le chainage avec dplyr
 
-Pour garder le code le plus lisible et simple possible, il est possible de chainer les manipulations : la sortie d'une manipulation sert automatiquement d'entrée pour la manipulation suivante. Le passage des informations d'une étape à l'autre se fait par le biais d'un opérateur spécial : le `%>%`.
+Pour garder le code le plus lisible et simple possible, il est possible de chainer les manipulations : la sortie d'une première manipulation sert automatiquement d'entrée pour la manipulation suivante.
 
-Cela permet de limiter les répétitions inutiles (e.g. définir à chaque fois le nom du dataset qu'on manipule) et de faciliter la compréhension.
+Le passage des informations d'une étape à l'autre se fait par le biais d'un opérateur spécial : le `%>%`.
 
-Ce n'est pas une partie spécifique à `dplyr`, car cette fonctionnalité est introduite par un package indépendant (`magrittr`) mais celle-ci prend tout son sens dans le contexte des manipulations de données.
+```{r results='hide'}
+log(sum(5, 10))
+5 %>% sum(10) %>% log
+
+arrange(filter(iris, Sepal.Length > 3), Species)
+
+tmp <- filter(iris, Sepal.Length > 3)
+arrange(tmp, Species)
+
+iris %>% filter(Sepal.Length > 3) %>% arrange(Species)
+```
+
+## A l'ancienne
+
+```{r}
+iris_2 <- iris[iris$Sepal.Length > 3, ]
+iris_2$sum_width <- 
+  iris_2$Sepal.Width + iris_2$Petal.Width
+iris_2$sum_length <- 
+  iris_2$Sepal.Length + iris_2$Petal.Length
+res_width <- tapply(iris_2$sum_width, iris_2$Species, mean)
+res_length <- tapply(iris_2$sum_length, iris_2$Species, mean)
+tab <- data.frame(
+  Species = names(res_length),
+  mean_sum_width = res_width,
+  mean_sum_length = res_length
+)
+tab[order(tab$mean_sum_width, decreasing = TRUE), ]
+```
+
+## Avec `dplyr`
+
+```{r}
+iris %>% 
+  filter(Sepal.Length > 3) %>% 
+  mutate(
+    sum_width = Sepal.Width + Petal.Width,
+    sum_length = Sepal.Length + Petal.Length
+  ) %>% 
+  group_by(Species) %>% 
+  summarise(
+    mean_sum_width = mean(sum_width),
+    mean_sum_length = mean(sum_length)
+  ) %>% 
+  arrange(desc(mean_sum_width))
+```
+
+## Autres verbes
+
+```{r}
+iris %>% 
+  select(Species, starts_with("Sepal")) %>% 
+  group_by(Species) %>% 
+  summarise_all(funs(mean, sd))
+```
+
+Lire les vignettes `dplyr` pour plus d'info `browseVignettes(package = "dplyr")`. `dplyr` remplace aussi la fonction `merge()` par exemple.
+
 
