@@ -14,10 +14,12 @@ library(dplyr)
 
 ## Le Hadleyverse
 
-Ensemble de packages autours de la manipulation de données développés par Hadley Wickham. Ces packages sont tous développés de façon à être:
+Ensemble de packages autour de la manipulation de données développés par Hadley Wickham. Ces packages sont tous développés de façon à être:
 
   * le plus expressif possible (= facilité à lire et comprendre le code)
   * le plus cohérent possible (= convention de nommage, consistence des arguments)
+
+De plus les nouvelles versions de ses packages sont plutôt bien documentées et accompagnées de vignette d'aide très pédagogiques. C'est pourquoi ce cours vous orientera souvent vers ces supports.
 
 ## Quelques packages
 
@@ -38,7 +40,7 @@ Organisé autours de verbes décrivant la manipulation générique que l'on souh
   - `select()` : permet de sélectionner des variables
   - `group_by()` : permet d'effectuer des opérations par sous-catégories
   - `mutate()` : permet de créer ou modifier des variables
-  - `summarise()` : permet de faire une aggrégation (souvent utilisé qvec `group_by()`)
+  - `summarise()` : permet de faire une aggrégation (souvent utilisé avec `group_by()`)
 
 ## Le chainage avec dplyr
 
@@ -102,6 +104,15 @@ iris %>%
   summarise_all(funs(mean, sd))
 ```
 
-Lire les vignettes `dplyr` pour plus d'info `browseVignettes(package = "dplyr")`. `dplyr` remplace aussi la fonction `merge()` par exemple.
+Lire les vignettes `dplyr` pour plus d'info `browseVignettes(package = "dplyr")`.
 
+`dplyr` remplace aussi la fonction `merge()` par exemple (par `left_join()` ou `inner_join()`).
 
+## Le package `tidyr`
+
+Ce package sert à ranger des données.
+
+  - passer facilement entre les formats longs/larges
+  - transformer des variables mal codées
+
+Les fonctions seront détaillées dans les exercices. Sinon prenez le temps de lire : `vignette("tidy-data", package = "tidyr")`.
