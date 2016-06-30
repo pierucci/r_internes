@@ -11,12 +11,13 @@ library(tidyr)
 library(knitr)
 ```
 
-Importer la base de données `medocs.csv`, une base de données disponible en open data.^[Les données ont déjà été un peu nettoyée pour faciliter l'import pour l'exercice par rapport à la base originale...] Cette base contient les données mensuelles de consommation remboursée par l'Assurance maladie sur le premier semestre 2016.
+Importer la base de données `medocs.csv`, une base de données disponible en open data.^[Les données ont déjà été un peu nettoyées pour faciliter l'import pour l'exercice par rapport à la base originale...] Cette base contient les données mensuelles de consommation remboursée par l'Assurance maladie sur le premier semestre 2016.
 
 ```{r}
 tab <- read.csv(
-  "~/Documents/r_isp/medocs.csv",
-  stringsAsFactors = FALSE
+  "./medocs.csv",
+  stringsAsFactors = FALSE,
+  encoding = "UTF-8"
 )
 head(tab, 2)
 ```
@@ -29,7 +30,8 @@ Nettoyer les coûts et les chiffres pour les lire comme des données numériques
 
 ```{r}
 clean <- function(x) {
-  as.numeric(gsub("€|\\s*", "", x))
+  # J'ai remplace le € par son code ASCII pour compatibilite
+  as.numeric(gsub(" \u20ac|\\s*", "", x))
 }
 
 tab <- tab %>% 
