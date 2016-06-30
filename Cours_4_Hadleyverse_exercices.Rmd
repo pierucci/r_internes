@@ -5,26 +5,123 @@ date: "June 30, 2016"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r include = FALSE}
+library(dplyr)
+library(tidyr)
+library(knitr)
 ```
 
-## R Markdown
+Importer la base de données `medocs.csv`, une base de données disponible en open data.^[Les données ont déjà été un peu nettoyée pour faciliter l'import pour l'exercice par rapport à la base originale...] Cette base contient les données mensuelles de consommation remboursée par l'Assurance maladie sur le premier semestre 2016.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+tab <- read.csv(
+  "~/Documents/r_isp/medocs.csv",
+  stringsAsFactors = FALSE
+)
+head(tab, 2)
 ```
 
-## Including Plots
+# Nettoyage
 
-You can also embed plots, for example:
+## Nettoyage des chiffres
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+Nettoyer les coûts et les chiffres pour les lire comme des données numériques.
+
+```{r}
+clean <- function(x) {
+  as.numeric(gsub("€|\\s*", "", x))
+}
+
+tab <- tab %>% 
+  mutate_at(
+    vars(
+      starts_with("Base"),
+      starts_with("Nombre"),
+      starts_with("Montant")
+    ),
+    clean
+  )
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Nettoyage des colonnes
+
+Les colonnes base, nombre et montant sont répétées par mois. Il faudrait en faire uniquement 3 colonnes, avec une variable indicatrice du mois.
+
+Pour l'exercice les étapes sont stockées dans des tables temporaires pour montrer le résultat des étapes intermédiaires mais bien entendu en pratique il est posible (et conseillé) de tout enchaîner d'un coup.
+
+Première étape: regrouper les colonnes.
+
+```{r}
+etape1 <- tab %>% 
+  gather(
+    key = var_name,
+    value = value,
+    starts_with("Base"),
+    starts_with("Nombre"),
+    starts_with("Montant")
+  )
+
+etape1 %>% 
+  select(CIP13, var_name, value) %>% 
+  head
+```
+
+Deuxième étape : extraire l'information du mois et du type de variable dans des colonnes séparées. Notez qu'on utilise la capture des expressions régulières.
+
+```{r}
+etape2 <- etape1 %>% 
+  extract(
+    col = var_name,
+    into = c("type", "mois"),
+    regex = "^([A-Za-z]+)\\..*([0-9])$"
+  )
+
+etape2 %>% 
+  select(CIP13, type, mois, value) %>% 
+  head
+```
+
+Troisième étape : refaire 3 colonnes à partir de la variable `type`.
+
+```{r}
+tab_clean <- etape2 %>% 
+  spread(
+    key = type,
+    value = value,
+    fill = 0
+  )
+
+tab_clean %>% 
+  select(CIP13, mois, Base, Montant, Nombre) %>% 
+  head
+```
+
+Regardez comme c'est joli en une seule étape.
+
+```{r}
+tab <- tab %>% 
+  gather(
+    key = var_name,
+    value = value,
+    starts_with("Base"),
+    starts_with("Nombre"),
+    starts_with("Montant")
+  ) %>% 
+  extract(
+    col = var_name,
+    into = c("type", "mois"),
+    regex = "^([A-Za-z]+)\\..*([0-9])$"
+  ) %>% 
+  spread(
+    key = type,
+    value = value,
+    fill = 0
+  )
+```
+
+## Analyse des données
+
+Quelles questions vous inspire cette base ?
+
+L'évolution mensuelle des dépenses totales des médicaments contre l'hépatite virale ? Du montant par unité ? Un classement des coûts unitaires par classe ATC ?
+
