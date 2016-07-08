@@ -61,6 +61,106 @@ arrange(tmp, Species)
 iris %>% filter(Sepal.Length > 3) %>% arrange(Species)
 ```
 
+```{r include = FALSE}
+tab <- data.frame(
+  class = c(rep("a", 2), rep("b", 3)),
+  var = c(10, 20, 110, 120, 160)
+)
+```
+
+## Mutate {.reduceCode}
+
+`mutate` crée des nouvelles variables, sans changer le nombre de lignes de la table. On peut utiliser des variables qu'on vient de créer (ici `var2` par exemple).
+```{r}
+tab
+tab %>% 
+  mutate(
+    var2 = var + 1,
+    var3 = var2 * 10
+  )
+```
+
+## Summarise {.reduceCode}
+
+`summarise` par contre résume toutes les lignes de la table en une seule ligne. Seules les variables crées sont conservées, vu que les anciennes variables ne peuvent tenir sur une seule ligne...
+```{r}
+tab
+tab %>% 
+  summarise(
+    var2 = mean(var),
+    var3 = sum(var)
+  )
+```
+Il faut donc utiliser des fonctions qui prennent en argument un vecteur avec plusieurs valeurs, et retournent une seule valeur puisque le résultat doit tenir sur une seule ligne. On peut appeler ces fonctions des *fonctions de résumé (summary functions)*.
+
+## Group by
+
+En soi `group_by` ne change rien aux données, il indique juste que la table devient groupée.
+```{r}
+tab %>% 
+  group_by(class)
+```
+Par contre ce groupement va changer le comportement de `mutate` et `summarise`...
+
+## Group by + summarise
+
+Au lieu de résumer les données en une seule ligne, `summarise` appliqué à des données groupées résume les données en une ligne par groupe.
+```{r}
+tab %>% 
+  group_by(class) %>% 
+  summarise(
+    var2 = mean(var),
+    var3 = sum(var)
+  )
+```
+Les variables indiquant les groupes sont conservées, en plus des variables crées par `summarise`.
+
+## Group by + mutate {.reduceCode}
+
+`mutate` utilisé avec `summarise` permet de calculer la nouvelle variable par groupe. Comparer :
+```{r}
+tab %>% mutate(var2 = sum(var), var3 = mean(var))
+tab %>% group_by(class) %>% 
+  mutate(var2 = sum(var), var3 = mean(var))
+```
+Bien entendu ça ne fonctionne qu'avec des *summary functions*.
+
+## Group by + arrange (1) {.reduceCode}
+
+`groupe_by` ne fonctionne pas avec `arrange` pour trier par groupe.
+```{r}
+tab %>% mutate(var2 = sin(var)) %>% 
+  group_by(class) %>% 
+  arrange(var2)
+```
+
+## Group by + arrange (2) {.reduceCode}
+
+Il faut ajouter la variable de groupe dans `arrange`.
+```{r}
+tab %>% mutate(var2 = sin(var)) %>% 
+  group_by(class) %>% 
+  arrange(class, var2)
+```
+
+## Fonctions spéciales {.reduceCode}
+
+Il existe quelques fonctions spéciales très utiles: `n` le nombre de lignes, `row_number` le numéro de ligne, `lead` et `lag` pour récupérer les lignes suivantes ou précédentes...
+```{r}
+tab %>% mutate(
+  nline = n(), rn = row_number(),
+  lead_var = lead(var), lagvar = lag(var))
+```
+
+## Fonctions spéciales + Group by {.reduceCode}
+
+Toutes ces fonctions prennent `group_by` en compte.
+```{r}
+tab %>% group_by(class) %>% mutate(
+  nline = n(), rn = row_number(),
+  lead_var = lead(var), lagvar = lag(var))
+```
+
 ## A l'ancienne
 
 ```{r}
