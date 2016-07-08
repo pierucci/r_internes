@@ -147,7 +147,7 @@ tab_clean %>%
   # group_by mois
   # le summarise ne fait disparaitre
   # qu'un niveau à la fois !
-  arrange(desc(n)) %>% 
+  arrange(mois, desc(n)) %>% 
   mutate(classement = row_number()) %>% 
   filter(classement <= 5) %>% 
   arrange(mois, classement) %>% 
@@ -168,7 +168,7 @@ tab_clean %>%
   kable
 ```
 
-Un classement des coûts unitaires par classe ATC.
+Un classement des coûts unitaires par classe ATC. Récupérer le top 10.
 
 ```{r result = 'asis'}
 tab_clean %>% 
