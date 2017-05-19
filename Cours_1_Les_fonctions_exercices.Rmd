@@ -1,14 +1,17 @@
 ---
 title: 'Cours 1 : Les fonctions'
 author: "Exercices"
-output: word_document
+output:
+  html_document: 
+    toc: yes
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(include = TRUE)
 ```
 
-# Exemple d'utilisation
+# Description de variables
 
 Ecrire une fonction qui, à partir d'une variable, effectue les étapes suivantes :
 
@@ -20,10 +23,7 @@ Ecrire une fonction qui, à partir d'une variable, effectue les étapes suivante
 ```{r}
 impute_and_describe <- function(x) {
   if (any(is.na(x))) {
-    message(paste(
-      "Le nombre de données manquantes est",
-      sum(is.na(x))
-    ))
+    message("Le nombre de données manquantes est ", sum(is.na(x)))
   }
   x[is.na(x)] <- mean(x, na.rm = TRUE)
   hist(x)
@@ -32,7 +32,7 @@ impute_and_describe <- function(x) {
 impute_and_describe(c(rnorm(10), NA))
 ```
 
-# Le lexical scoping
+# Etude d'associations
 
 Ecrire une fonction spécifique à un jeu de données. Par exemple à partir du jeu de données `infert`, une fonction :
 
@@ -58,90 +58,45 @@ assoc_case_infert("age")
 assoc_case_infert("education")
 ```
 
-`infert` est recherché dans l'environnement où `f()` est définie. Si on appelle `f()` depuis une fonction où on défini un autre jeu de données `infert` on risque d'avoir des surprises.
-
-Exemple : faire une fonction qui rééchantillonne `infert`, le modifie, et appelle à nouveau `assoc_case_infert()`.
-
-```{r}
-resample_and_test <- function(x) {
-  resamp <- sample(
-    seq_len(nrow(infert)),
-    size = nrow(infert),
-    replace = TRUE
-  )
-  infert <- infert[resamp, ]
-  assoc_case_infert(x)
-}
-resample_and_test("age")
-```
-
-Ca ne fonctionne pas car le `infert` utilisé par la fonction `assoc_case_infert()` est toujours celui de son *enclosing environment*, l'environnement global, et pas l'`infert` de son *calling environment*, l'*execution environment* de `resample_and_test()`.
-
 # Manipulation des arguments
 
 Ecrire une fonction qui a les proprités suivantes :
 
   * Prend 2 arguments `x` et `y` ;
   * Représente un nuage de points des arguments ;
-  * `x` a comme valeur par défault 10 valeurs aléatoires entre 0 et 1 ;
   * Si `y` est manquant alors `x` est représenté en ordonnée, selon son index en abcisse.
   
 ```{r}
-myplot1 <- function(x = runif(10), y) {
+my_plot1 <- function(x, y) {
   if(missing(y)) {
     y <- x
     x <- seq_along(y)
   }
   plot(x, y)
 }
-```
-
-Autre exercice : pareil, mais si `y` est manquant il prend les valeurs des index de `x`.
-
-```{r}
-myplot2 <- function(x = runif(10), y = seq_along(x)) {
-  plot(x, y)
-}
+my_plot1(rnorm(100), rnorm(100))
+my_plot1(rnorm(100))
 ```
 
 # Dot Dot Dot (`...`)
 
-Faire un fonction qui prend comme argument un nombre de points et représente un nuage de points aléatoirement généré selon un distribution normale. Les paramètres de `plot()` doivent pouvoir être modifiés depuis la fonction.
+Faire un fonction qui prend comme argument un nombre de points et représente un nuage de points aléatoirement généré. Les paramètres de `plot()` doivent pouvoir être modifiés depuis la fonction.
+
+Par défault la fonction représente 100 points.
 
 ```{r}
-random_scatter <- function(n, ...) {
+random_scatter <- function(n = 100, ...) {
   x <- rnorm(n)
   y <- rnorm(n)
   
   plot(x, y, ...)
 }
-random_scatter(100)
+random_scatter()
 random_scatter(500, col = "red")
 random_scatter(1000, ylim = c(0, 1))
 ```
 
-Faire une fonction qui à partir d'un nombre arbitraire de `t.test()` retourne le plus significatif.^[Plus avancé, utilise `lapply()` (prévu pour la leçon suivante).]
-
-```{r}
-most_signif_ttest <- function(...) {
-  list_ttest <- list(...)
-  
-  extract_p <- function(x)
-    x$p.value
-  
-  pvals <- unlist(lapply(list_ttest, extract_p))
-  
-  list_ttest[[which(pvals == min(pvals))]]
-}
-most_signif_ttest(
-  t.test(rnorm(10), rnorm(10)),
-  t.test(rnorm(10), rnorm(10)),
-  t.test(rnorm(10), rnorm(10)),
-  t.test(rnorm(10), rnorm(10))
-)
-```
-
-## Valeurs de retour complexes 
+# Valeurs de retour complexes 
 
 Faire une fonction qui retourne pour une variable :
 
@@ -174,6 +129,50 @@ impute_mean <- function(x) {
 (test <- impute_mean(c(1, 2, NA, 3)))
 attr(test, "imputed")
 ```
+
+# Dot Dot Dot (`...`) avancé
+
+Faire une fonction qui à partir d'un nombre arbitraire de `t.test()` retourne le plus significatif.^[Plus avancé, utilise `lapply()` (prévu pour la leçon suivante).]
+
+```{r}
+most_signif_ttest <- function(...) {
+  list_ttest <- list(...)
+  
+  extract_p <- function(x)
+    x$p.value
+  
+  pvals <- unlist(lapply(list_ttest, extract_p))
+  
+  list_ttest[[which(pvals == min(pvals))]]
+}
+most_signif_ttest(
+  t.test(rnorm(10), rnorm(10)),
+  t.test(rnorm(10), rnorm(10)),
+  t.test(rnorm(10), rnorm(10)),
+  t.test(rnorm(10), rnorm(10))
+)
+```
+
+# Note sur le scoping
+
+Dans la section *Etude d'associations*, `infert` est recherché dans l'environnement où `f()` est définie. Si on appelle `f()` depuis une fonction où on défini un autre jeu de données `infert` on risque d'avoir des surprises.
+
+Exemple : faire une fonction qui rééchantillonne `infert`, le modifie, et appelle à nouveau `assoc_case_infert()`.
+
+```{r}
+resample_and_test <- function(x) {
+  resamp <- sample(
+    seq_len(nrow(infert)),
+    size = nrow(infert),
+    replace = TRUE
+  )
+  infert <- infert[resamp, ]
+  assoc_case_infert(x)
+}
+resample_and_test("age")
+```
+
+Ca ne fonctionne pas car le `infert` utilisé par la fonction `assoc_case_infert()` est toujours celui de son *enclosing environment*, l'environnement global, et pas l'`infert` de son *calling environment*, l'*execution environment* de `resample_and_test()`.
 
 # Une fonction argument d'une fonction
 
