@@ -1,7 +1,9 @@
 ---
 title: 'Cours 2 : Les boucles'
 author: "Exercices"
-output: word_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -69,8 +71,8 @@ Exercices :
 ```{r}
 annees <- 1967:1980
 
-for(i in annees){
-  temp <- tab$pce[tab$annee == i]  
+for (a in annees) {
+  temp <- tab$pce[tab$annee == a]  
   mean(temp)
 }
 ```
@@ -78,8 +80,8 @@ for(i in annees){
 Toutefois cette boucle n'affiche rien. C'est parceque le contenu de la boucle n'est pas automatiquement "printé".^[Appeler `print` automatiquement est le comportement par défaut de `R` dans la console, et les utilisateurs pourraient penser que c'est habituel. En réalité c'est une exception, la règle est de ne pas appeler `print`.] Cette nuance est très importante, surtout pour des objets dont on oublie qu'ils ont besoin de passer par `print` pour être affichés (en particulier les graphiques de `ggplot2`).
 
 ```{r}
-for(i in annees){
-  temp <- tab$pce[tab$annee == i]  
+for (a in annees) {
+  temp <- tab$pce[tab$annee == a]  
   print(mean(temp))
 }
 ```
@@ -90,9 +92,27 @@ On peut vouloir stocker le résultat au lieu de juste l'afficher dans la console
 
 ```{r}
 output <- numeric()
-for(i in annees){
-  temp <- tab$pce[tab$annee == i]  
+
+for (a in annees) {
+  temp <- tab$pce[tab$annee == a]  
   output <- c(output, mean(temp))
+}
+
+output
+```
+
+*Pour aller plus loin*
+
+Si on déclare la longueur du vecteur `output` a priori le code tourne plus vite que si on fait "grandir" le vecteur en ajoutant les résultats au fur et à mesure à son extrémité (on commence à voir la différence pour du code qui tourne longtemps !).
+
+Toutefois pour que ce code marche il faut faire tourner la boucle sur la position des années sur le vecteur (1, 2, etc.), pas sur la valeur des années (1971, 1972, etc.) comme précédement. En effet nous avons besoin de la position pour effectuer `output[i] <- mean(temp)`.
+
+```{r}
+output <- numeric(length = length(annees))
+
+for (i in seq_along(annees)) {
+  temp <- tab$pce[tab$annee == annees[i]]  
+  output[i] <- mean(temp)
 }
 
 output
@@ -122,6 +142,7 @@ for(i in 1970:1971){
     write.csv2(x = temp, file = file_name, row.names = FALSE)
   }
 }
+list.files("./exercice_temp")
 ```
 
 # Les `lapply`
@@ -165,6 +186,20 @@ for (i in 1:length(list_tables)) {
 head(result)
 ```
 
+*Pour aller plus loin*
+
+On peut reconstituer la table beacoup plus rapidement avec :
+
+```{r eval = FALSE}
+Reduce(f = rbind, x = list_tables)
+```
+
+Ou bien encore :
+
+```{r eval = FALSE}
+do.call(what = rbind, args = list_tables)
+```
+
 # Les `apply`
 
 Pour appliquer ligne à ligne une fonction sur une table (ou colonne par colonne). Un `apply` est construit de la façon suivante :
@@ -206,6 +241,10 @@ apply(x, 1, mean)
 apply(x, 1, mean, na.rm = TRUE)
 ```
 
+*Pour aller plus loin*
+
+En pratique pour faire ces opérations simples utilisez les fonctions `rowSums()`, `rowMeans()`, `colSums()` et `colMeans()` qui sont beaucoup plus performantes.
+
 ## Exercice 2
 
 Il est possible d'utiliser avec `apply` une fonction qu'on a écrit. ^[Avec `lapply` aussi d'ailleurs.] Par exemple pour compter les données manquantes par variables :
@@ -222,6 +261,7 @@ Ou faire un LOCF :
 ```{r}
 locf <- function(x) {
   x_ok <- na.omit(x)
+  
   if (length(x_ok) > 0) {
     return(x_ok[length(x_ok)])
   } else {
@@ -276,17 +316,6 @@ exemple_liste[[1]] * 2
 # d'un seul wagon a la fois
 exemple_liste[[2:3]]
 ```
-
-## Mmmmmmagic
-
-Dans l'exemple avec `lapply` on peut éviter l'appel à la boucle `for` avec cette opération magique :
-
-```{r}
-result <- Reduce(rbind, list_tables)
-head(result)
-```
-
-`?Reduce` pour les plus curieux<
 
 ```{r include=FALSE}
 unlink("./exercice_temp", recursive = TRUE)
