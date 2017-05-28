@@ -1,10 +1,289 @@
 ---
 title: 'Cours 1 : Les fonctions'
 author: "Encore plus avancé"
-output: word_document
+output:
+  word_document:
+    toc: yes
+  html_document:
+    toc: yes
 ---
 
 Concepts plus avancés censurés de la présentation pour ne pas faire trop peur !
+
+```{r}
+f <- function(x, y) {
+  x + y
+}
+```
+
+
+# Les constituants d'une fonction {.reduceCode}
+
+Une fonction est constitué de **3 principaux éléments** :
+
+- Le **corps** : la définition de la fonction, accessible via `body()`.
+```{r}
+body(f)
+```
+- Les **arguments** : les paramètres qui sont utilisés par la fonction, accessible via `formals()`.
+```{r}
+formals(f)
+```
+- L'**environnement** : le contexte dans lequel la fonction est définie, accessible via `environment()`.
+```{r}
+environment(f)
+```
+
+# Les arguments
+
+Une fonction peut avoir un nombre important d'arguments. Comment faire lors de l'appel d'une fonction pour attribuer la bonne valeur au bon argument ?
+
+`R` fait appel à trois techniques possibles pour savoir à quel argument on fait référence dans l'appel d'une fonction :
+
+- Matching par leur nom complet
+- Matching par leur nom partiel
+- Matching par leur position (ordre dans la définition de la fonction)
+
+## Les arguments
+```{r}
+f <- function(foo, bar) {
+  c(foo, bar)
+}
+```
+
+Possiblité de donner les argument en :
+
+- Utilisant leurs noms complets
+```{r, results='hide'}
+f(foo = 1 , bar = 2)
+```
+
+- Utilisant une partie de leur nom (*partial matching*)
+```{r, results='hide'}
+f(f = 1, b = 2)
+#A noter, le caractère confusiogène de f() la fonction et f le paramètre "raccourci"
+```
+
+- Utilisant leur position dans la définition de la fonction
+```{r, results='hide'}
+f(1, 2)
+```
+
+## Manipulation des arguments {.reduceCode}
+
+Il est possible de tester la présence/absence d'un argument avec `missing()`.
+La fonction renvoie `TRUE` si l'argument n'a pas de valeur (et `FALSE` sinon).
+
+Attention : `NULL` ou `NA` sont bien des valeurs...
+
+```{r}
+f <- function(x, y) {
+  if (missing(y)) {
+    return("La valeur y doit être précisée")
+  }
+  return("Les valeurs de x et y sont précisées")
+}
+```
+
+```{r}
+f(x = "foo", y = "bar")
+f(x = "foo")
+f(x = "foo", y = NULL)
+```
+
+# Les environnements
+
+```{r}
+x <- 3
+varName <- "foo"
+```
+
+En `R` les noms d'objets (`x`, `varName`...) sont liés à des valeurs (`3`, `"foo"`...). Ces informations sont contenues dans un *environnement* (une sorte de "sac de noms").
+
+Par exemple l'environnement où on travaille quand on ouvre `R` est l'environnement global. Mais il peut exister d'autres environnements.
+
+Chaque fonction utilise 3 environnements relatifs : *enclosing*, *execution*, *calling*.
+
+## Execution environment
+
+Quand une fonction est lancée, le code contenu dans le corps est executé dans un nouvel environnement, créé *de novo*.
+
+Sauf exception, cet environnement est détruit et les données sont perdues quand la fonction est finie.
+
+```{r error = TRUE}
+f <- function() {
+  variable <- 42
+  variable
+}
+
+f()
+
+variable
+```
+
+## Enclosing environment {.reduceCode}
+
+C'est l'environnement où la fonction a été *définie*. Pour une fonction définie classiquement, c'est donc l'environnement global.
+
+Mais il est possible que ça soit un autre environnement, par exemple l'*execution environment* d'une autre fonction (quand une deuxième fonction est définie dans une première fonction).
+
+```{r}
+f <- function() {
+  g <- function(y) y^2
+  environment(g)
+}
+```
+L'*enclosing environment* de `f()` est l'environement global.
+```{r}
+environment(f)
+```
+L'*enclosing environment* de `g()` est l'*execution environment* de `f()`.
+```{r}
+f()
+```
+
+## Calling environment
+
+C'est tout simplement l'environnement où la fonction est lancée. On peut l'obtenir avec `parent.frame()`.
+
+```{r}
+f <- function() {
+  parent.frame()
+}
+```
+Ici c'est donc l'environnement global:
+```{r}
+f()
+```
+Mais pour cette même fonction `f()`, si elle est lancée depuis `g()`, ça peut aussi être l'*execution environment* de `g()`.
+```{r}
+g <- function() {
+  f()
+}
+g()
+```
+
+# Le lexical scoping
+
+Ensemble de règles permettant à `R` de faire correspondre une valeur à un symbole.
+```{r}
+# x est le symbole, 10 est la valeur
+x <- 10
+f <- function() {
+  x <- 20
+  x
+}
+
+x
+f()
+```
+
+## Le lexical scoping en détails (1/4)
+### Parcours des environnements
+
+Quand une variable n'est pas définie directement dans l'environnement de la fonction (*execution environment*), `R` va la chercher ailleurs.
+
+Plus précisement, `R` va remonter progressivement le `searchpaths()` à la recherche d'une correspondance avec une variable/fonction portant ce nom.
+
+Ici, la variable `x` est définie dans l'environnement de la fonction, donc R utilise cette correspondance :
+```{r}
+f <- function() {
+  x <- 1
+  x * 2
+}
+
+f()
+```
+
+## Le lexical scoping en détails (1/4)
+Ici, la variable `x` n'est pas définie dans l'environnement de la fonction, mais dans son *enclosing environment*, l'environnement global. 
+
+A l'exécution de la fonction `f`, `R` va d'abord chercher une correspondance pour `x` dans l'environnement de la fonction, puis va remonter à son *enclosing environment*, où il trouve une correspondance.
+```{r}
+x <- 10
+f <- function() {
+  print(x)
+}
+
+f()
+```
+
+## Le lexical scoping en détails (2/4)
+### Fonctions VS variables
+
+Une fonction et une variable, nommée à l'identique, ne sont pour autant pas les mêmes objets.
+Ainsi, il est possible de manipuler des fonctions et des variables avec le même nom.
+
+En fonction du contexte (appel d'une variable ou d'une fonction), `R` va chercher dans le type d'objet adéquat.
+
+**ATTENTION : c'est pratique, mais c'est une potentielle source d'erreurs** (risque de confusion)
+
+Ici, on crée un variable min correspondant à un vecteur
+```{r}
+min <- c(5:10)
+min
+```
+
+`R` fait bien la distinction entre la fonction min() et la variable min
+```{r}
+min(min)
+```
+
+## Le lexical scoping en détails (3/4) {.reduceCode}
+### Variables éphémères
+
+Les variables définies dans l'environnement de la fonction n'existent et/ou ne sont manipulées que pendant la durée de l'exécution de la fonction, puis disparaissent à la fin de l'exécution.
+
+Exemple : 
+```{r}
+f <- function() {
+  x <- 1
+  x * 2
+}
+```
+
+Appels successifs de la fonction : x est créé, manipulé, puis détruit à chaque exécution
+```{r}
+f()
+f()
+```
+
+## Le lexical scoping en détails (4/4) {.reduceCode}
+### Evaluation à l'exécution
+
+Les différentes variables utilisées par une fonction ne sont pas évalués lorsque la fonction est crée.
+L'ensemble de ces éléments sont évaluée au **moment où la fonction est exécutée**.
+
+Par conséquent, la valeur prise par une variable dans une fonction peut varier en fonction d'éléments extérieurs à la fonction (**attention, danger !**).
+
+Exemple : 
+```{r}
+x <- 10
+f <- function() {
+ x^2
+}
+
+f()
+
+x <- 100
+f()
+```
+
+## Lazy evaluation
+L'évaluation d'un argument ne se fait qu'à l'instant *t* où l'argument est utilisé dans le corps de la fonction (et donc à l'instant *t* où l'évaluation devient nécessaire).
+ 
+```{r}
+f <- function(a = 1 , b = a * 2) {
+  a <- 6
+  b
+}
+```
+
+L'évaluation de `b` ne se fait qu'au moment de son utilisation 
+(donc ici après l'affectation de la valeur 6 à `a`)
+```{r}
+f()
+```
 
 # Closures
 

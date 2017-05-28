@@ -2,13 +2,13 @@
 title: 'Cours 1 : Les fonctions'
 author: "Exercices"
 output:
-  html_document: 
-    toc: yes
   word_document: default
+  html_document:
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(include = TRUE)
+knitr::opts_chunk$set(include = FALSE)
 ```
 
 # Description de variables
@@ -130,7 +130,11 @@ impute_mean <- function(x) {
 attr(test, "imputed")
 ```
 
-# Dot Dot Dot (`...`) avancé
+# Exercices avancés
+
+Vraiment pas obligatoires !
+
+## Dot Dot Dot (`...`) avancé
 
 Faire une fonction qui à partir d'un nombre arbitraire de `t.test()` retourne le plus significatif.^[Plus avancé, utilise `lapply()` (prévu pour la leçon suivante).]
 
@@ -153,7 +157,7 @@ most_signif_ttest(
 )
 ```
 
-# Note sur le scoping
+## Note sur le scoping
 
 Dans la section *Etude d'associations*, `infert` est recherché dans l'environnement où `f()` est définie. Si on appelle `f()` depuis une fonction où on défini un autre jeu de données `infert` on risque d'avoir des surprises.
 
@@ -174,7 +178,7 @@ resample_and_test("age")
 
 Ca ne fonctionne pas car le `infert` utilisé par la fonction `assoc_case_infert()` est toujours celui de son *enclosing environment*, l'environnement global, et pas l'`infert` de son *calling environment*, l'*execution environment* de `resample_and_test()`.
 
-# Une fonction argument d'une fonction
+## Une fonction argument d'une fonction
 
 Reprendre l'exemple précédent, mais utiliser une fonction arbitraire pour faire l'imputation. Du coup la fonction arbitraire prend peut-être d'autres arguments arbitraires ?
 

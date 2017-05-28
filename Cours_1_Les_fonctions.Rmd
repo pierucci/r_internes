@@ -1,10 +1,10 @@
 ---
 title: 'Cours 1 : Les fonctions'
 output:
+  beamer_presentation: default
   ioslides_presentation:
     css: slides.css
     smaller: yes
-  beamer_presentation: default
 ---
 
 ```{r setup, include=FALSE}
