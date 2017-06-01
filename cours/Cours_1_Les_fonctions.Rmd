@@ -18,7 +18,7 @@ La **TRES** grande majorité des informations données ici sont issues du livre 
 Une référence (en Anglais !) en "vulgarisation" des fonctionnalités avancées de `R`.
 
 <div class="centered">
-![](img/AdvancedR.jpg)
+![](../img/AdvancedR.jpg)
 
 [http://adv-r.had.co.nz/](http://adv-r.had.co.nz/)
 </div>
