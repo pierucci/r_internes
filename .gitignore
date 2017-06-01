@@ -1,4 +1,5 @@
 *.docx
 *.html
+*.pdf
 .Rhistory
 .Rproj.user
