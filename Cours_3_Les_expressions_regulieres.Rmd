@@ -95,7 +95,7 @@ grep(pattern = "Bob|Caroll", x = exemple, value = TRUE)
 
   * `^`: début de la chaîne
   * `$`: fin de la chaîne
-  * `\b`: début ou fin d'un mot
+  * `\\b`: début ou fin d'un mot
   
 ```{r}
 grep(pattern = "l$", x = exemple, value = TRUE)
@@ -108,7 +108,7 @@ grep(pattern = "\\bC", x = exemple, value = TRUE)
 ## Les backreferences
 
   * `()`: Groupe des caractères dans une seule expression et les garde en mémoire
-  * `\1`, `\2`: Rappelle la sous-expression enregistrée
+  * `\\1`, `\\2`: Rappelle la sous-expression enregistrée
 
 ```{r}
 grep(pattern = "(.)\\1", x = exemple, value = TRUE)
