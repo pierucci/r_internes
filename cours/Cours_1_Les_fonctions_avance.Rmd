@@ -2,9 +2,9 @@
 title: 'Cours 1 : Les fonctions'
 author: "Encore plus avancé"
 output:
-  word_document:
-    toc: yes
   html_document:
+    toc: yes
+  word_document:
     toc: yes
 ---
 

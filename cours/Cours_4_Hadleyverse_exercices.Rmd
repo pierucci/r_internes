@@ -2,21 +2,23 @@
 title: 'Cours 4 : Le Hadleyverse'
 author: "Exercices"
 date: "June 30, 2016"
-output: word_document
+output:
+  html_document: 
+    toc: yes
+  word_document: default
 ---
 
 ```{r include = FALSE}
 library(dplyr)
 library(tidyr)
 library(knitr)
-setwd("~/Documents/r_isp/")
 ```
 
 Importer la base de données `medocs.csv`, une base de données disponible en open data.^[Les données ont déjà été un peu nettoyées pour faciliter l'import pour l'exercice par rapport à la base originale...] Cette base contient les données mensuelles de consommation remboursée par l'Assurance maladie sur le premier semestre 2016.
 
 ```{r}
 tab <- read.csv(
-  "./medocs.csv",
+  "../data/medocs.csv",
   stringsAsFactors = FALSE,
   encoding = "UTF-8"
 )
@@ -122,7 +124,7 @@ tab <- tab %>%
   )
 ```
 
-## Analyse des données
+# Analyse des données
 
 La fonction `kable()` sert juste à sortir le résultat dans un tableau pour le document final.
 

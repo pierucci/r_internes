@@ -2,9 +2,9 @@
 title: 'Cours 1 : Les fonctions'
 author: "Exercices"
 output:
-  word_document: default
   html_document:
     toc: yes
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}

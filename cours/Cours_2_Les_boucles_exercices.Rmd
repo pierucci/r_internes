@@ -2,8 +2,9 @@
 title: 'Cours 2 : Les boucles'
 author: "Exercices"
 output:
+  html_document: 
+    toc: yes
   word_document: default
-  html_document: default
 ---
 
 ```{r setup, include=FALSE}

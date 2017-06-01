@@ -1,7 +1,10 @@
 ---
 title: 'Cours 3 : Les expressions régulières'
 author: "Exercices"
-output: word_document
+output:
+  html_document: 
+    toc: yes
+  word_document: default
 ---
 
 # Exercice 1
@@ -134,7 +137,7 @@ knitr::kable(head(tab_serv))
 Ecrire un code pour extraire le code FINESS du référentiel (attention aux erreurs et à la Corse...).
 ```{r result = 'asis'}
 ref <- read.csv2(
-  '~/Documents/r_isp/FINESS_data.csv',
+  '../data/FINESS_data.csv',
   stringsAsFactors = FALSE,
   fileEncoding = "latin1"
 )
