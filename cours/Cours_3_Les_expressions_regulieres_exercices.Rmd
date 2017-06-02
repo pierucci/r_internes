@@ -228,6 +228,8 @@ ref <- cbind(ref, finSub, ville)
 knitr::kable(dplyr::slice(ref, c(1:5, 59)))
 ```
 
+En regardant de plus près certains FINESS n'ont pas le 0 initial. On peu les récupérer en ajoutant `?` au premier bloc.
+
 On pourrait aller plus loin et récupérer aussi aisément la raison sociale qui correspond au début de nos chaines de caractères...
 
 # Pour aller plus loin
