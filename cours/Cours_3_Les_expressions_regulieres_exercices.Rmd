@@ -2,10 +2,13 @@
 title: 'Cours 3 : Les expressions régulières'
 author: "Exercices"
 output:
-  html_document: 
-    toc: yes
   word_document: default
+  html_document:
+    toc: yes
 ---
+```{r include = FALSE}
+knitr::opts_chunk$set(include = TRUE)
+```
 
 # Exercice 1
 
@@ -29,13 +32,22 @@ cim10 <- "[[:upper:]][[:digit:]]{2,}"
 cim10_2 <- "[[:upper:]][[:digit:]]{2}(\\.[[:digit:]]+)?"
 ```
 
-```{r include = FALSE}
-grep(pattern = ghm, x = c("04M08T", "17K051", "13C033", "08M274"))
-grep(pattern = ghm_racine, x = c("04M08T", "17K05", "13C03", "08M274"))
-grep(pattern = ccam, x = c("LAFA004", "BGJA002", "ECQH003", "YYYY184"))
-grep(pattern = cim10, x = c("O450", "A68", "V643", "F153"))
-grep(pattern = cim10_2, x = c("O45.0", "A68", "V64.37", "F15.3"))
-
+```{r}
+grep(
+  pattern = ghm,
+  x = c("04M08T", "17K051", "13C033", "08M274"))
+grep(
+  pattern = ghm_racine,
+  x = c("04M08T", "17K05", "13C03", "08M274"))
+grep(
+  pattern = ccam,
+  x = c("LAFA004", "BGJA002", "ECQH003", "YYYY184"))
+grep(
+  pattern = cim10,
+  x = c("O450", "A68", "V643", "F153"))
+grep(
+  pattern = cim10_2,
+  x = c("O45.0", "A68", "V64.37", "F15.3"))
 ```
 
 # Exercice 2
@@ -43,17 +55,22 @@ grep(pattern = cim10_2, x = c("O45.0", "A68", "V64.37", "F15.3"))
 Ecrire un code pour extraire le code CIM-10 standard d'un code thésaurus (A10CX, I480CX, ...). Donc enlever le CX.
 
 ```{r}
-gsub(pattern = "CX", replacement = "", x = c("A10CX", "I480CX"))
+gsub(
+  pattern = "CX",
+  replacement = "",
+  x = c("A10CX", "I480CX"))
 
 regmatches(
-  c("A10CX", "I480CX"),
-  regexpr(
-    "[[:upper:]][[:digit:]]{2,}",
-    c("A10CX", "I480CX")
+  x = c("A10CX", "I480CX"),
+  m = regexpr(
+    pattern = "[[:upper:]][[:digit:]]{2,}",
+    text = c("A10CX", "I480CX")
   )
 )
 
-stringr::str_extract(c("A10CX", "I480CX"), "[[:upper:]][[:digit:]]{2,}")
+stringr::str_extract(
+  string = c("A10CX", "I480CX"),
+  pattern = "[[:upper:]][[:digit:]]{2,}")
 ```
 
 # Exercice 3
@@ -66,39 +83,42 @@ tab_serv <- data_frame(
   serv = c(
     "PNEUMOLOGIE-SOINS INTENSIFS",
     "PNEUMOLOGIE-HOSPIT COMPL CONVENT", 
-"CARDIOLOGIE-HOSPIT COMPL CONVENT", "URGENCES ADULTES-HOSPIT COMPL CONVENT", 
-"MEDECINE INTERNE-HOSPIT COMPL CONVENT", "CARDIOLOGIE-SOINS INTENSIFS", 
-"MALAD. INFECTIEUSES-HOSPIT COMPL CONVENT", "CARDIOLOGIE-HOSPITALISATION JOUR", 
-"REANIMATION MEDICALE-REANIMATION", "NEURO-VASCULAIRE-SOINS INTENSIFS", 
-"NEURO-VASCULAIRE-HOSPIT COMPL CONVENT", "UROLOGIE-HOSPIT COMPL CONVENT", 
-"CHIRURGIE VISCERALE-HOSPIT COMPL CONVENT", "PNEUMOLOGIE-HOSPITAL.SEMAINE", 
-"RHUMATOLOGIE-HOSPIT COMPL CONVENT", "HEPATO-GASTRO-ENTERO-HOSPIT COMPL CONVENT", 
-"NEPHROLOGIE-SOINS INTENSIFS", "NEPHROLOGIE-HOSPIT COMPL CONVENT", 
-"ENDOCRINOLOGIE-HOSPIT COMPL CONVENT", "MED.INT.GERIATRIQUE-HOSPIT COMPL CONVENT", 
-"ANESTHESIE-REA.CHIR.-SURVEILLANCE CONTINU", "CHIR.CARDIO-VASC.-HOSPIT COMPL CONVENT", 
-"ANESTHESIE-REA.CHIR.-REANIMATION", "DERMATOLOGIE-HOSPIT COMPL CONVENT", 
-"REANIMATION MEDICALE-SURVEILLANCE CONTINU", "MAL RARES-HOSPITALISATION JOUR", 
-"O.R.L.-HOSPIT COMPL CONVENT", "MEDECINE INTERNE-HOSPITAL.SEMAINE", 
-"REANIMATION POLYVALENTE-REANIMATION", "REANIMATION POLYVALENTE-SURVEILLANCE CONTINU", 
-"ADDICTO MCO-HOSPIT COMPL CONVENT", "CARDIOLOGIE-HOSPITAL.SEMAINE", 
-"CANCERO ADULTE-HOSPIT COMPL CONVENT", "CHIR.THORACIQUE-HOSPIT COMPL CONVENT", 
-"HEPATO-GASTRO-ENTERO-HOSPITAL.SEMAINE", "HEMATOLOGIE CLINIQUE-HOSPIT COMPL CONVENT", 
-"UROLOGIE-HOSPITAL.SEMAINE", "NEUROLOGIE-HOSPITAL.SEMAINE", "IMMUNOLOGIE CLINIQUE-HOSPIT COMPL CONVENT", 
-"CHIRURGIE VASCULAIRE-HOSPIT COMPL CONVENT", "HEMATOLOGIE CLINIQUE-SOINS INTENSIFS", 
-"NEUROLOGIE-HOSPIT COMPL CONVENT", "ENDOCRINOLOGIE-HOSPITAL.SEMAINE", 
-"CHIR.CARDIO-VASC.-SOINS INTENSIFS", "NUTRITION-HOSPIT COMPL CONVENT", 
-"DETENUS-HOSPIT COMPL CONVENT")
+    "CARDIOLOGIE-HOSPIT COMPL CONVENT", "URGENCES ADULTES-HOSPIT COMPL CONVENT", 
+    "MEDECINE INTERNE-HOSPIT COMPL CONVENT", "CARDIOLOGIE-SOINS INTENSIFS", 
+    "MALAD. INFECTIEUSES-HOSPIT COMPL CONVENT", "CARDIOLOGIE-HOSPITALISATION JOUR", 
+    "REANIMATION MEDICALE-REANIMATION", "NEURO-VASCULAIRE-SOINS INTENSIFS", 
+    "NEURO-VASCULAIRE-HOSPIT COMPL CONVENT", "UROLOGIE-HOSPIT COMPL CONVENT", 
+    "CHIRURGIE VISCERALE-HOSPIT COMPL CONVENT", "PNEUMOLOGIE-HOSPITAL.SEMAINE", 
+    "RHUMATOLOGIE-HOSPIT COMPL CONVENT", "HEPATO-GASTRO-ENTERO-HOSPIT COMPL CONVENT", 
+    "NEPHROLOGIE-SOINS INTENSIFS", "NEPHROLOGIE-HOSPIT COMPL CONVENT", 
+    "ENDOCRINOLOGIE-HOSPIT COMPL CONVENT", "MED.INT.GERIATRIQUE-HOSPIT COMPL CONVENT", 
+    "ANESTHESIE-REA.CHIR.-SURVEILLANCE CONTINU", "CHIR.CARDIO-VASC.-HOSPIT COMPL CONVENT", 
+    "ANESTHESIE-REA.CHIR.-REANIMATION", "DERMATOLOGIE-HOSPIT COMPL CONVENT", 
+    "REANIMATION MEDICALE-SURVEILLANCE CONTINU", "MAL RARES-HOSPITALISATION JOUR", 
+    "O.R.L.-HOSPIT COMPL CONVENT", "MEDECINE INTERNE-HOSPITAL.SEMAINE", 
+    "REANIMATION POLYVALENTE-REANIMATION", "REANIMATION POLYVALENTE-SURVEILLANCE CONTINU", 
+    "ADDICTO MCO-HOSPIT COMPL CONVENT", "CARDIOLOGIE-HOSPITAL.SEMAINE", 
+    "CANCERO ADULTE-HOSPIT COMPL CONVENT", "CHIR.THORACIQUE-HOSPIT COMPL CONVENT", 
+    "HEPATO-GASTRO-ENTERO-HOSPITAL.SEMAINE", "HEMATOLOGIE CLINIQUE-HOSPIT COMPL CONVENT", 
+    "UROLOGIE-HOSPITAL.SEMAINE", "NEUROLOGIE-HOSPITAL.SEMAINE", "IMMUNOLOGIE CLINIQUE-HOSPIT COMPL CONVENT", 
+    "CHIRURGIE VASCULAIRE-HOSPIT COMPL CONVENT", "HEMATOLOGIE CLINIQUE-SOINS INTENSIFS", 
+    "NEUROLOGIE-HOSPIT COMPL CONVENT", "ENDOCRINOLOGIE-HOSPITAL.SEMAINE", 
+    "CHIR.CARDIO-VASC.-SOINS INTENSIFS", "NUTRITION-HOSPIT COMPL CONVENT", 
+    "DETENUS-HOSPIT COMPL CONVENT")
 ) %>% 
   mutate(n = row_number()) %>% 
   select(n, serv)
 ```
 
 ```{r results = 'asis', echo = FALSE}
-knitr::kable(head(tab_serv))
+knitr::kable(dplyr::slice(tab_serv, c(1:5, 29:30)))
 ```
 
 ```{r}
-grep("REANIMATION|SURVEILLANCE CONTINU", tab_serv$serv, value = TRUE)
+grep(
+  pattern = "REANIMATION|SURVEILLANCE CONTINU",
+  x = tab_serv$serv,
+  value = TRUE)
 ```
 
 Parmi cette même liste, faire deux colonnes :
@@ -116,7 +136,7 @@ On écrit donc deux fonctions :
 Puis on fait un `lapply()` suivit d'un `unlist()` (pour transformer le résultat liste en vecteur).
 
 ```{r}
-split <- strsplit(tab_serv$serv, split = "-")
+split <- strsplit(x = tab_serv$serv, split = "-")
 split[c(1, 2, 11, 16, 44)]
 
 get_discip <- function(x) {
@@ -135,6 +155,7 @@ knitr::kable(head(tab_serv))
 # Exercice 4
 
 Ecrire un code pour extraire le code FINESS du référentiel (attention aux erreurs et à la Corse...).
+
 ```{r result = 'asis'}
 ref <- read.csv2(
   '../data/FINESS_data.csv',
@@ -148,22 +169,28 @@ Première approche : on recupère les match qui correspondent au format d'un FIN
 
 ```{r}
 finess <- regexpr(
-  "[[:digit:]][[:digit:]|A|B][[:digit:]]{7}",
-  ref$info
+  pattern = "[[:digit:]][[:digit:]|A|B][[:digit:]]{7}",
+  text = ref$info
 )
-finMatch <- regmatches(ref$info, finess, invert = NA)
+finMatch <- regmatches(
+  x = ref$info,
+  m = finess,
+  invert = NA)
 finMatch[c(1:6, 600, 3574)]
 
 f_nettoy <- function(x) {
   if(length(x) == 1) NA else x[2]
 }
-finMatch <- sapply(finMatch, f_nettoy)
+finMatch <- unlist(lapply(finMatch, f_nettoy))
 ```
 
 Autre approche : ici on capture le FINESS. `gsub()` est lui capable de garder les non-match et de leur donner un `NA`, ce qui evite le nettoyage vu au dessus.
 
 ```{r}
-finSub <- gsub(pattern = ".+([[:digit:]][[:digit:]|A|B][[:digit:]]{7}).+", replacement = "\\1", ref$info)
+finSub <- gsub(
+  pattern = ".+([[:digit:]][[:digit:]|A|B][[:digit:]]{7}).+",
+  replacement = "\\1",
+  ref$info)
 ```
 
 Et sinon heureusement il y a Hadley...
@@ -175,17 +202,30 @@ finHad <- stringr::str_extract(
 )
 ```
 
-Extraire aussi le nom de la ville (mentionnée après le code postal, sans prendre le CEDEX !)
+```{r}
+head(finMatch)
+head(finSub)
+head(finHad)
+```
+
+Extraire aussi le nom de la ville (mentionnée après le code postal, sans prendre le CEDEX !). Penser à la Corse !
 
 ```{r}
-ville <- gsub(pattern = "^.+[0-9]{4}\\s(.+)(CEDEX)?.*", replacement = "\\1", ref$info)
+ville <- gsub(
+  pattern = "^.+[0-9]{1}[0-9AB]{1}[0-9]{3}\\s(.+)",
+  replacement = "\\1",
+  x = ref$info)
+ville <- gsub(
+  pattern = " CEDEX$",
+  replacement = "",
+  x = ville)
 ```
 
 On obtient bien dans les deux cas des vecteurs de même longueur que le dataframe initial, ce qui permet de les manipuler aisément.
 
 ```{r result = 'asis'}
 ref <- cbind(ref, finSub, ville)
-knitr::kable(head(ref))
+knitr::kable(dplyr::slice(ref, c(1:5, 59)))
 ```
 
 On pourrait aller plus loin et récupérer aussi aisément la raison sociale qui correspond au début de nos chaines de caractères...
@@ -251,7 +291,7 @@ Déjà convertir le PDF en texte (des outils en ligne existent). Pour l'exercice
 
 ```{r}
 textGuide <- scan(
-  "https://pierucci.github.io/docs/exo/sts_20140005_0002_p000.txt",
+  file = "https://pierucci.org/docs/exo/sts_20140005_0002_p000.txt",
   what = character(),
   encoding = "latin1"
 )
