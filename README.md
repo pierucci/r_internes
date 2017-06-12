@@ -17,3 +17,8 @@ Bienvenue sur le repository regroupant les cours R dédiés aux internes de Sant
 ## Modalités pratiques
 
 L'ensemble des slides (réalisés sous R, via RMarkdown) sont téléchargeables sur le repository.
+
+Avant le cours pensez à :
+
+  * Mettre `R` et `RStudio` à jour,
+  * Installer le package `tidyverse`.
