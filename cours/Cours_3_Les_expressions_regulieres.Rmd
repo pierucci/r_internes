@@ -159,6 +159,15 @@ regexpr(pattern = "([A-z])\\1", text = exemple)
 regmatches(x = exemple, m = regexpr(pattern = "([A-z])\\1", text = exemple))
 ```
 
+## stringr
+
+Un package pour écrire plus facilement:
+
+  * `str_detect()`
+  * `str_extract()`
+  * `str_sub()`
+  * `str_match()`
+
 ## Documentation 
 
   * [R4CIAM](http://informatique-mia.inra.fr/r4ciam/node/148) : Aide mémoire sur les expressions régulières avec quelques exemples.
