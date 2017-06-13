@@ -1,10 +1,10 @@
 ---
 title: 'Cours 3 : Les expressions régulières'
 output:
+  beamer_presentation: default
   ioslides_presentation:
     css: slides.css
     smaller: yes
-  beamer_presentation: default
 ---
 
 ```{r setup, include=FALSE}
@@ -170,5 +170,4 @@ Un package pour écrire plus facilement:
 
 ## Documentation 
 
-  * [R4CIAM](http://informatique-mia.inra.fr/r4ciam/node/148) : Aide mémoire sur les expressions régulières avec quelques exemples.
-  * [Regular Expression in R](http://stat545.com/block022_regular-expression.html) un tutorial avec des exemples.
+  * [Regexpr](http://regexr.com): un site pour tester ses expressions.
