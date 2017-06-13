@@ -9,8 +9,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, comment = "#")
-library(dplyr)
-library(tidyr)
+library(tidyverse)
 ```
 
 ## Le tidyverse
@@ -18,14 +17,14 @@ library(tidyr)
 Ensemble de packages autour de la manipulation de données développés par/avec Hadley Wickham. Ces packages sont tous développés de façon à être:
 
   * le plus expressif possible (= facilité à lire et comprendre le code)
-  * le plus cohérent possible (= convention de nommage, consistence des arguments)
+  * le plus cohérent possible (= convention de nommage, cohérence des arguments)
 
 De plus les nouvelles versions de ses packages sont plutôt bien documentées et accompagnées de vignette d'aide très pédagogiques. C'est pourquoi ce cours vous orientera souvent vers ces supports.
 
 ## Quelques packages
 
   - `dplyr` : package généraliste sur manipulation de données, **TRES** utile
-  - `tidyr` : dédié à la mise en forme des données (format long/wide)
+  - `tidyr` : dédié à la mise en forme + nettoyage des données (format long/wide)
   - `readr` : lecture des données (remplace `read.csv()` et consort)
   - `ggplot2` : génération de graphique, **TRES** utile 
   - `lubridate`: manipulation de dates
@@ -51,7 +50,7 @@ Le passage des informations d'une étape à l'autre se fait par le biais d'un op
 
 ```{r results='hide'}
 log(sum(5, 10))
-5 %>% sum(10) %>% log
+5 %>% sum(10) %>% log()
 
 arrange(filter(iris, Sepal.Length > 3), Species)
 
@@ -64,60 +63,67 @@ iris %>% filter(Sepal.Length > 3) %>% arrange(Species)
 ```{r include = FALSE}
 tab <- data.frame(
   class = c(rep("a", 2), rep("b", 3)),
-  var = c(10, 20, 110, 120, 160)
-)
+  var = c(10, 20, 110, 120, 160))
 ```
 
-## Mutate {.reduceCode}
+## Plus de chaînage
 
-`mutate` crée des nouvelles variables, sans changer le nombre de lignes de la table. On peut utiliser des variables qu'on vient de créer (ici `var2` par exemple).
+On peut combiner le chaînage aec le retour à la ligne et avec `->` pour plus de lisibilité.
+
+```{r}
+iris %>%
+  filter(Sepal.Length > 3) %>%
+  arrange(Species) ->
+  result
+```
+
+## `mutate()` {.reduceCode}
+
+`mutate()` crée des nouvelles variables, sans changer le nombre de lignes de la table. On peut utiliser des variables qu'on vient de créer (ici `var2` par exemple).
 ```{r}
 tab
 tab %>% 
   mutate(
     var2 = var + 1,
-    var3 = var2 * 10
-  )
+    var3 = var2 * 10)
 ```
 
-## Summarise {.reduceCode}
+## `summarise()` {.reduceCode}
 
-`summarise` par contre résume toutes les lignes de la table en une seule ligne. Seules les variables crées sont conservées, vu que les anciennes variables ne peuvent tenir sur une seule ligne...
+`summarise()` par contre résume toutes les lignes de la table en une seule ligne. Seules les variables crées sont conservées, vu que les anciennes variables ne peuvent tenir sur une seule ligne...
 ```{r}
 tab
 tab %>% 
   summarise(
     var2 = mean(var),
-    var3 = sum(var)
-  )
+    var3 = sum(var))
 ```
 Il faut donc utiliser des fonctions qui prennent en argument un vecteur avec plusieurs valeurs, et retournent une seule valeur puisque le résultat doit tenir sur une seule ligne. On peut appeler ces fonctions des *fonctions de résumé (summary functions)*.
 
-## Group by
+## `group_by()`
 
-En soi `group_by` ne change rien aux données, il indique juste que la table devient groupée.
+En soi `group_by()` ne change rien aux données, il indique juste que la table devient groupée.
 ```{r}
 tab %>% 
   group_by(class)
 ```
-Par contre ce groupement va changer le comportement de `mutate` et `summarise`...
+Par contre ce groupement va changer le comportement de `mutate()` et `summarise()`...
 
-## Group by + summarise
+## `group_by()` %>%  `summarise()` {.reduceCode}
 
-Au lieu de résumer les données en une seule ligne, `summarise` appliqué à des données groupées résume les données en une ligne par groupe.
+Au lieu de résumer les données en une seule ligne, `summarise()` appliqué à des données groupées résume les données en une ligne par groupe.
 ```{r}
 tab %>% 
   group_by(class) %>% 
   summarise(
     var2 = mean(var),
-    var3 = sum(var)
-  )
+    var3 = sum(var))
 ```
 Les variables indiquant les groupes sont conservées, en plus des variables crées par `summarise`.
 
-## Group by + mutate {.reduceCode}
+## `group_by()` %>%  `mutate()` {.reduceCode}
 
-`mutate` utilisé avec `summarise` permet de calculer la nouvelle variable par groupe. Comparer :
+`mutate()` utilisé avec `group_by()` permet de calculer la nouvelle variable par groupe. Comparer :
 ```{r}
 tab %>% mutate(var2 = sum(var), var3 = mean(var))
 tab %>% group_by(class) %>% 
@@ -125,7 +131,7 @@ tab %>% group_by(class) %>%
 ```
 Bien entendu ça ne fonctionne qu'avec des *summary functions*.
 
-## Group by + arrange (1) {.reduceCode}
+## `group_by()` %>%  `arrange()` (1) {.reduceCode}
 
 `groupe_by` ne fonctionne pas avec `arrange` pour trier par groupe.
 ```{r}
@@ -134,7 +140,7 @@ tab %>% mutate(var2 = sin(var)) %>%
   arrange(var2)
 ```
 
-## Group by + arrange (2) {.reduceCode}
+## `group_by()` %>%  `arrange()` (2) {.reduceCode}
 
 Il faut ajouter la variable de groupe dans `arrange`.
 ```{r}
@@ -145,16 +151,16 @@ tab %>% mutate(var2 = sin(var)) %>%
 
 ## Fonctions spéciales {.reduceCode}
 
-Il existe quelques fonctions spéciales très utiles: `n` le nombre de lignes, `row_number` le numéro de ligne, `lead` et `lag` pour récupérer les lignes suivantes ou précédentes...
+Il existe quelques fonctions spéciales très utiles: `n()` le nombre de lignes, `row_number()` le numéro de ligne, `lead()` et `lag()` pour récupérer les lignes suivantes ou précédentes...
 ```{r}
 tab %>% mutate(
   nline = n(), rn = row_number(),
   lead_var = lead(var), lagvar = lag(var))
 ```
 
-## Fonctions spéciales + Group by {.reduceCode}
+## Fonctions spéciales + `group_by()` {.reduceCode}
 
-Toutes ces fonctions prennent `group_by` en compte.
+Toutes ces fonctions prennent `group_by()` en compte.
 ```{r}
 tab %>% group_by(class) %>% mutate(
   nline = n(), rn = row_number(),
@@ -186,13 +192,11 @@ iris %>%
   filter(Sepal.Length > 3) %>% 
   mutate(
     sum_width = Sepal.Width + Petal.Width,
-    sum_length = Sepal.Length + Petal.Length
-  ) %>% 
+    sum_length = Sepal.Length + Petal.Length) %>% 
   group_by(Species) %>% 
   summarise(
     mean_sum_width = mean(sum_width),
-    mean_sum_length = mean(sum_length)
-  ) %>% 
+    mean_sum_length = mean(sum_length)) %>% 
   arrange(desc(mean_sum_width))
 ```
 
@@ -216,7 +220,7 @@ Ce package sert à ranger des données.
   - passer facilement entre les formats longs/larges
   - transformer des variables mal codées
 
-## La fonction `gather`
+## La fonction `gather()`
 
 Sert à regrouper en une colonne des données dispersée sur plusieur colonnes.
 
@@ -226,8 +230,7 @@ tab <- data.frame(
   x1 = rnorm(2),
   x2 = rnorm(2),
   x3 = c(rnorm(1), NA),
-  y1 = rnorm(2)
-)
+  y1 = rnorm(2))
 ```
 
 ```{r}
@@ -236,8 +239,7 @@ tab %>%
   gather(
     key = var_name,
     value = number,
-    x1, x2, x3, y1
-  )
+    x1, x2, x3, y1)
 ```
 
 ## Sélection des variables
@@ -255,17 +257,16 @@ tab %>%
   gather(
     key = var_name,
     value = number,
-    x1:x3, y1
-  )
+    x1:x3, y1)
+
 tab %>% 
   gather(
     key = var_name,
     value = number,
-    starts_with("x"), y1
-  )
+    starts_with("x"), y1)
 ```
 
-## La fonction `spread`
+## La fonction `spread()` (1)
 
 Sert à étendre sur plusieurs colonnes des données regroupées en une seule colonne.
 
@@ -275,8 +276,7 @@ tab <- tab %>%
     key = var_name,
     value = number,
     x1:x3, y1,
-    na.rm = TRUE
-  )
+    na.rm = TRUE)
 ```
 
 ```{r}
@@ -284,21 +284,19 @@ tab
 tab %>% 
   spread(
     key = var_name,
-    value = number
-  )
+    value = number)
 ```
 
-## `spread` (2)
+## La fonction `spread()` (2)
 
-L'arguement `fill` est souvent pratique.
+L'arguement `fill =` est souvent pratique.
 
 ```{r}
 tab %>% 
   spread(
     key = var_name,
     value = number,
-    fill = 0
-  )
+    fill = 0)
 ```
 
 ## Nettoyage des variables (1)
@@ -306,8 +304,7 @@ tab %>%
 ```{r}
 tab %>% 
   mutate(
-    n = extract_numeric(var_name)
-  )
+    n = parse_number(var_name))
 ```
 
 ## Nettoyage des variables (2)
@@ -317,8 +314,7 @@ tab %>%
   extract(
     col = var_name,
     into = c("type", "n"),
-    regex = "^([a-z])([0-9])$"
-  )
+    regex = "^([a-z])([0-9])$")
 
 ```
 
