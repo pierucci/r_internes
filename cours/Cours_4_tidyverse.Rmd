@@ -159,14 +159,15 @@ tab %>%
 
 ## Fonctions spéciales {.reduceCode}
 
-Il existe quelques fonctions spéciales très utiles: `n()` le nombre de lignes, `row_number()` le numéro de ligne, `lead()` et `lag()` pour récupérer les lignes suivantes ou précédentes...
+Il existe quelques fonctions spéciales très utiles: `n()` le nombre de lignes, `row_number()` le numéro de ligne, `lead()` et `lag()` pour récupérer les lignes suivantes ou précédentes `n_distinct()` pour compter le nombre distinct d'éléments.
 ```{r}
 tab %>%
   mutate(
     nline = n(),
     rn = row_number(),
     lead_var = lead(var),
-    lag_var = lag(var))
+    lag_var = lag(var),
+    n_gpe = n_distinct(class))
 ```
 
 ## Fonctions spéciales + `group_by()` {.reduceCode}
@@ -179,7 +180,8 @@ tab %>%
     nline = n(),
     rn = row_number(),
     lead_var = lead(var),
-    lag_var = lag(var))
+    lag_var = lag(var),
+    n_gpe = n_distinct(class))
 ```
 
 ## A l'ancienne
