@@ -34,7 +34,7 @@ Nettoyer les coûts et les chiffres pour les lire comme des données numériques
 ```{r}
 clean <- function(x) {
   # J'ai remplace le € par son code ASCII pour compatibilite
-  as.numeric(gsub(" \u20ac|\\s*", "", x))
+  as.numeric(gsub("\u20ac|\\s*", "", x))
 }
 
 tab <- tab %>% 
@@ -77,26 +77,26 @@ Deuxième étape : extraire l'information du mois et du type de variable dans de
 etape2 <- etape1 %>% 
   extract(
     col = var_name,
-    into = c("type", "mois"),
-    regex = "^([A-Za-z]+)\\..*([0-9])$"
+    into = c("type", "annee", "mois"),
+    regex = "^([A-Za-z]+).*([0-9]{4})\\.([0-9]{2})$"
   )
 
 etape2 %>% 
-  select(CIP13, type, mois, value) %>% 
+  select(CIP13, type, annee,  mois, value) %>% 
   head
 ```
 
 Troisième étape : refaire 3 colonnes à partir de la variable `type`.
 
 ```{r}
-tab_clean <- etape2 %>% 
+etape3 <- etape2 %>% 
   spread(
     key = type,
     value = value,
     fill = 0
   )
 
-tab_clean %>% 
+etape3 %>% 
   select(CIP13, mois, Base, Montant, Nombre) %>% 
   head
 ```
@@ -114,8 +114,8 @@ tab <- tab %>%
   ) %>% 
   extract(
     col = var_name,
-    into = c("type", "mois"),
-    regex = "^([A-Za-z]+)\\..*([0-9])$"
+    into = c("type", "annee", "mois"),
+    regex = "^([A-Za-z]+).*([0-9]{4})\\.([0-9]{2})$"
   ) %>% 
   spread(
     key = type,
@@ -131,11 +131,11 @@ La fonction `kable()` sert juste à sortir le résultat dans un tableau pour le 
 Volumes de remboursements par type de molécule parmi les médicaments contre l'hépatite virale.
 
 ```{r result = 'asis'}
-tab_clean %>% 
+tab %>% 
   filter(Code.EphMRA == "J05B1") %>% 
   group_by(Classe.ATC) %>% 
   summarise(n = sum(Nombre)) %>% 
-  kable
+  kable()
 ```
 
 Quel est le top 5 des grandes catégories de médicaments les plus remboursés, par mois.
@@ -153,7 +153,7 @@ tab_clean %>%
   mutate(classement = row_number()) %>% 
   filter(classement <= 5) %>% 
   arrange(mois, classement) %>% 
-  kable
+  kable()
 ```
 
 Evolution mensuelle des traitements de l'hépatite virale. Du coût unitaire.
@@ -164,10 +164,10 @@ tab_clean %>%
   group_by(mois) %>% 
   summarise(
     cost = sum(Montant),
-    n = sum(Nombre)
+    n = sum(Nombre),
+    cost_unit = cost / n
   ) %>% 
-  mutate(cost_unit = cost / n) %>% 
-  kable
+  kable()
 ```
 
 Un classement des coûts unitaires par classe ATC. Récupérer le top 10.
@@ -178,10 +178,10 @@ tab_clean %>%
   group_by(Libellé.ATC.2) %>% 
   summarise(
     cost = sum(Montant),
-    n = sum(Nombre)
+    n = sum(Nombre),
+    cost_unit = cost / n
   ) %>% 
-  mutate(cost_unit = cost / n) %>% 
   arrange(desc(cost_unit)) %>% 
   slice(1:10) %>% 
-  kable
+  kable()
 ```
