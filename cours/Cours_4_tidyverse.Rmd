@@ -48,6 +48,10 @@ Pour garder le code le plus lisible et simple possible, il est possible de chain
 
 Le passage des informations d'une étape à l'autre se fait par le biais d'un opérateur spécial : le `%>%`.
 
+<div class="centered">
+![](../img/logo.png)
+</div>
+
 ```{r results='hide'}
 log(sum(5, 10))
 5 %>% sum(10) %>% log()
@@ -60,6 +64,8 @@ arrange(tmp, Species)
 iris %>% filter(Sepal.Length > 3) %>% arrange(Species)
 ```
 
+Plus d'info : `browseVignettes(package = "magrittr")`.
+
 ```{r include = FALSE}
 tab <- data.frame(
   class = c(rep("a", 2), rep("b", 3)),
@@ -68,7 +74,7 @@ tab <- data.frame(
 
 ## Plus de chaînage
 
-On peut combiner le chaînage aec le retour à la ligne et avec `->` pour plus de lisibilité.
+On peut combiner le chaînage avec le retour à la ligne et avec `->` pour plus de lisibilité.
 
 ```{r}
 iris %>%
@@ -98,7 +104,7 @@ tab %>%
     var2 = mean(var),
     var3 = sum(var))
 ```
-Il faut donc utiliser des fonctions qui prennent en argument un vecteur avec plusieurs valeurs, et retournent une seule valeur puisque le résultat doit tenir sur une seule ligne. On peut appeler ces fonctions des *fonctions de résumé (summary functions)*.
+Il faut donc utiliser des fonctions qui prennent un vecteur avec plusieurs valeurs, et retournent une valeur unique. On peut appeler ces fonctions des *fonctions de résumé (summary functions)*.
 
 ## `group_by()`
 
@@ -119,7 +125,7 @@ tab %>%
     var2 = mean(var),
     var3 = sum(var))
 ```
-Les variables indiquant les groupes sont conservées, en plus des variables crées par `summarise`.
+Les variables indiquant les groupes sont conservées, en plus des variables crées par `summarise()`.
 
 ## `group_by()` %>%  `mutate()` {.reduceCode}
 
@@ -135,7 +141,8 @@ Bien entendu ça ne fonctionne qu'avec des *summary functions*.
 
 `groupe_by` ne fonctionne pas avec `arrange` pour trier par groupe.
 ```{r}
-tab %>% mutate(var2 = sin(var)) %>% 
+tab %>%
+  mutate(var2 = sin(var)) %>% 
   group_by(class) %>% 
   arrange(var2)
 ```
@@ -144,7 +151,8 @@ tab %>% mutate(var2 = sin(var)) %>%
 
 Il faut ajouter la variable de groupe dans `arrange`.
 ```{r}
-tab %>% mutate(var2 = sin(var)) %>% 
+tab %>%
+  mutate(var2 = sin(var)) %>% 
   group_by(class) %>% 
   arrange(class, var2)
 ```
@@ -153,18 +161,25 @@ tab %>% mutate(var2 = sin(var)) %>%
 
 Il existe quelques fonctions spéciales très utiles: `n()` le nombre de lignes, `row_number()` le numéro de ligne, `lead()` et `lag()` pour récupérer les lignes suivantes ou précédentes...
 ```{r}
-tab %>% mutate(
-  nline = n(), rn = row_number(),
-  lead_var = lead(var), lagvar = lag(var))
+tab %>%
+  mutate(
+    nline = n(),
+    rn = row_number(),
+    lead_var = lead(var),
+    lag_var = lag(var))
 ```
 
 ## Fonctions spéciales + `group_by()` {.reduceCode}
 
 Toutes ces fonctions prennent `group_by()` en compte.
 ```{r}
-tab %>% group_by(class) %>% mutate(
-  nline = n(), rn = row_number(),
-  lead_var = lead(var), lagvar = lag(var))
+tab %>%
+  group_by(class) %>%
+  mutate(
+    nline = n(),
+    rn = row_number(),
+    lead_var = lead(var),
+    lag_var = lag(var))
 ```
 
 ## A l'ancienne
@@ -228,9 +243,9 @@ Sert à regrouper en une colonne des données dispersée sur plusieur colonnes.
 tab <- data.frame(
   a = c("a", "b"),
   x1 = rnorm(2),
-  x2 = rnorm(2),
-  x3 = c(rnorm(1), NA),
-  y1 = rnorm(2))
+  x2 = c(rnorm(1), NA),
+  y1 = rnorm(2),
+  y2 = rnorm(2))
 ```
 
 ```{r}
@@ -239,7 +254,7 @@ tab %>%
   gather(
     key = var_name,
     value = number,
-    x1, x2, x3, y1)
+    x1, x2, y1, y2)
 ```
 
 ## Sélection des variables
@@ -257,13 +272,14 @@ tab %>%
   gather(
     key = var_name,
     value = number,
-    x1:x3, y1)
+    x1:x2, y1:y2)
 
 tab %>% 
   gather(
     key = var_name,
     value = number,
-    starts_with("x"), y1)
+    starts_with("x"),
+    starts_with("y"))
 ```
 
 ## La fonction `spread()` (1)
@@ -275,7 +291,7 @@ tab <- tab %>%
   gather(
     key = var_name,
     value = number,
-    x1:x3, y1,
+    x1:x2, y1:y2,
     na.rm = TRUE)
 ```
 
@@ -316,6 +332,19 @@ tab %>%
     into = c("type", "n"),
     regex = "^([a-z])([0-9])$")
 
+```
+
+## Combiner nettoyage + `spread()`
+
+```{r}
+tab %>% 
+  extract(
+    col = var_name,
+    into = c("type", "n"),
+    regex = "^([a-z])([0-9])$") %>% 
+  spread(
+    key = type,
+    value = number)
 ```
 
 Pour plus d'infos prenez le temps de lire : `vignette("tidy-data", package = "tidyr")`.
