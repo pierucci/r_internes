@@ -1,11 +1,11 @@
 ---
-title: 'Cours 4 : Le Hadleyverse'
+title: 'Cours 4 : Le tidyverse'
 author: "Exercices"
 date: "June 30, 2016"
 output:
-  html_document: 
-    toc: yes
   word_document: default
+  html_document:
+    toc: yes
 ---
 
 ```{r include = FALSE}
@@ -141,7 +141,7 @@ tab %>%
 Quel est le top 5 des grandes catégories de médicaments les plus remboursés, par mois.
 
 ```{r result = 'asis'}
-tab_clean %>% 
+tab %>% 
   filter(Libellé.ATC.2 != "") %>% 
   group_by(mois, Libellé.ATC.2) %>% 
   summarise(n = sum(Nombre)) %>% 
@@ -159,7 +159,7 @@ tab_clean %>%
 Evolution mensuelle des traitements de l'hépatite virale. Du coût unitaire.
 
 ```{r result = 'asis'}
-tab_clean %>% 
+tab %>% 
   filter(Code.EphMRA == "J05B1") %>% 
   group_by(mois) %>% 
   summarise(
@@ -173,7 +173,7 @@ tab_clean %>%
 Un classement des coûts unitaires par classe ATC. Récupérer le top 10.
 
 ```{r result = 'asis'}
-tab_clean %>% 
+tab %>% 
   filter(Libellé.ATC.2 != "") %>% 
   group_by(Libellé.ATC.2) %>% 
   summarise(
