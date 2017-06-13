@@ -168,6 +168,7 @@ tab %>%
     lead_var = lead(var),
     lag_var = lag(var))
 ```
+*N.B. : on peut aussi évoquer `n_distinct` qui compte le nombre distinct d'éléments (un cas concret : on peut compter un nombre de séjours en comptant le nombre de ligne (fonction `n`) et compter le nombre de patients avec `n_distinct` sur la variable identifiant les patients, un patient pouvant effectuer plusieurs séjours)*
 
 ## Fonctions spéciales + `group_by()` {.reduceCode}
 
