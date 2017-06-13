@@ -139,7 +139,7 @@ Bien entendu ça ne fonctionne qu'avec des *summary functions*.
 
 ## `group_by()` %>%  `arrange()` (1) {.reduceCode}
 
-`groupe_by` ne fonctionne pas avec `arrange` pour trier par groupe.
+`group_by` ne fonctionne pas avec `arrange` pour trier par groupe.
 ```{r}
 tab %>%
   mutate(var2 = sin(var)) %>% 
